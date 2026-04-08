@@ -6,6 +6,9 @@
   "prisma": {
     "schema": "src/prisma/schema.prisma"
   },
+  "engines": {
+  "node": "20.x"
+  },
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "build": "tsc",
