@@ -1,0 +1,372 @@
+// This is your Prisma schema file
+// Learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  admin
+  field_agent
+  quality_manager
+  viewer
+}
+
+enum LotStatus {
+  harvest
+  processing
+  processed
+  transit
+  exported
+  rejected
+}
+
+enum ShipmentStatus {
+  preparing
+  in_transit
+  delivered
+  cancelled
+}
+
+enum CertificationType {
+  organic
+  fair_trade
+  eudr
+  rainforest
+  other
+}
+
+enum DocumentType {
+  phytosanitary
+  lab_report
+  organic_cert
+  fair_trade_cert
+  eudr_proof
+  invoice
+  other
+}
+
+enum NotificationType {
+  cert_expiring
+  lot_blocked
+  quality_anomaly
+  shipment_delayed
+  new_lot
+  system
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String
+  firstName    String
+  lastName     String
+  role         Role     @default(viewer)
+  isActive     Boolean  @default(true)
+  avatarUrl    String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  notifications Notification[]
+
+  @@map("users")
+}
+
+model Product {
+  id          String   @id @default(uuid())
+  name        String
+  variety     String?
+  category    String
+  unit        String   @default("kg")
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  lots Lot[]
+
+  @@map("products")
+}
+
+model Producer {
+  id           String   @id @default(uuid())
+  name         String
+  country      String   @default("Madagascar")
+  region       String
+  village      String?
+  latitude     Float?
+  longitude    Float?
+  areaHectares Float?
+  email        String?
+  telephone    String?
+  description  String?
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  lots           Lot[]
+  certifications Certification[]
+  photos         ProducerPhoto[]
+  documents      Document[]
+
+  @@map("producers")
+}
+
+model Lot {
+  id               String    @id @default(uuid())
+  lotNumber        String    @unique
+  producerId       String
+  productId        String
+  harvestDate      DateTime
+  quantityKg       Float
+  status           LotStatus @default(harvest)
+  qrCodeUrl        String?
+  qualityScore     Float?
+  notes            String?
+  harvestLatitude  Float?
+  harvestLongitude Float?
+  conditioningType String?   @map("conditioning_type") // vanille_noire | vanille_rouge
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  producer           Producer            @relation(fields: [producerId], references: [id])
+  product            Product             @relation(fields: [productId], references: [id])
+  processingSteps    ProcessingStep[]
+  conditioningOrders ConditioningOrder[]
+  shipmentLots       ShipmentLot[]
+  scanLogs           ScanLog[]
+  photos             LotPhoto[]
+  documents          Document[]
+
+  @@map("lots")
+}
+
+model ProcessingStep {
+  id             String    @id @default(uuid())
+  lotId          String
+  stepName       String
+  stepOrder      Int
+  startedAt      DateTime
+  endedAt        DateTime?
+  operatorName   String?
+  location       String?
+  inputQuantity  Float?
+  outputQuantity Float?
+  qualityScore   Float?
+  notes          String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  lot    Lot               @relation(fields: [lotId], references: [id], onDelete: Cascade)
+  photos ProcessingPhoto[]
+
+  @@map("processing_steps")
+}
+
+model Shipment {
+  id                String         @id @default(uuid())
+  reference         String         @unique
+  carrierName       String
+  containerNumber   String?
+  depot             String?
+  departureLocation String
+  arrivalLocation   String
+  departureDate     DateTime?
+  expectedArrival   DateTime?
+  actualArrival     DateTime?
+  status            ShipmentStatus @default(preparing)
+  notes             String?
+  qrCodeUrl         String?        @map("qr_code_url")
+  totalWeightKg     Float?         @map("total_weight_kg")
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  shipmentLots ShipmentLot[]
+  documents    Document[]
+
+  @@map("shipments")
+}
+
+model ShipmentLot {
+  id         String   @id @default(uuid())
+  shipmentId String
+  lotId      String
+  createdAt  DateTime @default(now())
+
+  shipment Shipment @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
+  lot      Lot      @relation(fields: [lotId], references: [id], onDelete: Cascade)
+
+  @@unique([shipmentId, lotId])
+  @@map("shipment_lots")
+}
+
+model Certification {
+  id         String            @id @default(uuid())
+  producerId String
+  type       CertificationType
+  issuer     String
+  issuedAt   DateTime
+  expiresAt  DateTime
+  status     String            @default("active")
+  fileUrl    String?
+  notes      String?
+  createdAt  DateTime          @default(now())
+  updatedAt  DateTime          @updatedAt
+
+  producer Producer @relation(fields: [producerId], references: [id], onDelete: Cascade)
+
+  @@map("certifications")
+}
+
+model Document {
+  id         String       @id @default(uuid())
+  name       String
+  docType    DocumentType
+  fileUrl    String
+  fileSize   Int?
+  mimeType   String?
+  lotId      String?
+  producerId String?
+  stepId     String?
+  shipmentId String?
+  notes      String?
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+
+  lot      Lot?      @relation(fields: [lotId], references: [id], onDelete: SetNull)
+  producer Producer? @relation(fields: [producerId], references: [id], onDelete: SetNull)
+  shipment Shipment? @relation(fields: [shipmentId], references: [id], onDelete: SetNull)
+
+  @@map("documents")
+}
+
+model ProducerPhoto {
+  id         String   @id @default(uuid())
+  producerId String
+  url        String
+  caption    String?
+  isPrimary  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  producer Producer @relation(fields: [producerId], references: [id], onDelete: Cascade)
+
+  @@map("producer_photos")
+}
+
+model LotPhoto {
+  id        String   @id @default(uuid())
+  lotId     String
+  url       String
+  caption   String?
+  createdAt DateTime @default(now())
+
+  lot Lot @relation(fields: [lotId], references: [id], onDelete: Cascade)
+
+  @@map("lot_photos")
+}
+
+model ProcessingPhoto {
+  id        String   @id @default(uuid())
+  stepId    String
+  url       String
+  caption   String?
+  createdAt DateTime @default(now())
+
+  step ProcessingStep @relation(fields: [stepId], references: [id], onDelete: Cascade)
+
+  @@map("processing_photos")
+}
+
+model Notification {
+  id        String           @id @default(uuid())
+  userId    String
+  type      NotificationType
+  title     String
+  message   String
+  data      Json?
+  isRead    Boolean          @default(false)
+  createdAt DateTime         @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
+}
+
+model ScanLog {
+  id              String   @id @default(uuid())
+  lotId           String   @map("lot_id")
+  ipAddress       String?  @map("ip_address")
+  country         String?
+  city            String?
+  device          String?
+  userAgent       String?  @map("user_agent")
+  referer         String?
+  isSuspicious    Boolean  @default(false) @map("is_suspicious")
+  suspicionReason String?  @map("suspicion_reason")
+  latitude        Float?
+  longitude       Float?
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  lot Lot @relation(fields: [lotId], references: [id], onDelete: Cascade)
+
+  @@index([lotId])
+  @@index([createdAt])
+  @@map("scan_logs")
+}
+
+model ConditioningOrder {
+  id          String             @id @default(uuid())
+  lotId       String             @map("lot_id")
+  productType String             @map("product_type")
+  destination String?
+  status      String             @default("en_cours")
+  passNumber  Int                @default(1) @map("pass_number")
+  createdBy   String             @map("created_by")
+  createdAt   DateTime           @default(now()) @map("created_at")
+  updatedAt   DateTime           @updatedAt @map("updated_at")
+  lot         Lot                @relation(fields: [lotId], references: [id])
+  steps       ConditioningStep[]
+
+  @@map("conditioning_orders")
+}
+
+model ConditioningStep {
+  id             String            @id @default(uuid())
+  orderId        String            @map("order_id")
+  stepName       String            @map("step_name")
+  stepOrder      Int               @map("step_order")
+  status         String            @default("en_attente")
+  startedAt      DateTime?         @map("started_at")
+  completedAt    DateTime?         @map("completed_at")
+  operatorName   String?           @map("operator_name")
+  validatedBy    String?           @map("validated_by")
+  validatedAt    DateTime?         @map("validated_at")
+  quantityIn     Float?            @map("quantity_in")
+  quantityOut    Float?            @map("quantity_out")
+  humidityIn     Float?            @map("humidity_in")
+  humidityOut    Float?            @map("humidity_out")
+  moldPercent    Float?            @map("mold_percent")
+  splitPercent   Float?            @map("split_percent")
+  phenolPercent  Float?            @map("phenol_percent")
+  pocketPercent  Float?            @map("pocket_percent")
+  metalDetResult String?           @map("metal_det_result")
+  boxCount       Int?              @map("box_count")
+  notes          String?
+  isConform      Boolean?          @map("is_conform")
+  documents      String[]          @default([])
+  // Nouveaux champs process réel AGK-COMORES
+  temperature    Float?            @map("temperature")       // Échaudage: 60-65°C
+  vanillineRate  Float?            @map("vanilline_rate")    // Taux de vanilline final (%)
+  classification String?           @map("classification")    // 3ème/4ème/mauvais/sec_soleil
+  isFendue       Boolean?          @map("is_fendue")         // Fendue (true) ou Non fendue (false)
+  bundleType     String?           @map("bundle_type")       // ficelle / raphia / vrac
+  bundleCount    Int?              @map("bundle_count")      // Nombre de bottes
+  order          ConditioningOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@map("conditioning_steps")
+}

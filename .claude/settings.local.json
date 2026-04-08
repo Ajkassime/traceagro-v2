@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cat /Users/ajkassime/Downloads/traceagro-v2/backend/src/config/*.ts)",
+      "Bash(grep -n generateLotNumber /Users/ajkassime/Downloads/traceagro-v2/backend/src/utils/*.ts)",
+      "Bash(npx tsc:*)",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(curl -s http://localhost:3000/health)",
+      "Bash(npx prisma:*)",
+      "Bash(npm run:*)",
+      "WebSearch",
+      "Bash(ps -p 16933 -p 32466 -o pid,comm,args)"
+    ]
+  }
+}
