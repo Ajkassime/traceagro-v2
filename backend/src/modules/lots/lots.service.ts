@@ -398,11 +398,15 @@ export class LotsService {
 
     const lot = await prisma.lot.create({
       data: {
-        ...data,
-        lotNumber,
-        qrCodeUrl: qrCode,
-        harvestDate: new Date(data.harvestDate),
-      },
+  lotNumber,
+  qrCodeUrl: qrCode,
+  harvestDate: new Date(data.harvestDate),
+  productId: data.productId,
+  producerId: data.producerId ?? undefined,
+  quantityKg: data.quantityKg,
+  origin: data.origin ?? undefined,
+  notes: data.notes ?? undefined,
+} as any,
       include: LOT_INCLUDE,
     });
 
@@ -433,7 +437,7 @@ export class LotsService {
   async addStep(lotId: string, data: AddStepInput) {
     const count = await prisma.processingStep.count({ where: { lotId } });
     return prisma.processingStep.create({
-      data: { ...data, lotId, stepOrder: count + 1, startedAt: new Date(data.startedAt) },
+      data: { ...data, lotId, stepOrder: count + 1, startedAt: new Date(data.startedAt) } as any,
       include: { photos: true },
     });
   }
