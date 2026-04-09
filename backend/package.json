@@ -14,7 +14,7 @@
   },
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "build": "prisma generate --schema src/prisma/schema.prisma && tsc",
+    "build": "prisma generate --schema src/prisma/schema.prisma && tsc --skipLibCheck",
     "build:full": "tsc && mkdir -p public && cp -R ../frontend/dist/. public/",
     "start": "node dist/server.js",
     "db:generate": "prisma generate",
