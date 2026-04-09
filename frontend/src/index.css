@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,51 +6,79 @@
 
 @layer base {
   :root {
-    --color-bg: #0d1117;
-    --color-card: #161b22;
-    --color-sidebar: #13181f;
-    --color-border: rgba(255, 255, 255, 0.08);
-    --color-primary: #22c55e;
-    --color-accent: #f59e0b;
+    /* ── APL Brand Colors ── */
+    --apl-teal:        #1e5c6e;
+    --apl-teal-light:  #2a7a90;
+    --apl-teal-dark:   #154552;
+    --apl-gold:        #c9923a;
+    --apl-gold-light:  #e0aa55;
+    --apl-gold-dark:   #a87530;
 
-    /* Legacy variables for conditioning pages */
-    --green: #22c55e;
-    --ink: #f0f6fc;
-    --mist: #8b949e;
-    --slate: #94a3b8;
-    --pale: rgba(34, 197, 94, 0.1);
-    --cream: rgba(255, 255, 255, 0.03);
-    --border: rgba(255, 255, 255, 0.08);
-    --font-display: 'Plus Jakarta Sans', sans-serif;
+    /* ── Lineone Navy palette ── */
+    --color-navy-50:   #e7e9ef;
+    --color-navy-100:  #c2c9d6;
+    --color-navy-200:  #a3adc2;
+    --color-navy-300:  #697a9b;
+    --color-navy-400:  #5c6b8a;
+    --color-navy-450:  #465675;
+    --color-navy-500:  #384766;
+    --color-navy-600:  #313e59;
+    --color-navy-700:  #26334d;
+    --color-navy-750:  #222e45;
+    --color-navy-800:  #202b40;
+    --color-navy-900:  #192132;
+
+    /* ── App tokens ── */
+    --color-bg:      #192132;
+    --color-card:    #202b40;
+    --color-sidebar: #192132;
+    --color-border:  rgba(255, 255, 255, 0.07);
+    --color-primary: #1e5c6e;
+    --color-accent:  #c9923a;
+    --color-success: #10b981;
+    --color-warning: #ff9800;
+    --color-error:   #ff5724;
+    --color-info:    #0ea5e9;
+
+    /* ── Legacy ── */
+    --green:         #1e5c6e;
+    --ink:           #e7e9ef;
+    --mist:          #8b949e;
+    --slate:         #94a3b8;
+    --pale:          rgba(30, 92, 110, 0.12);
+    --cream:         rgba(255, 255, 255, 0.03);
+    --border:        rgba(255, 255, 255, 0.07);
+    --font-display:  'Poppins', sans-serif;
   }
 
   .light {
-    --color-bg: #f6f8fa;
-    --color-card: #ffffff;
+    --color-bg:      #f0f4f8;
+    --color-card:    #ffffff;
     --color-sidebar: #ffffff;
-    --color-border: rgba(0, 0, 0, 0.08);
-    --color-primary: #16a34a;
-    --color-accent: #d97706;
+    --color-border:  rgba(0, 0, 0, 0.07);
+    --color-primary: #1e5c6e;
+    --color-accent:  #c9923a;
   }
 
   * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 
   body {
-    @apply font-sans antialiased;
+    font-family: 'Poppins', 'Inter', ui-sans-serif, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
     background-color: var(--color-bg);
-    color: #f0f6fc;
+    color: var(--color-navy-100);
+    overflow-x: hidden;
   }
+  .light body, .light { color: #1a2332; }
 
-  .light body, .light {
-    color: #1a2332;
-  }
-
-  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
   ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 3px; }
-  ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+  ::-webkit-scrollbar-thumb { background: rgba(201,146,58,0.25); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(201,146,58,0.45); }
 
-  .light ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); }
+  button, a, [role="button"] { -webkit-tap-highlight-color: transparent; }
 }
 
 @layer components {
@@ -58,70 +86,94 @@
     @apply rounded-xl border;
     background: var(--color-card);
     border-color: var(--color-border);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.18);
   }
-
   .card-hover {
     @apply card transition-all duration-200;
   }
   .card-hover:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    box-shadow: 0 8px 28px rgba(0,0,0,0.28);
+    border-color: rgba(201, 146, 58, 0.2);
+  }
+  @media (hover: none) {
+    .card-hover:hover { transform: none; }
+    .card-hover:active { transform: scale(0.98); }
   }
 
   .btn-primary {
-    @apply inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all duration-150;
-    background: var(--color-primary);
-    @apply text-white hover:opacity-90 active:scale-95;
+    @apply inline-flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm transition-all duration-150 text-white;
+    background: linear-gradient(135deg, var(--apl-teal) 0%, var(--apl-teal-light) 100%);
+    min-height: 40px;
+    box-shadow: 0 2px 8px rgba(30,92,110,0.35);
   }
+  .btn-primary:hover { opacity: 0.92; transform: translateY(-1px); }
+  .btn-primary:active { transform: scale(0.97); }
 
   .btn-secondary {
-    @apply inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all duration-150 border;
+    @apply inline-flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm transition-all duration-150 border;
     border-color: var(--color-border);
-    @apply text-gray-300 hover:bg-white/5 active:scale-95;
+    color: var(--color-navy-200);
+    min-height: 40px;
   }
+  .btn-secondary:hover { background: rgba(255,255,255,0.05); }
 
   .btn-ghost {
     @apply inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-all duration-150;
-    @apply text-gray-400 hover:text-white hover:bg-white/5;
+    color: var(--color-navy-300);
+    min-height: 36px;
   }
+  .btn-ghost:hover { color: #fff; background: rgba(255,255,255,0.06); }
 
   .input {
-    @apply w-full px-3 py-2 rounded-lg text-sm outline-none transition-all;
-    background: rgba(255,255,255,0.05);
+    @apply w-full px-3 py-2.5 rounded-lg text-sm outline-none transition-all;
+    background: rgba(255,255,255,0.04);
     border: 1px solid var(--color-border);
-    @apply text-white placeholder-gray-500 focus:border-forest-500 focus:ring-1 focus:ring-forest-500/30;
+    color: var(--color-navy-100);
+    font-size: 16px;
   }
+  @media (min-width: 640px) { .input { font-size: 0.875rem; } }
+  .input::placeholder { color: var(--color-navy-400); }
+  .input:focus {
+    border-color: var(--apl-teal-light);
+    box-shadow: 0 0 0 3px rgba(30,92,110,0.2);
+    outline: none;
+  }
+  .light .input { background: #f8fafc; color: #1a2332; border-color: rgba(0,0,0,0.12); }
 
-  .light .input {
-    background: #f8fafc;
-    @apply text-gray-900 placeholder-gray-400 focus:border-forest-600;
-  }
-
-  .badge {
-    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
-  }
+  .badge { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium; }
 
   .page-title {
-    @apply text-2xl font-display font-bold text-white;
+    @apply text-xl md:text-2xl font-bold text-white;
+    font-family: 'Poppins', sans-serif;
+    letter-spacing: -0.01em;
   }
-
-  .light .page-title { @apply text-gray-900; }
+  .light .page-title { color: #1a2332; }
 
   .section-label {
-    @apply text-xs font-semibold uppercase tracking-widest text-gray-500;
+    @apply text-xs font-semibold uppercase tracking-widest;
+    color: var(--color-navy-400);
   }
-}
 
-/* Leaflet dark mode */
-.dark .leaflet-tile {
-  filter: brightness(0.7) invert(1) contrast(3) hue-rotate(200deg) saturate(0.3) brightness(0.7);
+  .page-container {
+    @apply p-4 md:p-6 lg:p-8;
+    padding-bottom: calc(1.5rem + env(safe-area-inset-bottom));
+  }
+
+  .grid-responsive-2 { @apply grid grid-cols-1 sm:grid-cols-2 gap-4; }
+  .grid-responsive-3 { @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4; }
+  .grid-responsive-4 { @apply grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4; }
+
+  .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
 }
 
 /* Recharts */
 .recharts-tooltip-wrapper .recharts-default-tooltip {
-  background: #1e293b !important;
-  border: 1px solid rgba(255,255,255,0.1) !important;
+  background: #202b40 !important;
+  border: 1px solid rgba(201,146,58,0.2) !important;
   border-radius: 8px !important;
+  font-size: 12px !important;
 }
 
 /* Animations */
@@ -130,10 +182,9 @@
 
 @keyframes fadeIn {
   from { opacity: 0; }
-  to { opacity: 1; }
+  to   { opacity: 1; }
 }
-
 @keyframes slideUp {
   from { transform: translateY(16px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+  to   { transform: translateY(0);    opacity: 1; }
 }

@@ -9,6 +9,9 @@
   "engines": {
     "node": "20.x"
   },
+  "prisma": {
+  "seed": "tsx src/prisma/seed.ts"
+  },
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "build": "tsc",
