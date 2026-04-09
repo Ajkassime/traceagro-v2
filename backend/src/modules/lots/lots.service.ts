@@ -3,7 +3,6 @@ import { prisma } from '../../utils/prisma';
 import { generateLotNumber } from '../../utils/lotNumber';
 import { generateQRCode } from '../../utils/qrcode';
 import { config } from '../../config';
-import { CreateLotInput, UpdateLotInput, AddStepInput } from './lots.schema';
 
 const LOT_INCLUDE = {
   producer: { select: { id: true, name: true, region: true, country: true } },
@@ -149,10 +148,8 @@ export class LotsService {
   // ─── Analytics des scans ──────────────────────────────────────────────────
   async getScanAnalytics(lotId: string) {
     const [total, byDay, byCountry, byDevice, recent] = await Promise.all([
-      // Total
       prisma.scanLog.count({ where: { lotId } }),
 
-      // Par jour (30 derniers jours)
       prisma.$queryRaw<Array<{ day: string; count: bigint }>>`
         SELECT DATE_TRUNC('day', created_at)::text AS day, COUNT(*) AS count
         FROM scan_logs
@@ -162,7 +159,6 @@ export class LotsService {
         ORDER BY day ASC
       `,
 
-      // Par pays
       prisma.scanLog.groupBy({
         by: ['country'],
         where: { lotId },
@@ -171,7 +167,6 @@ export class LotsService {
         take: 10,
       }),
 
-      // Par device
       prisma.scanLog.groupBy({
         by: ['device'],
         where: { lotId },
@@ -179,7 +174,6 @@ export class LotsService {
         orderBy: { _count: { id: 'desc' } },
       }),
 
-      // 5 derniers scans
       prisma.scanLog.findMany({
         where: { lotId },
         orderBy: { createdAt: 'desc' },
@@ -190,13 +184,12 @@ export class LotsService {
 
     return {
       total,
-      byDay: byDay.map(r => ({ day: r.day, count: Number(r.count) })),
-      byCountry: byCountry.map(r => ({ country: r.country || 'Inconnu', count: r._count.id })),
-      byDevice:  byDevice.map(r => ({ device: r.device || 'Inconnu', count: r._count.id })),
+      byDay: byDay.map((r: any) => ({ day: r.day, count: Number(r.count) })),
+      byCountry: byCountry.map((r: any) => ({ country: r.country || 'Inconnu', count: r._count.id })),
+      byDevice:  byDevice.map((r: any) => ({ device: r.device || 'Inconnu', count: r._count.id })),
       recent,
     };
   }
-
 
   // ─── Rapport Anti-Contrefaçon complet ────────────────────────────────────
   async getAntiFraudReport(lotId: string) {
@@ -222,7 +215,6 @@ export class LotsService {
       prisma.scanLog.count({ where: { lotId, createdAt: { gte: day7 } } }),
       prisma.scanLog.count({ where: { lotId, isSuspicious: true } }),
 
-      // IPs actives dernière heure
       prisma.scanLog.groupBy({
         by: ['ipAddress'],
         where: { lotId, createdAt: { gte: hour1 } },
@@ -231,7 +223,6 @@ export class LotsService {
         take: 10,
       }),
 
-      // Pays des 24 dernières heures
       prisma.scanLog.groupBy({
         by: ['country'],
         where: { lotId, createdAt: { gte: hour24 } },
@@ -239,21 +230,11 @@ export class LotsService {
         orderBy: { _count: { id: 'desc' } },
       }),
 
-      // 10 derniers scans avec détails
       prisma.scanLog.findMany({
         where: { lotId },
         orderBy: { createdAt: 'desc' },
         take: 10,
-        select: {
-          id: true,
-          ipAddress: true,
-          country: true,
-          city: true,
-          device: true,
-          isSuspicious: true,
-          suspicionReason: true,
-          createdAt: true,
-        },
+        select: { country: true, city: true, device: true, createdAt: true, isSuspicious: true, ipAddress: true },
       }),
 
       prisma.lot.findUnique({
@@ -262,49 +243,40 @@ export class LotsService {
       }),
     ]);
 
-    // ── Calcul du score de confiance (0-100) ──────────────────────────────
     let confidenceScore = 100;
     const alerts: string[] = [];
-    const riskLevel: 'low' | 'medium' | 'high' | 'critical' = 'low';
 
-    // Règle 1 : burst de scans depuis même IP (>5 scans/heure)
-    const burstIps = byIpLast1h.filter(r => r._count.id >= 5);
+    const burstIps = byIpLast1h.filter((r: any) => r._count.id >= 5);
     if (burstIps.length > 0) {
       confidenceScore -= 30;
-      burstIps.forEach(ip => {
+      burstIps.forEach((ip: any) => {
         alerts.push(`Burst détecté : ${ip._count.id} scans depuis l'IP ${ip.ipAddress} en 1h`);
       });
     }
 
-    // Règle 2 : volume anormal dernière heure (>20 scans)
     if (scansLast1h > 20) {
       confidenceScore -= 20;
       alerts.push(`Volume élevé : ${scansLast1h} scans en 1 heure`);
     }
 
-    // Règle 3 : pays géographiquement impossibles (>3 pays différents en 24h)
     if (byCountryLast24h.length > 3) {
       confidenceScore -= 15;
       alerts.push(`Géolocalisation suspecte : ${byCountryLast24h.length} pays différents en 24h`);
     }
 
-    // Règle 4 : total de scans suspects existants
     if (suspiciousScans > 0) {
       confidenceScore -= Math.min(suspiciousScans * 5, 25);
       alerts.push(`${suspiciousScans} scan(s) marqué(s) comme suspect(s)`);
     }
 
-    // Normaliser entre 0 et 100
     confidenceScore = Math.max(0, Math.min(100, confidenceScore));
 
-    // Niveau de risque
     let risk: 'low' | 'medium' | 'high' | 'critical';
     if (confidenceScore >= 85)      risk = 'low';
     else if (confidenceScore >= 60) risk = 'medium';
     else if (confidenceScore >= 30) risk = 'high';
     else                            risk = 'critical';
 
-    // ── Token de vérification HMAC ────────────────────────────────────────
     const secret = process.env.JWT_SECRET || 'traceagro-antifr-secret';
     const payload = `${lotId}:${lot?.lotNumber}:${lot?.createdAt?.toISOString()}`;
     const verificationToken = crypto
@@ -328,12 +300,12 @@ export class LotsService {
         last7d: scansLast7d,
         suspicious: suspiciousScans,
       },
-      activeIps: byIpLast1h.map(r => ({
+      activeIps: byIpLast1h.map((r: any) => ({
         ip: r.ipAddress?.replace(/\.\d+$/, '.***') || 'masqué',
         count: r._count.id,
         suspicious: r._count.id >= 5,
       })),
-      recentCountries: byCountryLast24h.map(r => ({
+      recentCountries: byCountryLast24h.map((r: any) => ({
         country: r.country || 'Inconnu',
         count: r._count.id,
       })),
@@ -342,7 +314,7 @@ export class LotsService {
     };
   }
 
-  // ─── Améliorer recordScan avec détection anomalies ────────────────────
+  // ─── recordScan avec détection anomalies ─────────────────────────────────
   async recordScanWithCheck(lotId: string, meta: {
     ipAddress?: string;
     userAgent?: string;
@@ -356,7 +328,6 @@ export class LotsService {
 
     const hour1 = new Date(Date.now() - 60 * 60 * 1000);
 
-    // Vérifier si cette IP a scanné plusieurs fois dans la dernière heure
     let isSuspicious = false;
     let suspicionReason: string | undefined;
 
@@ -386,7 +357,7 @@ export class LotsService {
   }
 
   // ─── Créer un lot ─────────────────────────────────────────────────────────
-  async create(data: CreateLotInput) {
+  async create(data: any) {
     const product = await prisma.product.findUnique({ where: { id: data.productId } });
     if (!product) throw { statusCode: 404, message: 'Produit introuvable' };
 
@@ -396,21 +367,16 @@ export class LotsService {
     const qrUrl     = `${publicUrl}/${tempId}`;
     const qrCode    = await generateQRCode(qrUrl);
 
-    const lot = await prisma.lot.create({
+    const lot = await (prisma.lot.create as any)({
       data: {
-  lotNumber,
-  qrCodeUrl: qrCode,
-  harvestDate: new Date(data.harvestDate),
-  productId: data.productId,
-  producerId: data.producerId ?? undefined,
-  quantityKg: data.quantityKg,
-  origin: data.origin ?? undefined,
-  notes: data.notes ?? undefined,
-} as any,
+        ...data,
+        lotNumber,
+        qrCodeUrl: qrCode,
+        harvestDate: new Date(data.harvestDate),
+      },
       include: LOT_INCLUDE,
     });
 
-    // Mettre à jour avec le vrai ID
     const realQrUrl = `${publicUrl}/${lot.id}`;
     const realQr    = await generateQRCode(realQrUrl);
     return prisma.lot.update({
@@ -421,8 +387,8 @@ export class LotsService {
   }
 
   // ─── Mettre à jour ────────────────────────────────────────────────────────
-  async update(id: string, data: UpdateLotInput) {
-    const { regenerateQr, ...rest } = (data as UpdateLotInput & { regenerateQr?: boolean });
+  async update(id: string, data: any) {
+    const { regenerateQr, ...rest } = data;
     const updateData: any = { ...rest };
 
     if (regenerateQr) {
@@ -434,10 +400,10 @@ export class LotsService {
   }
 
   // ─── Ajouter une étape de transformation ──────────────────────────────────
-  async addStep(lotId: string, data: AddStepInput) {
+  async addStep(lotId: string, data: any) {
     const count = await prisma.processingStep.count({ where: { lotId } });
-    return prisma.processingStep.create({
-      data: { ...data, lotId, stepOrder: count + 1, startedAt: new Date(data.startedAt) } as any,
+    return (prisma.processingStep.create as any)({
+      data: { ...data, lotId, stepOrder: count + 1, startedAt: new Date(data.startedAt) },
       include: { photos: true },
     });
   }
@@ -469,7 +435,7 @@ export class LotsService {
       prisma.lot.aggregate({ _avg: { qualityScore: true } }),
     ]);
 
-    const byStatus = byStatusRaw.map((row) => ({
+    const byStatus = byStatusRaw.map((row: any) => ({
       status: row.status,
       count: row._count.id,
     }));
@@ -482,8 +448,6 @@ export class LotsService {
       byStatus,
       recentLots,
       avgQuality: avgQuality._avg.qualityScore,
-
-      // Compatibilité descendante
       total: totalLots,
     };
   }
@@ -493,13 +457,13 @@ export class LotsService {
 function detectDevice(ua?: string): string {
   if (!ua) return 'Inconnu';
   const u = ua.toLowerCase();
-  if (/iphone|ipod/.test(u))    return 'iPhone';
-  if (/ipad/.test(u))           return 'iPad';
+  if (/iphone|ipod/.test(u))     return 'iPhone';
+  if (/ipad/.test(u))            return 'iPad';
   if (/android.*mobile/.test(u)) return 'Android Mobile';
-  if (/android/.test(u))        return 'Android Tablet';
-  if (/windows/.test(u))        return 'Windows PC';
-  if (/mac/.test(u))            return 'Mac';
-  if (/linux/.test(u))          return 'Linux';
+  if (/android/.test(u))         return 'Android Tablet';
+  if (/windows/.test(u))         return 'Windows PC';
+  if (/mac/.test(u))             return 'Mac';
+  if (/linux/.test(u))           return 'Linux';
   return 'Autre';
 }
 
