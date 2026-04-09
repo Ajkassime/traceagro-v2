@@ -16,7 +16,7 @@ const hasFrontendBuild = config.nodeEnv === 'production';
 // Security
 app.use(helmet());
 app.use(cors({
-  origin: config.frontendUrl,
+  origin: [config.frontendUrl, 'http://localhost:5173', 'https://trace.innov.studio'],
   credentials: true,
 }));
 
