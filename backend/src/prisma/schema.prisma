@@ -48,6 +48,8 @@ enum DocumentType {
   fair_trade_cert
   eudr_proof
   invoice
+  purchase_order
+  tech_spec
   other
 }
 
@@ -60,6 +62,61 @@ enum NotificationType {
   system
 }
 
+enum PurchaseOrderStatus {
+  pending       // En attente
+  in_production // En cours de conditionnement
+  ready         // Prêt à expédier
+  shipped       // Expédié
+  delivered     // Livré
+  cancelled     // Annulé
+}
+
+// ─── CLIENT ──────────────────────────────────────────────────────────────────
+model Client {
+  id        String   @id @default(uuid())
+  name      String
+  country   String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  purchaseOrders PurchaseOrder[]
+
+  @@map("clients")
+}
+
+// ─── PURCHASE ORDER ───────────────────────────────────────────────────────────
+model PurchaseOrder {
+  id              String              @id @default(uuid())
+  poNumber        String              @unique @map("po_number")  // ex: PO-2026-001 (ERP ou manuel)
+  clientId        String              @map("client_id")
+  lotId           String              @map("lot_id")             // Lot source
+  quantityKg      Float               @map("quantity_kg")        // Quantité demandée
+  destination     String                                          // Pays/port de destination
+  deliveryDate    DateTime            @map("delivery_date")      // Date livraison souhaitée
+  status          PurchaseOrderStatus @default(pending)
+
+  // Spécifications techniques (cahier des charges)
+  specGrade         String?  @map("spec_grade")          // 1er, 2ème, 3ème, 4ème
+  specHumidityMin   Float?   @map("spec_humidity_min")   // Humidité cible min (%)
+  specHumidityMax   Float?   @map("spec_humidity_max")   // Humidité cible max (%)
+  specLengthMin     Float?   @map("spec_length_min")     // Longueur min (cm)
+  specCertifications String[] @default([]) @map("spec_certifications") // Bio, FairTrade, EUDR...
+  specPackaging     String?  @map("spec_packaging")      // carton, sac, vrac
+  specNotes         String?  @map("spec_notes")          // Notes libres
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  client            Client              @relation(fields: [clientId], references: [id])
+  lot               Lot                 @relation(fields: [lotId], references: [id])
+  conditioningOrders ConditioningOrder[]
+  subLots           Lot[]               @relation("PurchaseOrderSubLots")
+
+  @@map("purchase_orders")
+}
+
+// ─── USER ─────────────────────────────────────────────────────────────────────
 model User {
   id           String   @id @default(uuid())
   email        String   @unique
@@ -77,6 +134,7 @@ model User {
   @@map("users")
 }
 
+// ─── PRODUCT ──────────────────────────────────────────────────────────────────
 model Product {
   id          String   @id @default(uuid())
   name        String
@@ -93,6 +151,7 @@ model Product {
   @@map("products")
 }
 
+// ─── PRODUCER ─────────────────────────────────────────────────────────────────
 model Producer {
   id           String   @id @default(uuid())
   name         String
@@ -117,35 +176,67 @@ model Producer {
   @@map("producers")
 }
 
+// ─── LOT ──────────────────────────────────────────────────────────────────────
 model Lot {
   id               String    @id @default(uuid())
   lotNumber        String    @unique
   producerId       String
   productId        String
   harvestDate      DateTime
-  quantityKg       Float
+  quantityKg       Float                        // Quantité totale initiale
+  availableKg      Float?    @map("available_kg") // Quantité restante disponible (calculée)
   status           LotStatus @default(harvest)
   qrCodeUrl        String?
   qualityScore     Float?
   notes            String?
   harvestLatitude  Float?
   harvestLongitude Float?
-  conditioningType String?   @map("conditioning_type") // vanille_noire | vanille_rouge
+  conditioningType String?   @map("conditioning_type")
+
+  // Gestion sous-lots
+  parentLotId      String?   @map("parent_lot_id")  // null = lot racine
+  subLotIndex      String?   @map("sub_lot_index")  // A, B, C...
+  purchaseOrderId  String?   @map("purchase_order_id") // PO qui a généré ce sous-lot
+
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
 
   producer           Producer            @relation(fields: [producerId], references: [id])
   product            Product             @relation(fields: [productId], references: [id])
+  parentLot          Lot?                @relation("LotSubLots", fields: [parentLotId], references: [id])
+  subLots            Lot[]               @relation("LotSubLots")
+  originPO           PurchaseOrder?      @relation("PurchaseOrderSubLots", fields: [purchaseOrderId], references: [id])
   processingSteps    ProcessingStep[]
   conditioningOrders ConditioningOrder[]
+  purchaseOrders     PurchaseOrder[]
   shipmentLots       ShipmentLot[]
   scanLogs           ScanLog[]
   photos             LotPhoto[]
   documents          Document[]
+  lotEvents          LotEvent[]          // Historique complet
 
   @@map("lots")
 }
 
+// ─── LOT EVENT (Historique) ───────────────────────────────────────────────────
+model LotEvent {
+  id          String   @id @default(uuid())
+  lotId       String   @map("lot_id")
+  eventType   String   @map("event_type")  // created, split, conditioning_started, conditioning_done, shipped, delivered
+  description String
+  quantityKg  Float?   @map("quantity_kg") // Quantité concernée
+  relatedId   String?  @map("related_id")  // ID du PO, conditionnement, expédition concerné
+  relatedType String?  @map("related_type") // "purchase_order" | "conditioning" | "shipment"
+  createdBy   String?  @map("created_by")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  lot Lot @relation(fields: [lotId], references: [id], onDelete: Cascade)
+
+  @@index([lotId])
+  @@map("lot_events")
+}
+
+// ─── PROCESSING STEP ──────────────────────────────────────────────────────────
 model ProcessingStep {
   id             String    @id @default(uuid())
   lotId          String
@@ -168,6 +259,7 @@ model ProcessingStep {
   @@map("processing_steps")
 }
 
+// ─── SHIPMENT ─────────────────────────────────────────────────────────────────
 model Shipment {
   id                String         @id @default(uuid())
   reference         String         @unique
@@ -180,6 +272,7 @@ model Shipment {
   expectedArrival   DateTime?
   actualArrival     DateTime?
   status            ShipmentStatus @default(preparing)
+  transportMode     String?        @default("maritime") @map("transport_mode") // maritime | aerien
   notes             String?
   qrCodeUrl         String?        @map("qr_code_url")
   totalWeightKg     Float?         @map("total_weight_kg")
@@ -192,6 +285,7 @@ model Shipment {
   @@map("shipments")
 }
 
+// ─── SHIPMENT LOT ─────────────────────────────────────────────────────────────
 model ShipmentLot {
   id         String   @id @default(uuid())
   shipmentId String
@@ -205,6 +299,7 @@ model ShipmentLot {
   @@map("shipment_lots")
 }
 
+// ─── CERTIFICATION ────────────────────────────────────────────────────────────
 model Certification {
   id         String            @id @default(uuid())
   producerId String
@@ -223,6 +318,7 @@ model Certification {
   @@map("certifications")
 }
 
+// ─── DOCUMENT ─────────────────────────────────────────────────────────────────
 model Document {
   id         String       @id @default(uuid())
   name       String
@@ -245,6 +341,7 @@ model Document {
   @@map("documents")
 }
 
+// ─── PRODUCER PHOTO ───────────────────────────────────────────────────────────
 model ProducerPhoto {
   id         String   @id @default(uuid())
   producerId String
@@ -258,6 +355,7 @@ model ProducerPhoto {
   @@map("producer_photos")
 }
 
+// ─── LOT PHOTO ────────────────────────────────────────────────────────────────
 model LotPhoto {
   id        String   @id @default(uuid())
   lotId     String
@@ -270,6 +368,7 @@ model LotPhoto {
   @@map("lot_photos")
 }
 
+// ─── PROCESSING PHOTO ─────────────────────────────────────────────────────────
 model ProcessingPhoto {
   id        String   @id @default(uuid())
   stepId    String
@@ -282,6 +381,7 @@ model ProcessingPhoto {
   @@map("processing_photos")
 }
 
+// ─── NOTIFICATION ─────────────────────────────────────────────────────────────
 model Notification {
   id        String           @id @default(uuid())
   userId    String
@@ -297,6 +397,7 @@ model Notification {
   @@map("notifications")
 }
 
+// ─── SCAN LOG ─────────────────────────────────────────────────────────────────
 model ScanLog {
   id              String   @id @default(uuid())
   lotId           String   @map("lot_id")
@@ -319,22 +420,28 @@ model ScanLog {
   @@map("scan_logs")
 }
 
+// ─── CONDITIONING ORDER ───────────────────────────────────────────────────────
 model ConditioningOrder {
-  id          String             @id @default(uuid())
-  lotId       String             @map("lot_id")
-  productType String             @map("product_type")
-  destination String?
-  status      String             @default("en_cours")
-  passNumber  Int                @default(1) @map("pass_number")
-  createdBy   String             @map("created_by")
-  createdAt   DateTime           @default(now()) @map("created_at")
-  updatedAt   DateTime           @updatedAt @map("updated_at")
-  lot         Lot                @relation(fields: [lotId], references: [id])
-  steps       ConditioningStep[]
+  id              String             @id @default(uuid())
+  lotId           String             @map("lot_id")
+  purchaseOrderId String?            @map("purchase_order_id") // PO associé
+  quantityKg      Float?             @map("quantity_kg")       // Quantité à conditionner (sous-lot)
+  productType     String             @map("product_type")
+  destination     String?
+  status          String             @default("en_cours")
+  passNumber      Int                @default(1) @map("pass_number")
+  createdBy       String             @map("created_by")
+  createdAt       DateTime           @default(now()) @map("created_at")
+  updatedAt       DateTime           @updatedAt @map("updated_at")
+
+  lot           Lot                @relation(fields: [lotId], references: [id])
+  purchaseOrder PurchaseOrder?     @relation(fields: [purchaseOrderId], references: [id])
+  steps         ConditioningStep[]
 
   @@map("conditioning_orders")
 }
 
+// ─── CONDITIONING STEP ────────────────────────────────────────────────────────
 model ConditioningStep {
   id             String            @id @default(uuid())
   orderId        String            @map("order_id")
@@ -359,14 +466,14 @@ model ConditioningStep {
   notes          String?
   isConform      Boolean?          @map("is_conform")
   documents      String[]          @default([])
-  // Nouveaux champs process réel AGK-COMORES
-  temperature    Float?            @map("temperature")       // Échaudage: 60-65°C
-  vanillineRate  Float?            @map("vanilline_rate")    // Taux de vanilline final (%)
-  classification String?           @map("classification")    // 3ème/4ème/mauvais/sec_soleil
-  isFendue       Boolean?          @map("is_fendue")         // Fendue (true) ou Non fendue (false)
-  bundleType     String?           @map("bundle_type")       // ficelle / raphia / vrac
-  bundleCount    Int?              @map("bundle_count")      // Nombre de bottes
-  order          ConditioningOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  temperature    Float?            @map("temperature")
+  vanillineRate  Float?            @map("vanilline_rate")
+  classification String?           @map("classification")
+  isFendue       Boolean?          @map("is_fendue")
+  bundleType     String?           @map("bundle_type")
+  bundleCount    Int?              @map("bundle_count")
+
+  order ConditioningOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
   @@map("conditioning_steps")
 }

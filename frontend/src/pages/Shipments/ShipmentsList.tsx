@@ -38,7 +38,10 @@ const ShipmentCard: React.FC<{ s: any; onClick: () => void }> = ({ s, onClick })
       <div className="flex items-start justify-between gap-3 mb-3">
         <div className="flex items-start gap-3">
           <div className="w-10 h-10 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center flex-shrink-0">
-            <Ship size={18} className="text-blue-400" />
+            {s.transportMode === 'aerien'
+              ? <span style={{ fontSize: 18 }}>✈️</span>
+              : <Ship size={18} className="text-blue-400" />
+            }
           </div>
           <div>
             <p className="font-mono text-sm font-bold text-white group-hover:text-forest-400 transition-colors">{s.reference}</p>
@@ -92,6 +95,7 @@ export const ShipmentsList: React.FC = () => {
     reference: '', carrierName: '', containerNumber: '',
     departureLocation: '', arrivalLocation: '',
     departureDate: '', expectedArrival: '', notes: '',
+    transportMode: 'maritime',
   });
 
   /* ── Queries ─────────────────────────────────────────────────────────── */
@@ -124,10 +128,11 @@ export const ShipmentsList: React.FC = () => {
         departureDate: form.departureDate ? new Date(form.departureDate).toISOString() : undefined,
         expectedArrival: form.expectedArrival ? new Date(form.expectedArrival).toISOString() : undefined,
         notes: form.notes || undefined,
+        transportMode: form.transportMode,
       });
       toast.success('Expédition créée avec QR code !');
       setCreateOpen(false);
-      setForm({ reference: '', carrierName: '', containerNumber: '', departureLocation: '', arrivalLocation: '', departureDate: '', expectedArrival: '', notes: '' });
+      setForm({ reference: '', carrierName: '', containerNumber: '', departureLocation: '', arrivalLocation: '', departureDate: '', expectedArrival: '', notes: '', transportMode: 'maritime' });
       qc.invalidateQueries({ queryKey: ['shipments'] });
       qc.invalidateQueries({ queryKey: ['shipments-stats'] });
       // Naviguer vers le détail
@@ -260,6 +265,43 @@ export const ShipmentsList: React.FC = () => {
             </p>
           </div>
 
+          {/* Mode de transport */}
+          <div>
+            <label className="block text-xs font-medium text-gray-400 mb-2">Mode de transport *</label>
+            <div className="grid grid-cols-2 gap-3">
+              <div
+                onClick={() => setF('transportMode', 'maritime')}
+                className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all ${
+                  form.transportMode === 'maritime'
+                    ? 'border-blue-500/50 bg-blue-500/10'
+                    : 'border-white/[0.06] bg-white/[0.02] hover:border-white/20'
+                }`}
+              >
+                <span style={{ fontSize: 22 }}>🚢</span>
+                <div>
+                  <p className={`text-sm font-semibold ${form.transportMode === 'maritime' ? 'text-blue-400' : 'text-gray-300'}`}>Maritime</p>
+                  <p className="text-xs text-gray-500">Conteneur / Fret mer</p>
+                </div>
+                {form.transportMode === 'maritime' && <span className="ml-auto text-blue-400">✓</span>}
+              </div>
+              <div
+                onClick={() => setF('transportMode', 'aerien')}
+                className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all ${
+                  form.transportMode === 'aerien'
+                    ? 'border-vanilla-500/50 bg-vanilla-500/10'
+                    : 'border-white/[0.06] bg-white/[0.02] hover:border-white/20'
+                }`}
+              >
+                <span style={{ fontSize: 22 }}>✈️</span>
+                <div>
+                  <p className={`text-sm font-semibold ${form.transportMode === 'aerien' ? 'text-vanilla-400' : 'text-gray-300'}`}>Aérien</p>
+                  <p className="text-xs text-gray-500">Fret avion / AWB</p>
+                </div>
+                {form.transportMode === 'aerien' && <span className="ml-auto text-vanilla-400">✓</span>}
+              </div>
+            </div>
+          </div>
+
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-medium text-gray-400 mb-1.5">Référence *</label>
@@ -272,19 +314,49 @@ export const ShipmentsList: React.FC = () => {
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-gray-400 mb-1.5">N° Conteneur</label>
-            <input className="input font-mono" placeholder="MSCU1234567" value={form.containerNumber} onChange={e => setF('containerNumber', e.target.value)} />
+            <label className="block text-xs font-medium text-gray-400 mb-1.5">
+              {form.transportMode === 'maritime' ? 'N° Conteneur' : 'N° AWB (Airway Bill)'}
+            </label>
+            <input
+              className="input font-mono"
+              placeholder={form.transportMode === 'maritime' ? 'MSCU1234567' : 'AWB-123-45678901'}
+              value={form.containerNumber}
+              onChange={e => setF('containerNumber', e.target.value)}
+            />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-medium text-gray-400 mb-1.5">Port de départ *</label>
-              <input className="input" placeholder="Toamasina" value={form.departureLocation} onChange={e => setF('departureLocation', e.target.value)} required />
+              <label className="block text-xs font-medium text-gray-400 mb-1.5">
+                {form.transportMode === 'maritime' ? 'Port de départ *' : 'Aéroport de départ *'}
+              </label>
+              <input
+                className="input"
+                placeholder={form.transportMode === 'maritime' ? 'Toamasina' : 'TNR — Antananarivo'}
+                value={form.departureLocation}
+                onChange={e => setF('departureLocation', e.target.value)}
+                required
+              />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-400 mb-1.5">Port d'arrivée *</label>
-              <input className="input" placeholder="Marseille, Le Havre..." value={form.arrivalLocation} onChange={e => setF('arrivalLocation', e.target.value)} required />
+              <label className="block text-xs font-medium text-gray-400 mb-1.5">
+                {form.transportMode === 'maritime' ? "Port d'arrivée *" : "Aéroport d'arrivée *"}
+              </label>
+              <input
+                className="input"
+                placeholder={form.transportMode === 'maritime' ? 'Marseille, Le Havre...' : 'CDG — Paris, AMS — Amsterdam...'}
+                value={form.arrivalLocation}
+                onChange={e => setF('arrivalLocation', e.target.value)}
+                required
+              />
             </div>
+          </div>
+
+          {/* Avertissement lots conditionnés */}
+          <div className="p-3 bg-vanilla-500/5 border border-vanilla-500/20 rounded-lg">
+            <p className="text-xs text-vanilla-400">
+              ⚠️ Seuls les lots ayant complété le conditionnement peuvent être ajoutés à une expédition.
+            </p>
           </div>
 
           <div className="grid grid-cols-2 gap-4">

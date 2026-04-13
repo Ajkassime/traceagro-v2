@@ -24,26 +24,13 @@ const navBottom = [
   { to: '/settings',      icon: Settings, label: 'Paramètres' },
 ];
 
-/* ── Inline SVG logo (no external file needed) ── */
 const APLLogo: React.FC<{ collapsed: boolean }> = ({ collapsed }) => (
   <div className={cn('flex items-center gap-3', collapsed ? 'justify-center' : '')}>
-    {/* Icon mark — vanilla flower placeholder styled with APL colors */}
-    <div
-      className="flex-shrink-0 rounded-lg flex items-center justify-center"
-      style={{
-        width: collapsed ? 36 : 36,
-        height: collapsed ? 36 : 36,
-        background: 'linear-gradient(135deg, #1e5c6e 50%, #c9923a 100%)',
-        boxShadow: '0 2px 8px rgba(30,92,110,0.4)',
-      }}
-    >
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M12 2C12 2 7 6 7 11C7 13.76 9.24 16 12 16C14.76 16 17 13.76 17 11C17 6 12 2 12 2Z" fill="white" fillOpacity="0.9"/>
-        <path d="M12 16V22" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-        <path d="M9 19H15" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
-        <circle cx="12" cy="10" r="2.5" fill="#c9923a"/>
-      </svg>
-    </div>
+    <img
+      src="/logo-apl.svg"
+      alt="APL Vanilla"
+      style={{ width: collapsed ? 40 : 80, height: collapsed ? 40 : 80, objectFit: 'contain' }}
+    />
     {!collapsed && (
       <div className="leading-tight">
         <p className="font-bold text-white text-sm tracking-wide" style={{ fontFamily: 'Poppins, sans-serif' }}>
@@ -55,7 +42,7 @@ const APLLogo: React.FC<{ collapsed: boolean }> = ({ collapsed }) => (
       </div>
     )}
   </div>
-);
+)/* ── Inline SVG logo (no external file needed) ── */
 
 export const Sidebar: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);

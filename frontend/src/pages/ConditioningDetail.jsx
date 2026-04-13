@@ -6,6 +6,7 @@ import { Card } from '../components/ui/Card'
 import { Modal } from '../components/ui/Modal'
 import { PageLoader } from '../components/ui/Spinner'
 import toast from 'react-hot-toast'
+import api from '../lib/api'
 
 // ─── Flux réel AGK-COMORES (doc officiel v1 — 23/06/22) ─────────────────────
 const STEP_ICONS = {
@@ -564,7 +565,7 @@ function StepForm({ step, order, onSave, saving }) {
 // ─── Page principale ──────────────────────────────────────────────────────────
 export default function ConditioningDetail() {
   const { id } = useParams()
-  const { token, user } = useAuthStore()
+  const { user } = useAuthStore()
   const navigate = useNavigate()
   const [order, setOrder] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -577,11 +578,10 @@ export default function ConditioningDetail() {
   const [lastRefreshed, setLastRefreshed] = useState(null)
 
   const load = useCallback(() => {
-    fetch(`/api/conditioning/${id}`, { headers: { Authorization: `Bearer ${token}` } })
-      .then(r => r.json())
-      .then(d => { if (d.success) { setOrder(d.data); setLastRefreshed(new Date()) } })
+    api.get(`/conditioning/${id}`)
+      .then(res => { if (res.data?.success) { setOrder(res.data.data); setLastRefreshed(new Date()) } })
       .finally(() => setLoading(false))
-  }, [id, token])
+  }, [id])
 
   useEffect(() => { load() }, [load])
 
@@ -594,18 +594,13 @@ export default function ConditioningDetail() {
   const handleSaveStep = async (data) => {
     setSaving(true)
     try {
-      const res = await fetch(`/api/conditioning/${id}/steps/${activeStep.id}`, {
-        method: 'PUT',
-        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      })
-      const result = await res.json()
-      if (result.success) {
+      const res = await api.put(`/conditioning/${id}/steps/${activeStep.id}`, data)
+      if (res.data?.success) {
         toast.success('✅ Données enregistrées')
         setShowStepModal(false)
         load()
-      } else { toast.error(result.message || 'Erreur enregistrement') }
-    } catch { toast.error('Erreur réseau') }
+      } else { toast.error(res.data?.message || 'Erreur enregistrement') }
+    } catch (err) { toast.error(err?.response?.data?.message || 'Erreur réseau') }
     finally { setSaving(false) }
   }
 
@@ -621,19 +616,14 @@ export default function ConditioningDetail() {
   const handleValidate = async () => {
     setValidating(true)
     try {
-      const res = await fetch(`/api/conditioning/${id}/steps/${showValidate.id}/validate`, {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify(validateForm),
-      })
-      const result = await res.json()
-      if (result.success) {
+      const res = await api.post(`/conditioning/${id}/steps/${showValidate.id}/validate`, validateForm)
+      if (res.data?.success) {
         toast.success(validateForm.isConform ? '✅ Étape validée' : '❌ Non conforme')
         setShowValidate(null)
         setValidateForm({ isConform: null, notes: '' })
         load()
-      } else { toast.error(result.message || 'Erreur validation') }
-    } catch { toast.error('Erreur réseau') }
+      } else { toast.error(res.data?.message || 'Erreur validation') }
+    } catch (err) { toast.error(err?.response?.data?.message || 'Erreur réseau') }
     finally { setValidating(false) }
   }
 

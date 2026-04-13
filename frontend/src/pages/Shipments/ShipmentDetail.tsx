@@ -73,7 +73,19 @@ export const ShipmentDetail: React.FC = () => {
 
   const { data: availableLots } = useQuery({
     queryKey: ['lots-available'],
-    queryFn: () => api.get('/lots', { params: { limit: 100 } }).then(r => r.data.data),
+    queryFn: async () => {
+      // Récupérer les lots ET les ordres de conditionnement terminés
+      const [lotsRes, condRes] = await Promise.all([
+        api.get('/lots', { params: { limit: 100 } }),
+        api.get('/conditioning', { params: { status: 'termine' } }),
+      ]);
+      const allLots = lotsRes.data.data ?? [];
+      const conditionedLotIds = new Set(
+        (condRes.data.data ?? []).map((order: any) => order.lotId)
+      );
+      // Retourner seulement les lots ayant un conditionnement terminé
+      return allLots.filter((lot: any) => conditionedLotIds.has(lot.id));
+    },
   });
 
   /* ── actions ──────────────────────────────────────────────────────────── */
@@ -556,35 +568,52 @@ export const ShipmentDetail: React.FC = () => {
       {/* ── Modal: Ajouter lots ───────────────────────────────────────── */}
       <Modal open={addLotOpen} onClose={() => setAddLotOpen(false)} title="Ajouter des lots" size="md">
         <form onSubmit={addLots} className="space-y-4">
+          <div className="p-3 bg-vanilla-500/5 border border-vanilla-500/20 rounded-lg">
+            <p className="text-xs text-vanilla-400">
+              ✅ Seuls les lots ayant complété le <strong>conditionnement</strong> peuvent être exportés.
+            </p>
+          </div>
           <div>
-            <label className="block text-xs font-medium text-gray-400 mb-2">Lots disponibles</label>
+            <label className="block text-xs font-medium text-gray-400 mb-2">
+              Lots conditionnés disponibles
+            </label>
             <div className="max-h-60 overflow-y-auto space-y-1">
-              {(availableLots ?? []).map((lot: any) => {
-                const alreadyAdded = lots.some((l: any) => l.id === lot.id);
-                return (
-                  <label key={lot.id} className={`flex items-center gap-3 p-2.5 rounded-lg cursor-pointer transition-colors ${alreadyAdded ? 'opacity-40' : 'hover:bg-white/[0.04]'}`}>
-                    <input
-                      type="checkbox"
-                      disabled={alreadyAdded}
-                      onChange={e => {
-                        const ids = addLotIds.split(',').map(s => s.trim()).filter(Boolean);
-                        if (e.target.checked) setAddLotIds([...ids, lot.id].join(','));
-                        else setAddLotIds(ids.filter(i => i !== lot.id).join(','));
-                      }}
-                      checked={addLotIds.includes(lot.id)}
-                      className="rounded"
-                    />
-                    <span className="font-mono text-xs text-forest-400">{lot.lotNumber}</span>
-                    <span className="text-xs text-gray-400">{lot.product?.name}</span>
-                    {alreadyAdded && <span className="text-xs text-gray-600 ml-auto">déjà ajouté</span>}
-                  </label>
-                );
-              })}
+              {(availableLots ?? []).length === 0 ? (
+                <div className="text-center py-8 text-gray-500">
+                  <p className="text-sm">Aucun lot conditionné disponible</p>
+                  <p className="text-xs mt-1 text-gray-600">
+                    Les lots doivent terminer le conditionnement avant d'être exportables.
+                  </p>
+                </div>
+              ) : (
+                (availableLots ?? []).map((lot: any) => {
+                  const alreadyAdded = lots.some((l: any) => l.id === lot.id);
+                  return (
+                    <label key={lot.id} className={`flex items-center gap-3 p-2.5 rounded-lg cursor-pointer transition-colors ${alreadyAdded ? 'opacity-40' : 'hover:bg-white/[0.04]'}`}>
+                      <input
+                        type="checkbox"
+                        disabled={alreadyAdded}
+                        onChange={e => {
+                          const ids = addLotIds.split(',').map(s => s.trim()).filter(Boolean);
+                          if (e.target.checked) setAddLotIds([...ids, lot.id].join(','));
+                          else setAddLotIds(ids.filter(i => i !== lot.id).join(','));
+                        }}
+                        checked={addLotIds.includes(lot.id)}
+                        className="rounded"
+                      />
+                      <span className="font-mono text-xs text-forest-400">{lot.lotNumber}</span>
+                      <span className="text-xs text-gray-400">{lot.product?.name}</span>
+                      <span className="text-xs text-green-500/70 ml-auto">✅ Conditionné</span>
+                      {alreadyAdded && <span className="text-xs text-gray-600 ml-auto">déjà ajouté</span>}
+                    </label>
+                  );
+                })
+              )}
             </div>
           </div>
           <div className="flex justify-end gap-2">
             <Button type="button" variant="secondary" onClick={() => setAddLotOpen(false)}>Annuler</Button>
-            <Button type="submit">Ajouter</Button>
+            <Button type="submit" disabled={(availableLots ?? []).length === 0}>Ajouter</Button>
           </div>
         </form>
       </Modal>

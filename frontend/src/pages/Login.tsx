@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Leaf, Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff } from 'lucide-react';
 import { useAuthStore } from '../stores/authStore';
 import api from '../lib/api';
 import toast from 'react-hot-toast';
@@ -32,19 +32,23 @@ export const Login: React.FC = () => {
     <div className="min-h-screen flex items-center justify-center p-4" style={{ background: 'var(--color-bg)' }}>
       {/* Background gradient */}
       <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute inset-0 bg-gradient-to-br from-forest-950/40 via-transparent to-vanilla-800/10" />
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-forest-600/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-vanilla-500/5 rounded-full blur-3xl" />
+        <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, rgba(30,92,110,0.08) 0%, transparent 50%, rgba(201,146,58,0.05) 100%)' }} />
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full blur-3xl" style={{ background: 'rgba(30,92,110,0.06)' }} />
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full blur-3xl" style={{ background: 'rgba(201,146,58,0.06)' }} />
       </div>
 
       <div className="w-full max-w-sm relative z-10 animate-slide-up">
-        {/* Logo */}
+
+        {/* Logo APL */}
         <div className="flex flex-col items-center mb-8">
-          <div className="w-14 h-14 rounded-2xl bg-forest-600 flex items-center justify-center mb-4 shadow-lg shadow-forest-600/30">
-            <Leaf size={28} className="text-white" />
-          </div>
-          <h1 className="font-display font-bold text-2xl text-white">TraceAgro</h1>
-          <p className="text-sm text-gray-500 mt-1">APL Madagascar — v2.0</p>
+          <img
+            src="/logo-apl.svg"
+            alt="APL Vanilla"
+            style={{ width: 150, height: 'auto', objectFit: 'contain', marginBottom: 12 }}
+          />
+          <p className="text-xs" style={{ color: 'var(--color-navy-400)', letterSpacing: '0.05em' }}>
+            TraceAgro · APL Madagascar v2.0
+          </p>
         </div>
 
         {/* Card */}
@@ -74,21 +78,40 @@ export const Login: React.FC = () => {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                 />
-                <button type="button" onClick={() => setShowPwd(!showPwd)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300">
+                <button
+                  type="button"
+                  onClick={() => setShowPwd(!showPwd)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300"
+                >
                   {showPwd ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               </div>
             </div>
-            <button type="submit" className="btn-primary w-full justify-center py-2.5" disabled={loading}>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full flex items-center justify-center py-3 rounded-lg font-medium text-sm text-white transition-all duration-150"
+              style={{
+                background: 'linear-gradient(135deg, #1e5c6e 0%, #2a7a90 100%)',
+                boxShadow: '0 2px 8px rgba(30,92,110,0.35)',
+                opacity: loading ? 0.7 : 1,
+                minHeight: 44,
+              }}
+            >
               {loading ? 'Connexion...' : 'Se connecter'}
             </button>
           </form>
 
-          <div className="mt-4 p-3 rounded-lg bg-white/[0.03] border border-white/[0.06]">
+          <div className="mt-4 p-3 rounded-lg" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
             <p className="text-xs text-gray-500 text-center">Compte de démonstration :</p>
             <p className="text-xs text-gray-400 text-center mt-1 font-mono">admin@traceagro.mg / Admin1234!</p>
           </div>
         </div>
+
+        <p className="text-center text-xs mt-6" style={{ color: 'var(--color-navy-500)' }}>
+          © 2026 APL Vanilla & Spices · Madagascar
+        </p>
       </div>
     </div>
   );

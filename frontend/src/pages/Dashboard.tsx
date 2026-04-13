@@ -1,6 +1,6 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Package, Users, Ship, CheckCircle, TrendingUp, AlertTriangle } from 'lucide-react';
+import { Package, Factory, Ship, CheckCircle, TrendingUp, AlertTriangle } from 'lucide-react';
 import { Header } from '../components/layout/Header';
 import { StatCard, Card, CardHeader } from '../components/ui/Card';
 import { LotsBarChart } from '../components/charts/LotsBarChart';
@@ -17,6 +17,12 @@ export const Dashboard: React.FC = () => {
   const { data: stats, isLoading: statsLoading } = useQuery({
     queryKey: ['dashboard-stats'],
     queryFn: () => api.get('/lots/dashboard-stats').then((r) => r.data.data),
+    refetchInterval: 60000,
+  });
+
+  const { data: conditioning } = useQuery({
+    queryKey: ['conditioning-stats'],
+    queryFn: () => api.get('/conditioning?status=en_cours').then((r) => r.data),
     refetchInterval: 60000,
   });
 
@@ -43,10 +49,10 @@ export const Dashboard: React.FC = () => {
             color="text-forest-400"
           />
           <StatCard
-            title="Producteurs actifs"
-            value={stats?.activeProducers ?? 0}
-            icon={<Users size={20} />}
-            color="text-blue-400"
+            title="Conditionnement"
+            value={conditioning?.stats?.en_cours ?? 0}
+            icon={<Factory size={20} />}
+            color="text-apl-gold"
           />
           <StatCard
             title="En transit"

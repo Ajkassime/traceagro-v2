@@ -9,7 +9,6 @@ import { PageLoader, EmptyState } from '../components/ui/Spinner'
 import api from '../lib/api'
 import toast from 'react-hot-toast'
 
-// ─── Configurations ───────────────────────────────────────────────────────────
 const STATUS_CONFIG = {
   en_cours:     { label: 'En cours',     bg: 'rgba(245,158,11,0.15)',  color: '#fb923c', dot: '#ff9800', solid: '#c2410c' },
   termine:      { label: 'Terminé',      bg: 'rgba(34,197,94,0.15)',   color: '#4ade80', dot: '#4caf50', solid: '#15803d' },
@@ -27,7 +26,6 @@ const STEP_ICONS = {
   'Mise en carton': '📫', 'Transfert stock fini': '✅',
 }
 
-// Seuils de durée par étape (heures) — HACCP vanille (FFVA, BRC v9)
 const STEP_THRESHOLDS = {
   'Reception':                { warn: 6,   crit: 12  },
   'Sechage':                  { warn: 48,  crit: 96  },
@@ -45,7 +43,6 @@ const QUALITY_THRESHOLDS = {
   pocketPercent: { warn: 10, crit: 20 },
 }
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
 function formatDuration(minutes) {
   if (minutes < 60) return `${Math.round(minutes)}min`
   const h = Math.floor(minutes / 60)
@@ -62,7 +59,6 @@ function parseHumNorm(order) {
   return null
 }
 
-// Retourne la date de la dernière activité sur un ordre
 function getLastActivity(order) {
   const dates = (order.steps || [])
     .flatMap(s => [s.updatedAt, s.startedAt, s.completedAt].filter(Boolean))
@@ -70,32 +66,22 @@ function getLastActivity(order) {
   return dates.length > 0 ? new Date(Math.max(...dates)) : new Date(order.createdAt)
 }
 
-// Calcule les alertes d'un ordre (pour badge sur la carte)
 function getOrderAlerts(order) {
   let crit = 0, warn = 0
-
   for (const step of (order.steps || [])) {
     const thr = STEP_THRESHOLDS[step.stepName]
-
-    // 1. Durée étape active dépassée
     if (step.startedAt && step.status === 'en_cours' && thr) {
       const hours = (Date.now() - new Date(step.startedAt)) / 3600000
       if (hours > thr.crit) crit++
       else if (hours > thr.warn) warn++
     }
-
-    // 2. Humidité hors norme
     const norm = parseHumNorm(order)
     if (norm && step.humidityOut) {
       const val = parseFloat(step.humidityOut)
       if (val < norm[0] || val > norm[1]) crit++
       else if (val <= norm[0] + 0.5 || val >= norm[1] - 0.5) warn++
     }
-
-    // 3. Détection métal non conforme
     if (step.metalDetResult === 'Non conforme') crit++
-
-    // 4. Défauts qualité triage
     if (step.stepName === 'Triage et mesurage') {
       let warnCount = 0
       for (const [key, t] of Object.entries(QUALITY_THRESHOLDS)) {
@@ -107,34 +93,25 @@ function getOrderAlerts(order) {
       }
       if (warnCount >= 3) crit++
     }
-
-    // 5. Pas d'opérateur depuis 1h+
     if (step.status === 'en_cours' && !step.operatorName && step.startedAt) {
       if ((Date.now() - new Date(step.startedAt)) / 60000 > 60) warn++
     }
-
-    // 6. Perte de masse excessive
     if (step.quantityIn && step.quantityOut) {
       const loss = (parseFloat(step.quantityIn) - parseFloat(step.quantityOut)) / parseFloat(step.quantityIn) * 100
       if (loss > 25) crit++
       else if (loss > 15) warn++
     }
   }
-
-  // 7. Ordre en cours mais inactif depuis 8h (stalled)
   if (order.status === 'en_cours') {
     const lastAct = getLastActivity(order)
     const hoursStalled = (Date.now() - lastAct) / 3600000
     if (hoursStalled > 24) crit++
     else if (hoursStalled > 8) warn++
   }
-
   return { critical: crit, warning: warn }
 }
 
-// ─── Composant principal ──────────────────────────────────────────────────────
 export default function Conditioning() {
-  const { token, language: lang } = useAuthStore()
   const navigate = useNavigate()
   const [orders, setOrders] = useState([])
   const [stats, setStats] = useState({})
@@ -149,46 +126,46 @@ export default function Conditioning() {
 
   const load = useCallback(() => {
     setLoading(true)
-    fetch(`/api/conditioning${statusFilter ? `?status=${statusFilter}` : ''}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then(r => r.json())
-      .then(d => { setOrders(d.data || []); setStats(d.stats || {}) })
+    const url = statusFilter ? `/conditioning?status=${statusFilter}` : '/conditioning'
+    api.get(url)
+      .then(res => {
+        setOrders(res.data?.data || [])
+        setStats(res.data?.stats || {})
+      })
+      .catch(() => toast.error('Erreur lors du chargement'))
       .finally(() => setLoading(false))
-  }, [statusFilter, token])
+  }, [statusFilter])
 
   useEffect(() => { load() }, [load])
 
-  // Auto-refresh toutes les 60s quand il y a des ordres actifs
   useEffect(() => {
     if (!orders.some(o => o.status === 'en_cours')) return
     const interval = setInterval(load, 60000)
     return () => clearInterval(interval)
-  }, [orders.length > 0 && orders.some(o => o.status === 'en_cours'), load])
+  }, [orders.length, load])
 
   useEffect(() => {
     api.get('/lots', { params: { limit: 200 } }).then(r => setLots(r.data?.data || []))
   }, [])
 
   const handleCreate = async (e) => {
-    e.preventDefault(); setSaving(true)
+    e.preventDefault()
+    setSaving(true)
     try {
-      const res = await fetch('/api/conditioning', {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
-      })
-      const data = await res.json()
-      if (data.success) {
+      const res = await api.post('/conditioning', form)
+      if (res.data?.success) {
         toast.success('🏭 Ordre de conditionnement créé')
         setShowCreate(false)
         setForm({ lotId: '', productType: 'vanille_noire', destination: '' })
-        navigate(`/conditioning/${data.data.id}`)
+        navigate(`/conditioning/${res.data.data.id}`)
       } else {
-        toast.error(data.message || 'Erreur lors de la création')
+        toast.error(res.data?.message || 'Erreur lors de la création')
       }
-    } catch { toast.error('Erreur réseau') }
-    finally { setSaving(false) }
+    } catch (err) {
+      toast.error(err?.response?.data?.message || 'Erreur réseau')
+    } finally {
+      setSaving(false)
+    }
   }
 
   const currentStep = (order) => order.steps?.find(s => s.status === 'en_cours')
@@ -197,7 +174,6 @@ export default function Conditioning() {
     return Math.round((done / (order.steps?.length || 7)) * 100)
   }
 
-  // Filtrage + tri (alertes critiques en premier)
   const filteredOrders = useMemo(() => {
     let list = orders
     if (productFilter) list = list.filter(o => o.productType === productFilter)
@@ -225,9 +201,8 @@ export default function Conditioning() {
   const hasActiveOrders = orders.some(o => o.status === 'en_cours')
 
   return (
-    <div style={{ padding: '32px 36px', minHeight: '100vh' }} className="fade-in">
+    <div style={{ padding: '32px 36px', minHeight: '100vh' }}>
 
-      {/* ── HEADER ─────────────────────────────────────────────────────────── */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 28 }}>
         <div>
           <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 26, color: 'var(--ink)', fontWeight: 700 }}>
@@ -235,27 +210,17 @@ export default function Conditioning() {
           </h1>
           <p style={{ color: 'var(--mist)', fontSize: 13, marginTop: 3, display: 'flex', alignItems: 'center', gap: 8 }}>
             Suivi des process de production en temps réel
-            {hasActiveOrders && (
-              <span style={{ fontSize: 11, color: '#4ade80' }}>🟢 Actualisation auto toutes les 60s</span>
-            )}
+            {hasActiveOrders && <span style={{ fontSize: 11, color: '#4ade80' }}>🟢 Actualisation auto toutes les 60s</span>}
           </p>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           {globalAlerts.critical > 0 && (
-            <div style={{
-              padding: '6px 12px', borderRadius: 8, fontSize: 12, fontWeight: 600,
-              background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)',
-              color: '#f87171', display: 'flex', alignItems: 'center', gap: 6,
-            }}>
+            <div style={{ padding: '6px 12px', borderRadius: 8, fontSize: 12, fontWeight: 600, background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)', color: '#f87171', display: 'flex', alignItems: 'center', gap: 6 }}>
               🚨 {globalAlerts.critical} alerte{globalAlerts.critical > 1 ? 's' : ''} critique{globalAlerts.critical > 1 ? 's' : ''}
             </div>
           )}
           {globalAlerts.critical === 0 && globalAlerts.warning > 0 && (
-            <div style={{
-              padding: '6px 12px', borderRadius: 8, fontSize: 12, fontWeight: 600,
-              background: 'rgba(245,158,11,0.15)', border: '1px solid rgba(245,158,11,0.3)',
-              color: '#fb923c', display: 'flex', alignItems: 'center', gap: 6,
-            }}>
+            <div style={{ padding: '6px 12px', borderRadius: 8, fontSize: 12, fontWeight: 600, background: 'rgba(245,158,11,0.15)', border: '1px solid rgba(245,158,11,0.3)', color: '#fb923c', display: 'flex', alignItems: 'center', gap: 6 }}>
               ⚠️ {globalAlerts.warning} avertissement{globalAlerts.warning > 1 ? 's' : ''}
             </div>
           )}
@@ -263,7 +228,6 @@ export default function Conditioning() {
         </div>
       </div>
 
-      {/* ── STATS — filtre par statut ───────────────────────────────────────── */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14, marginBottom: 24 }}>
         {[
           { key: '',             label: 'Tous',          icon: '📋', solid: '#475569', count: totalAll },
@@ -283,42 +247,27 @@ export default function Conditioning() {
         ))}
       </div>
 
-      {/* ── RECHERCHE + FILTRE PRODUIT ─────────────────────────────────────── */}
       <div style={{ display: 'flex', gap: 12, marginBottom: 20, alignItems: 'center' }}>
         <div style={{ flex: 1, position: 'relative' }}>
           <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--mist)', fontSize: 14, pointerEvents: 'none' }}>🔍</span>
-          <input
-            type="text" placeholder="Rechercher par lot, producteur..."
-            value={search} onChange={e => setSearch(e.target.value)}
-            style={{ width: '100%', padding: '9px 12px 9px 36px', border: '1.5px solid var(--border)', borderRadius: 8, fontSize: 13, background: 'rgba(255,255,255,0.05)', color: 'var(--ink)', outline: 'none', boxSizing: 'border-box' }}
-          />
+          <input type="text" placeholder="Rechercher par lot, producteur..." value={search} onChange={e => setSearch(e.target.value)}
+            style={{ width: '100%', padding: '9px 12px 9px 36px', border: '1.5px solid var(--border)', borderRadius: 8, fontSize: 13, background: 'rgba(255,255,255,0.05)', color: 'var(--ink)', outline: 'none', boxSizing: 'border-box' }} />
         </div>
         <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
-          {[
-            { key: '',             label: 'Tous types' },
-            { key: 'vanille_noire', label: '🖤 Noire'  },
-            { key: 'vanille_rouge', label: '❤️ Rouge'  },
-          ].map(p => (
+          {[{ key: '', label: 'Tous types' }, { key: 'vanille_noire', label: '🖤 Noire' }, { key: 'vanille_rouge', label: '❤️ Rouge' }].map(p => (
             <button key={p.key} onClick={() => setProductFilter(p.key)} style={{
               padding: '7px 14px', borderRadius: 8, fontSize: 12.5, fontWeight: 500, border: 'none', cursor: 'pointer',
               background: productFilter === p.key ? 'rgba(34,197,94,0.2)' : 'rgba(255,255,255,0.04)',
               color: productFilter === p.key ? '#4ade80' : 'var(--slate)',
-              outline: `1.5px solid ${productFilter === p.key ? '#4ade80' : 'var(--border)'}`,
-              transition: 'all 0.15s',
-            }}>
-              {p.label}
-            </button>
+              outline: `1.5px solid ${productFilter === p.key ? '#4ade80' : 'var(--border)'}`, transition: 'all 0.15s',
+            }}>{p.label}</button>
           ))}
         </div>
         {(search || productFilter) && (
-          <button onClick={() => { setSearch(''); setProductFilter('') }} style={{
-            padding: '7px 12px', borderRadius: 8, fontSize: 12, color: 'var(--mist)', background: 'transparent',
-            border: '1px solid var(--border)', cursor: 'pointer',
-          }}>✕ Reset</button>
+          <button onClick={() => { setSearch(''); setProductFilter('') }} style={{ padding: '7px 12px', borderRadius: 8, fontSize: 12, color: 'var(--mist)', background: 'transparent', border: '1px solid var(--border)', cursor: 'pointer' }}>✕ Reset</button>
         )}
       </div>
 
-      {/* ── LISTE DES ORDRES ───────────────────────────────────────────────── */}
       {loading ? (
         <PageLoader />
       ) : filteredOrders.length === 0 ? (
@@ -341,73 +290,35 @@ export default function Conditioning() {
             const isStalled = order.status === 'en_cours' && minutesSinceActivity > 8 * 60
 
             return (
-              <Card key={order.id} style={{
-                padding: '18px 20px', cursor: 'pointer', transition: 'all 0.2s',
-                border: alerts.critical > 0 ? '1.5px solid rgba(239,68,68,0.35)' : undefined,
-              }}
+              <Card key={order.id} style={{ padding: '18px 20px', cursor: 'pointer', transition: 'all 0.2s', border: alerts.critical > 0 ? '1.5px solid rgba(239,68,68,0.35)' : undefined }}
                 onClick={() => navigate(`/conditioning/${order.id}`)}>
-
-                {/* Card header */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                    <div style={{ width: 40, height: 40, borderRadius: 10, flexShrink: 0, background: prod.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>
-                      {prod.icon}
-                    </div>
+                    <div style={{ width: 40, height: 40, borderRadius: 10, flexShrink: 0, background: prod.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>{prod.icon}</div>
                     <div>
                       <div style={{ fontWeight: 700, fontSize: 13.5, color: 'var(--ink)' }}>{prod.label}</div>
-                      <div style={{ fontSize: 11.5, color: 'var(--mist)', marginTop: 1 }}>
-                        Passage #{order.passNumber} — {order.lot?.lotNumber}
-                      </div>
+                      <div style={{ fontSize: 11.5, color: 'var(--mist)', marginTop: 1 }}>Passage #{order.passNumber} — {order.lot?.lotNumber}</div>
                     </div>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                    {/* Badges d'alerte */}
-                    {alerts.critical > 0 && (
-                      <div title={`${alerts.critical} alerte(s) critique(s)`} style={{
-                        width: 22, height: 22, borderRadius: '50%', background: '#dc2626',
-                        color: 'white', fontSize: 10, fontWeight: 700,
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      }}>{alerts.critical}</div>
-                    )}
-                    {alerts.critical === 0 && alerts.warning > 0 && (
-                      <div title={`${alerts.warning} avertissement(s)`} style={{
-                        width: 22, height: 22, borderRadius: '50%', background: '#d97706',
-                        color: 'white', fontSize: 10, fontWeight: 700,
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      }}>{alerts.warning}</div>
-                    )}
-                    <div style={{
-                      padding: '3px 10px', borderRadius: 20, fontSize: 11, fontWeight: 600,
-                      background: cfg.bg, color: cfg.color, display: 'flex', alignItems: 'center', gap: 5,
-                    }}>
-                      <div style={{ width: 6, height: 6, borderRadius: '50%', background: cfg.dot }} />
-                      {cfg.label}
+                    {alerts.critical > 0 && <div title={`${alerts.critical} alerte(s) critique(s)`} style={{ width: 22, height: 22, borderRadius: '50%', background: '#dc2626', color: 'white', fontSize: 10, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{alerts.critical}</div>}
+                    {alerts.critical === 0 && alerts.warning > 0 && <div title={`${alerts.warning} avertissement(s)`} style={{ width: 22, height: 22, borderRadius: '50%', background: '#d97706', color: 'white', fontSize: 10, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{alerts.warning}</div>}
+                    <div style={{ padding: '3px 10px', borderRadius: 20, fontSize: 11, fontWeight: 600, background: cfg.bg, color: cfg.color, display: 'flex', alignItems: 'center', gap: 5 }}>
+                      <div style={{ width: 6, height: 6, borderRadius: '50%', background: cfg.dot }} />{cfg.label}
                     </div>
                   </div>
                 </div>
 
-                {/* Producteur + destination + poids + date */}
                 <div style={{ fontSize: 12.5, color: 'var(--slate)', marginBottom: 12, display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 6 }}>
                   <span>🌱 {order.lot?.producer?.name}</span>
-                  {order.lot?.quantityKg && (
-                    <span style={{ color: 'var(--mist)', fontSize: 11 }}>⚖️ {Number(order.lot.quantityKg).toLocaleString()} kg</span>
-                  )}
-                  {order.destination && (
-                    <span style={{ background: 'rgba(99,102,241,0.2)', color: '#93c5fd', padding: '1px 7px', borderRadius: 8, fontSize: 11, fontWeight: 500 }}>
-                      {order.destination.toUpperCase()}
-                    </span>
-                  )}
-                  <span style={{ color: 'var(--mist)', fontSize: 11 }}>
-                    {new Date(order.createdAt).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' })}
-                  </span>
+                  {order.lot?.quantityKg && <span style={{ color: 'var(--mist)', fontSize: 11 }}>⚖️ {Number(order.lot.quantityKg).toLocaleString()} kg</span>}
+                  {order.destination && <span style={{ background: 'rgba(99,102,241,0.2)', color: '#93c5fd', padding: '1px 7px', borderRadius: 8, fontSize: 11, fontWeight: 500 }}>{order.destination.toUpperCase()}</span>}
+                  <span style={{ color: 'var(--mist)', fontSize: 11 }}>{new Date(order.createdAt).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' })}</span>
                 </div>
 
-                {/* Barre de progression */}
                 <div style={{ marginBottom: 12 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
-                    <span style={{ fontSize: 11.5, color: 'var(--mist)' }}>
-                      {order.steps?.filter(s => s.status === 'termine').length || 0} / {order.steps?.length || 7} étapes
-                    </span>
+                    <span style={{ fontSize: 11.5, color: 'var(--mist)' }}>{order.steps?.filter(s => s.status === 'termine').length || 0} / {order.steps?.length || 7} étapes</span>
                     <span style={{ fontSize: 11.5, fontWeight: 600, color: pct === 100 ? '#4ade80' : 'var(--green)' }}>{pct}%</span>
                   </div>
                   <div style={{ height: 6, background: 'var(--pale)', borderRadius: 3, overflow: 'hidden' }}>
@@ -415,17 +326,13 @@ export default function Conditioning() {
                   </div>
                 </div>
 
-                {/* Étape active ou alerte inactivité */}
                 {active ? (
                   <div style={{ background: 'var(--cream)', borderRadius: 8, padding: '8px 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                       <span style={{ fontSize: 16 }}>{STEP_ICONS[active.stepName] || '⚙️'}</span>
                       <div>
                         <div style={{ fontSize: 12.5, fontWeight: 600, color: 'var(--ink)' }}>{active.stepName}</div>
-                        {active.operatorName
-                          ? <div style={{ fontSize: 11, color: 'var(--mist)' }}>👤 {active.operatorName}</div>
-                          : <div style={{ fontSize: 11, color: '#fb923c' }}>⚠️ Opérateur non assigné</div>
-                        }
+                        {active.operatorName ? <div style={{ fontSize: 11, color: 'var(--mist)' }}>👤 {active.operatorName}</div> : <div style={{ fontSize: 11, color: '#fb923c' }}>⚠️ Opérateur non assigné</div>}
                       </div>
                     </div>
                     {active.startedAt && (() => {
@@ -435,12 +342,7 @@ export default function Conditioning() {
                       const isCrit = thr && hours > thr.crit
                       const isWarn = thr && hours > thr.warn
                       return (
-                        <span style={{
-                          fontSize: 11, fontWeight: 600, padding: '2px 7px', borderRadius: 8,
-                          color: isCrit ? '#f87171' : isWarn ? '#fb923c' : 'var(--slate)',
-                          background: isCrit ? 'rgba(239,68,68,0.15)' : isWarn ? 'rgba(245,158,11,0.15)' : 'rgba(255,255,255,0.05)',
-                          border: `1px solid ${isCrit ? 'rgba(239,68,68,0.3)' : isWarn ? 'rgba(245,158,11,0.3)' : 'transparent'}`,
-                        }}>
+                        <span style={{ fontSize: 11, fontWeight: 600, padding: '2px 7px', borderRadius: 8, color: isCrit ? '#f87171' : isWarn ? '#fb923c' : 'var(--slate)', background: isCrit ? 'rgba(239,68,68,0.15)' : isWarn ? 'rgba(245,158,11,0.15)' : 'rgba(255,255,255,0.05)', border: `1px solid ${isCrit ? 'rgba(239,68,68,0.3)' : isWarn ? 'rgba(245,158,11,0.3)' : 'transparent'}` }}>
                           {isCrit ? '🚨' : '⏱'} {formatDuration(mins)}
                         </span>
                       )
@@ -452,21 +354,13 @@ export default function Conditioning() {
                   </div>
                 ) : null}
 
-                {/* Dernière activité (si pas en cours actif) */}
                 {!active && order.status === 'en_cours' && !isStalled && (
-                  <div style={{ fontSize: 11, color: 'var(--mist)', marginTop: 6 }}>
-                    🕐 Dernière activité : {formatDuration(minutesSinceActivity)} ago
-                  </div>
+                  <div style={{ fontSize: 11, color: 'var(--mist)', marginTop: 6 }}>🕐 Dernière activité : {formatDuration(minutesSinceActivity)} ago</div>
                 )}
 
-                {/* Mini-timeline */}
                 <div style={{ display: 'flex', gap: 3, marginTop: 10 }}>
                   {order.steps?.map(s => (
-                    <div key={s.id} title={s.stepName} style={{
-                      flex: 1, height: 4, borderRadius: 2,
-                      background: s.status === 'termine' ? '#4caf50' : s.status === 'en_cours' ? '#ff9800' : 'var(--border)',
-                      transition: 'background 0.3s',
-                    }} />
+                    <div key={s.id} title={s.stepName} style={{ flex: 1, height: 4, borderRadius: 2, background: s.status === 'termine' ? '#4caf50' : s.status === 'en_cours' ? '#ff9800' : 'var(--border)', transition: 'background 0.3s' }} />
                   ))}
                 </div>
               </Card>
@@ -475,15 +369,10 @@ export default function Conditioning() {
         </div>
       )}
 
-      {/* ── MODAL CRÉATION ─────────────────────────────────────────────────── */}
       <Modal open={showCreate} onClose={() => setShowCreate(false)} title="+ Nouvel ordre de conditionnement" size="md">
         <form onSubmit={handleCreate}>
-
-          {/* ── ÉTAPE 1 : Lot ───────────────────────────────────────────────── */}
           <div style={{ marginBottom: 16 }}>
-            <label style={{ display: 'block', fontSize: 12.5, fontWeight: 500, color: 'var(--slate)', marginBottom: 5 }}>
-              Lot à conditionner *
-            </label>
+            <label style={{ display: 'block', fontSize: 12.5, fontWeight: 500, color: 'var(--slate)', marginBottom: 5 }}>Lot à conditionner *</label>
             <select required value={form.lotId}
               onChange={e => {
                 const lotId = e.target.value
@@ -491,10 +380,8 @@ export default function Conditioning() {
                 let productType = form.productType
                 if (lot) {
                   if (lot.conditioningType) {
-                    // Champ explicite défini sur le lot — priorité absolue
                     productType = lot.conditioningType
                   } else {
-                    // Fallback : détection via nom / variété / catégorie du produit
                     const haystack = [lot.product?.name, lot.product?.variety, lot.product?.category].join(' ').toLowerCase()
                     productType = (haystack.includes('rouge') || haystack.includes('red')) ? 'vanille_rouge' : 'vanille_noire'
                   }
@@ -504,69 +391,40 @@ export default function Conditioning() {
               style={{ width: '100%', padding: '10px 12px', border: '1.5px solid var(--border)', borderRadius: 8, fontSize: 13.5, background: 'rgba(255,255,255,0.05)', color: 'var(--ink)', outline: 'none' }}>
               <option value="">-- Choisir un lot --</option>
               {lots.map(l => (
-                <option key={l.id} value={l.id}>
-                  {l.lotNumber} — {l.product?.name} — {Number(l.quantityKg).toLocaleString()} kg ({l.producer?.name})
-                </option>
+                <option key={l.id} value={l.id}>{l.lotNumber} — {l.product?.name} — {Number(l.quantityKg).toLocaleString()} kg ({l.producer?.name})</option>
               ))}
             </select>
           </div>
 
-          {/* ── ÉTAPE 2 : Type de produit — auto-détecté ou manuel ─────────── */}
           <div style={{ marginBottom: 14 }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
               <label style={{ fontSize: 12.5, fontWeight: 500, color: 'var(--slate)' }}>Type de produit *</label>
               {form.lotId && (() => {
                 const lot = lots.find(l => l.id === form.lotId)
                 const isExplicit = !!lot?.conditioningType
-                return (
-                  <span style={{ fontSize: 11, padding: '2px 8px', borderRadius: 6, fontWeight: 600,
-                    background: isExplicit ? 'rgba(34,197,94,0.12)' : 'rgba(245,158,11,0.12)',
-                    color: isExplicit ? '#4ade80' : '#fb923c',
-                  }}>
-                    {isExplicit ? '✓ Défini sur le lot' : '⚡ Déduit du produit'}
-                  </span>
-                )
+                return <span style={{ fontSize: 11, padding: '2px 8px', borderRadius: 6, fontWeight: 600, background: isExplicit ? 'rgba(34,197,94,0.12)' : 'rgba(245,158,11,0.12)', color: isExplicit ? '#4ade80' : '#fb923c' }}>{isExplicit ? '✓ Défini sur le lot' : '⚡ Déduit du produit'}</span>
               })()}
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
               {Object.entries(PRODUCT_CONFIG).map(([key, cfg]) => (
-                <div key={key} onClick={() => setForm(f => ({ ...f, productType: key, destination: '' }))} style={{
-                  padding: '12px 16px', borderRadius: 10, cursor: 'pointer',
-                  border: `2px solid ${form.productType === key ? 'var(--green)' : 'var(--border)'}`,
-                  background: form.productType === key ? 'var(--pale)' : 'rgba(255,255,255,0.04)',
-                  display: 'flex', alignItems: 'center', gap: 10, transition: 'all 0.15s',
-                  position: 'relative',
-                }}>
+                <div key={key} onClick={() => setForm(f => ({ ...f, productType: key, destination: '' }))} style={{ padding: '12px 16px', borderRadius: 10, cursor: 'pointer', border: `2px solid ${form.productType === key ? 'var(--green)' : 'var(--border)'}`, background: form.productType === key ? 'var(--pale)' : 'rgba(255,255,255,0.04)', display: 'flex', alignItems: 'center', gap: 10, transition: 'all 0.15s' }}>
                   <span style={{ fontSize: 22 }}>{cfg.icon}</span>
                   <div style={{ flex: 1 }}>
                     <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>{cfg.label}</div>
-                    <div style={{ fontSize: 11, color: 'var(--mist)' }}>
-                      {key === 'vanille_noire' ? 'Norme : 36–38%' : 'Norme selon destination'}
-                    </div>
+                    <div style={{ fontSize: 11, color: 'var(--mist)' }}>{key === 'vanille_noire' ? 'Norme : 36–38%' : 'Norme selon destination'}</div>
                   </div>
-                  {form.productType === key && (
-                    <span style={{ fontSize: 16, color: 'var(--green)' }}>✓</span>
-                  )}
+                  {form.productType === key && <span style={{ fontSize: 16, color: 'var(--green)' }}>✓</span>}
                 </div>
               ))}
             </div>
           </div>
 
-          {/* ── ÉTAPE 3 : Destination (vanille rouge uniquement) ─────────────── */}
           {form.productType === 'vanille_rouge' && (
             <div style={{ marginBottom: 14 }}>
               <label style={{ display: 'block', fontSize: 12.5, fontWeight: 500, color: 'var(--slate)', marginBottom: 5 }}>Destination — norme humidité *</label>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-                {[
-                  { key: 'us', label: 'USA',    norm: '25–28%', flag: '🇺🇸' },
-                  { key: 'eu', label: 'Europe', norm: '28–32%', flag: '🇪🇺' },
-                ].map(d => (
-                  <div key={d.key} onClick={() => setForm(f => ({ ...f, destination: d.key }))} style={{
-                    padding: '10px 14px', borderRadius: 10, cursor: 'pointer',
-                    border: `2px solid ${form.destination === d.key ? 'var(--green)' : 'var(--border)'}`,
-                    background: form.destination === d.key ? 'var(--pale)' : 'rgba(255,255,255,0.04)',
-                    transition: 'all 0.15s',
-                  }}>
+                {[{ key: 'us', label: 'USA', norm: '25–28%', flag: '🇺🇸' }, { key: 'eu', label: 'Europe', norm: '28–32%', flag: '🇪🇺' }].map(d => (
+                  <div key={d.key} onClick={() => setForm(f => ({ ...f, destination: d.key }))} style={{ padding: '10px 14px', borderRadius: 10, cursor: 'pointer', border: `2px solid ${form.destination === d.key ? 'var(--green)' : 'var(--border)'}`, background: form.destination === d.key ? 'var(--pale)' : 'rgba(255,255,255,0.04)', transition: 'all 0.15s' }}>
                     <div style={{ fontSize: 20 }}>{d.flag}</div>
                     <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)', marginTop: 4 }}>{d.label}</div>
                     <div style={{ fontSize: 11, color: 'var(--mist)' }}>Humidité {d.norm}</div>
@@ -576,7 +434,6 @@ export default function Conditioning() {
             </div>
           )}
 
-          {/* ── Récap lot sélectionné ────────────────────────────────────────── */}
           {form.lotId && (() => {
             const lot = lots.find(l => l.id === form.lotId)
             if (!lot) return null
@@ -592,15 +449,8 @@ export default function Conditioning() {
           })()}
 
           <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end', marginTop: 20, paddingTop: 16, borderTop: '1px solid var(--border)' }}>
-            <button type="button" onClick={() => setShowCreate(false)} style={{
-              padding: '9px 18px', borderRadius: 8, background: 'var(--pale)', color: 'var(--green)',
-              fontSize: 13.5, fontWeight: 500, border: 'none', cursor: 'pointer',
-            }}>Annuler</button>
-            <button type="submit" disabled={saving || !form.lotId || (form.productType === 'vanille_rouge' && !form.destination)} style={{
-              padding: '9px 18px', borderRadius: 8, background: 'var(--green)', color: 'white',
-              fontSize: 13.5, fontWeight: 500, border: 'none', cursor: 'pointer',
-              opacity: (saving || !form.lotId || (form.productType === 'vanille_rouge' && !form.destination)) ? 0.6 : 1,
-            }}>
+            <button type="button" onClick={() => setShowCreate(false)} style={{ padding: '9px 18px', borderRadius: 8, background: 'var(--pale)', color: 'var(--green)', fontSize: 13.5, fontWeight: 500, border: 'none', cursor: 'pointer' }}>Annuler</button>
+            <button type="submit" disabled={saving || !form.lotId || (form.productType === 'vanille_rouge' && !form.destination)} style={{ padding: '9px 18px', borderRadius: 8, background: 'var(--green)', color: 'white', fontSize: 13.5, fontWeight: 500, border: 'none', cursor: 'pointer', opacity: (saving || !form.lotId || (form.productType === 'vanille_rouge' && !form.destination)) ? 0.6 : 1 }}>
               {saving ? '⏳ Création...' : '🚀 Lancer le conditionnement'}
             </button>
           </div>
