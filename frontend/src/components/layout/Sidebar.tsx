@@ -3,19 +3,21 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard, Package, Users, Ship, FileText, Map,
   Brain, Bell, Settings, LogOut, ChevronLeft, ChevronRight,
-  Zap, Factory
+  Zap, Factory, Building2, ClipboardList
 } from 'lucide-react';
 import { useAuthStore } from '../../stores/authStore';
 import { cn } from '../../lib/utils';
 
 const nav = [
-  { to: '/dashboard',    icon: LayoutDashboard, label: 'Dashboard' },
-  { to: '/lots',         icon: Package,          label: 'Lots' },
-  { to: '/producers',    icon: Users,            label: 'Producteurs' },
-  { to: '/shipments',    icon: Ship,             label: 'Expéditions' },
-  { to: '/documents',    icon: FileText,         label: 'Documents' },
-  { to: '/conditioning', icon: Factory,          label: 'Conditionnement' },
-  { to: '/map',          icon: Map,              label: 'Cartographie' },
+  { to: '/dashboard',       icon: LayoutDashboard, label: 'Dashboard' },
+  { to: '/lots',            icon: Package,          label: 'Lots' },
+  { to: '/producers',       icon: Users,            label: 'Producteurs' },
+  { to: '/clients',         icon: Building2,        label: 'Clients' },
+  { to: '/purchase-orders', icon: ClipboardList,    label: 'Bons de commande' },
+  { to: '/shipments',       icon: Ship,             label: 'Expéditions' },
+  { to: '/documents',       icon: FileText,         label: 'Documents' },
+  { to: '/conditioning',    icon: Factory,          label: 'Conditionnement' },
+  { to: '/map',             icon: Map,              label: 'Cartographie' },
 ];
 
 const navBottom = [

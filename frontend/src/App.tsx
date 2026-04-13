@@ -23,6 +23,8 @@ import { ShipmentPublicPage } from './pages/Public/ShipmentPublicPage';
 import Conditioning from './pages/Conditioning';
 // @ts-ignore – JSX pages
 import ConditioningDetail from './pages/ConditioningDetail';
+import Clients from './pages/Clients';
+import PurchaseOrders from './pages/PurchaseOrders';
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isAuthenticated } = useAuthStore();
@@ -55,6 +57,8 @@ function App() {
 
       <Route path="/conditioning"     element={<ProtectedRoute><Conditioning /></ProtectedRoute>} />
       <Route path="/conditioning/:id" element={<ProtectedRoute><ConditioningDetail /></ProtectedRoute>} />
+      <Route path="/clients"          element={<ProtectedRoute><Clients /></ProtectedRoute>} />
+      <Route path="/purchase-orders"  element={<ProtectedRoute><PurchaseOrders /></ProtectedRoute>} />
 
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>

@@ -9,6 +9,8 @@ import { documentsRoutes } from '../modules/documents/documents.routes';
 import { intelligenceRoutes } from '../modules/intelligence/intelligence.routes';
 import { notificationsRoutes } from '../modules/notifications/notifications.routes';
 import { conditioningRoutes } from '../modules/conditioning/conditioning.routes';
+import { clientsRoutes } from '../modules/clients/clients.routes';
+import { purchaseOrdersRoutes } from '../modules/purchase-orders/purchase-orders.routes';
 
 export const router = Router();
 
@@ -22,6 +24,8 @@ router.use('/documents', documentsRoutes);
 router.use('/intelligence', intelligenceRoutes);
 router.use('/notifications', notificationsRoutes);
 router.use('/conditioning', conditioningRoutes);
+router.use('/clients', clientsRoutes);
+router.use('/purchase-orders', purchaseOrdersRoutes);
 
 router.get('/', (_req, res) => {
   res.json({ message: 'TraceAgro API v2.0', docs: '/api/docs' });
