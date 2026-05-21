@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardHeader } from '../../../components/ui/Card';
 import { PhaseAccordion } from './PhaseAccordion';
 import type { TeamMember } from './TeamTable';
@@ -40,6 +40,12 @@ export const ClassificationSection: React.FC<ClassificationSectionProps> = ({ lo
     : null;
 
   const [selectedType, setSelectedType] = useState<VanillaType | null>(existingType);
+
+  useEffect(() => {
+    if (existingType !== null) {
+      setSelectedType(existingType);
+    }
+  }, [existingType]);
 
   const getPhaseData = (phaseType: string, phaseIndex: number) =>
     phases.find(p => p.phaseType === phaseType && p.phaseIndex === phaseIndex && p.vanillaType === selectedType);
