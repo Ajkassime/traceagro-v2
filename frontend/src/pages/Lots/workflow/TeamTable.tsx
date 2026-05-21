@@ -5,7 +5,7 @@ import api from '../../../lib/api';
 import { Button } from '../../../components/ui/Button';
 import toast from 'react-hot-toast';
 
-interface TeamMember {
+export interface TeamMember {
   id: string;
   nom: string;
   quotas?: number | null;

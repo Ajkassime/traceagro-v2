@@ -4,6 +4,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../../../lib/api';
 import { Button } from '../../../components/ui/Button';
 import { TeamTable } from './TeamTable';
+import type { TeamMember } from './TeamTable';
 import toast from 'react-hot-toast';
 
 interface PhaseData {
@@ -18,7 +19,7 @@ interface PhaseData {
   isNouvelEmploye: boolean;
   autres?: string | null;
   nbSachets?: number | null;
-  teamMembers: any[];
+  teamMembers: TeamMember[];
 }
 
 interface PhaseAccordionProps {
@@ -46,13 +47,14 @@ export const PhaseAccordion: React.FC<PhaseAccordionProps> = ({
   });
 
   useEffect(() => {
+    if (!data) return;
     setForm({
-      nomResponsable:  data?.nomResponsable  ?? '',
-      poids:           data?.poids           != null ? String(data.poids) : '',
-      qualiteOk:       data?.qualiteOk       ?? false,
-      isNouvelEmploye: data?.isNouvelEmploye ?? false,
-      autres:          data?.autres          ?? '',
-      nbSachets:       data?.nbSachets       != null ? String(data.nbSachets) : '',
+      nomResponsable:  data.nomResponsable  ?? '',
+      poids:           data.poids           != null ? String(data.poids) : '',
+      qualiteOk:       data.qualiteOk       ?? false,
+      isNouvelEmploye: data.isNouvelEmploye ?? false,
+      autres:          data.autres          ?? '',
+      nbSachets:       data.nbSachets       != null ? String(data.nbSachets) : '',
     });
   }, [data]);
 
@@ -72,7 +74,7 @@ export const PhaseAccordion: React.FC<PhaseAccordionProps> = ({
       qualiteOk:       vanillaType === 'conditionne' ? form.qualiteOk : undefined,
       isNouvelEmploye: phaseType === 'mesurage' ? form.isNouvelEmploye : undefined,
       autres:          phaseType === 'detecteur_metaux' ? form.autres || undefined : undefined,
-      nbSachets:       phaseType === 'sous_vide' && form.nbSachets ? parseInt(form.nbSachets) : undefined,
+      nbSachets:       phaseType === 'sous_vide' && form.nbSachets ? parseInt(form.nbSachets, 10) : undefined,
     });
   };
 
@@ -97,6 +99,8 @@ export const PhaseAccordion: React.FC<PhaseAccordionProps> = ({
     >
       {/* Header */}
       <button
+        type="button"
+        aria-expanded={open}
         className="w-full flex items-center justify-between px-4 py-3 text-left"
         onClick={() => setOpen(o => !o)}
       >
