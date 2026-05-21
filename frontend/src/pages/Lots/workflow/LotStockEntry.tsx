@@ -40,6 +40,7 @@ export const LotStockEntry: React.FC<{ lotId: string }> = ({ lotId }) => {
   });
 
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
+  const [submittedValidation, setSubmittedValidation] = useState(false);
 
   useEffect(() => {
     if (!data) return;
@@ -60,14 +61,15 @@ export const LotStockEntry: React.FC<{ lotId: string }> = ({ lotId }) => {
 
   const saveMutation = useMutation({
     mutationFn: (payload: object) => api.put(`/lots/${lotId}/stock-entry`, payload),
-    onSuccess: () => {
+    onSuccess: (response: any) => {
+      if (response?.data?.data?.validatedAt) setSubmittedValidation(true);
       qc.invalidateQueries({ queryKey: ['lot-stock-entry', lotId] });
       toast.success('Entrée stock enregistrée');
     },
     onError: () => toast.error("Erreur lors de l'enregistrement"),
   });
 
-  const isLocked = !!data?.validatedAt;
+  const isLocked = !!data?.validatedAt || submittedValidation;
 
   const buildPayload = (validate = false) => ({
     specification:    form.specification    || undefined,
@@ -165,6 +167,7 @@ export const LotStockEntry: React.FC<{ lotId: string }> = ({ lotId }) => {
         {!isLocked && (
           <div className="flex gap-2 pt-1">
             <Button
+              type="button"
               size="sm"
               variant="secondary"
               loading={saveMutation.isPending}
@@ -173,6 +176,7 @@ export const LotStockEntry: React.FC<{ lotId: string }> = ({ lotId }) => {
               Enregistrer
             </Button>
             <Button
+              type="button"
               size="sm"
               loading={saveMutation.isPending}
               onClick={() => saveMutation.mutate(buildPayload(true))}
