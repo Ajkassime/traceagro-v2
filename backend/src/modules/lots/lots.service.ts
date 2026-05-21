@@ -469,7 +469,7 @@ export class LotsService {
     const phase = await prisma.lotWorkflowPhase.findUnique({ where: { id: phaseId } });
     if (!phase) throw { statusCode: 404, message: 'Phase introuvable' };
     if (phase.isValidated) throw { statusCode: 403, message: 'Phase verrouillée — modification impossible' };
-    return prisma.lotTeamMember.create({ data: { phaseId, ...data } });
+    return (prisma.lotTeamMember.create as any)({ data: { phaseId, ...data } });
   }
 
   async updateTeamMember(memberId: string, data: UpdateTeamMemberInput) {

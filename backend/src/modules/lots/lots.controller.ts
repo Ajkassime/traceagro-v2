@@ -96,6 +96,73 @@ export class LotsController {
       return sendSuccess(res, stats);
     } catch (err: any) { return sendError(res, err.message, err.statusCode || 500); }
   }
+
+  // ─── RÉCEPTION ───────────────────────────────────────────────────────────────
+  async getReception(req: Request, res: Response) {
+    try {
+      const data = await lotsService.getReception(req.params.id);
+      return sendSuccess(res, data);
+    } catch (err: any) { return sendError(res, err.message, err.statusCode || 500); }
+  }
+
+  async upsertReception(req: Request, res: Response) {
+    try {
+      const data = await lotsService.upsertReception(req.params.id, req.body);
+      return sendSuccess(res, data);
+    } catch (err: any) { return sendError(res, err.message, err.statusCode || 500); }
+  }
+
+  // ─── WORKFLOW ─────────────────────────────────────────────────────────────────
+  async getWorkflow(req: Request, res: Response) {
+    try {
+      const data = await lotsService.getWorkflow(req.params.id);
+      return sendSuccess(res, data);
+    } catch (err: any) { return sendError(res, err.message, err.statusCode || 500); }
+  }
+
+  async upsertPhase(req: Request, res: Response) {
+    try {
+      const { id, vanillaType, phaseType, index } = req.params;
+      const data = await lotsService.upsertPhase(id, vanillaType, phaseType, parseInt(index), req.body);
+      return sendSuccess(res, data);
+    } catch (err: any) { return sendError(res, err.message, err.statusCode || 500); }
+  }
+
+  async addTeamMember(req: Request, res: Response) {
+    try {
+      const data = await lotsService.addTeamMember(req.params.phaseId, req.body);
+      return sendSuccess(res, data, 'Membre ajouté', 201);
+    } catch (err: any) { return sendError(res, err.message, err.statusCode || 500); }
+  }
+
+  async updateTeamMember(req: Request, res: Response) {
+    try {
+      const data = await lotsService.updateTeamMember(req.params.memberId, req.body);
+      return sendSuccess(res, data);
+    } catch (err: any) { return sendError(res, err.message, err.statusCode || 500); }
+  }
+
+  async deleteTeamMember(req: Request, res: Response) {
+    try {
+      await lotsService.deleteTeamMember(req.params.memberId);
+      return sendSuccess(res, null, 'Membre supprimé');
+    } catch (err: any) { return sendError(res, err.message, err.statusCode || 500); }
+  }
+
+  // ─── STOCK ENTRY ─────────────────────────────────────────────────────────────
+  async getStockEntry(req: Request, res: Response) {
+    try {
+      const data = await lotsService.getStockEntry(req.params.id);
+      return sendSuccess(res, data);
+    } catch (err: any) { return sendError(res, err.message, err.statusCode || 500); }
+  }
+
+  async upsertStockEntry(req: Request, res: Response) {
+    try {
+      const data = await lotsService.upsertStockEntry(req.params.id, req.body);
+      return sendSuccess(res, data);
+    } catch (err: any) { return sendError(res, err.message, err.statusCode || 500); }
+  }
 }
 
 export const lotsController = new LotsController();
