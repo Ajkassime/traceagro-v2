@@ -214,6 +214,9 @@ model Lot {
   photos             LotPhoto[]
   documents          Document[]
   lotEvents          LotEvent[]          // Historique complet
+  reception          LotReception?
+  workflowPhases     LotWorkflowPhase[]
+  stockEntry         LotStockEntry?
 
   @@map("lots")
 }
@@ -476,4 +479,92 @@ model ConditioningStep {
   order ConditioningOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
   @@map("conditioning_steps")
+}
+
+// ─── LOT RECEPTION ────────────────────────────────────────────────────────────
+model LotReception {
+  id           String    @id @default(uuid())
+  lotId        String    @unique @map("lot_id")
+  quantite     Float?
+  origine      String?
+  ristourne    Float?
+  poids        Float?
+  contrePesage Boolean   @default(false) @map("contre_pesage")
+  emplacement  String?
+  nbSousVide   Int?      @map("nb_sous_vide")
+  odeur        String?
+  etatFondu    Boolean?  @map("etat_fondu")
+  moisissure   Boolean?  @map("moisissure")
+  validatedAt  DateTime? @map("validated_at")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  lot Lot @relation(fields: [lotId], references: [id], onDelete: Cascade)
+
+  @@map("lot_receptions")
+}
+
+// ─── LOT WORKFLOW PHASE ───────────────────────────────────────────────────────
+model LotWorkflowPhase {
+  id              String   @id @default(uuid())
+  lotId           String   @map("lot_id")
+  vanillaType     String   @map("vanilla_type")
+  phaseType       String   @map("phase_type")
+  phaseIndex      Int      @default(1) @map("phase_index")
+  nomResponsable  String?  @map("nom_responsable")
+  poids           Float?
+  isValidated     Boolean  @default(false) @map("is_validated")
+  qualiteOk       Boolean? @map("qualite_ok")
+  isNouvelEmploye Boolean  @default(false) @map("is_nouvel_employe")
+  autres          String?
+  nbSachets       Int?     @map("nb_sachets")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  lot         Lot             @relation(fields: [lotId], references: [id], onDelete: Cascade)
+  teamMembers LotTeamMember[]
+
+  @@unique([lotId, vanillaType, phaseType, phaseIndex])
+  @@map("lot_workflow_phases")
+}
+
+// ─── LOT TEAM MEMBER ──────────────────────────────────────────────────────────
+model LotTeamMember {
+  id           String   @id @default(uuid())
+  phaseId      String   @map("phase_id")
+  nom          String
+  quotas       Float?
+  activite     String?
+  quantiteFini Float?   @map("quantite_fini")
+  observation  String?
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  phase LotWorkflowPhase @relation(fields: [phaseId], references: [id], onDelete: Cascade)
+
+  @@map("lot_team_members")
+}
+
+// ─── LOT STOCK ENTRY ──────────────────────────────────────────────────────────
+model LotStockEntry {
+  id               String    @id @default(uuid())
+  lotId            String    @unique @map("lot_id")
+  specification    String?
+  fondusPoids      Float?    @map("fondus_poids")
+  fondusNbSousVide Int?      @map("fondus_nb_sous_vide")
+  tk               Float?
+  moisi            Float?
+  cuts             Float?
+  poquee           Float?
+  noirGourmet      Float?    @map("noir_gourmet")
+  noirTk           Float?    @map("noir_tk")
+  rougeUs          Float?    @map("rouge_us")
+  rougeEurope      Float?    @map("rouge_europe")
+  validatedAt      DateTime? @map("validated_at")
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @updatedAt @map("updated_at")
+
+  lot Lot @relation(fields: [lotId], references: [id], onDelete: Cascade)
+
+  @@map("lot_stock_entries")
 }
