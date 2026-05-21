@@ -36,3 +36,64 @@ export const addStepSchema = z.object({
 export type CreateLotInput = z.infer<typeof createLotSchema>;
 export type UpdateLotInput = z.infer<typeof updateLotSchema>;
 export type AddStepInput = z.infer<typeof addStepSchema>;
+
+export const upsertReceptionSchema = z.object({
+  quantite:     z.number().positive().optional(),
+  origine:      z.string().optional(),
+  ristourne:    z.number().min(0).optional(),
+  poids:        z.number().positive().optional(),
+  contrePesage: z.boolean().optional(),
+  emplacement:  z.string().optional(),
+  nbSousVide:   z.number().int().min(0).optional(),
+  odeur:        z.string().optional(),
+  etatFondu:    z.boolean().optional(),
+  moisissure:   z.boolean().optional(),
+  validatedAt:  z.string().datetime().nullable().optional(),
+});
+
+export const upsertPhaseSchema = z.object({
+  nomResponsable:  z.string().optional(),
+  poids:           z.number().positive().optional(),
+  isValidated:     z.boolean().optional(),
+  qualiteOk:       z.boolean().nullable().optional(),
+  isNouvelEmploye: z.boolean().optional(),
+  autres:          z.string().optional(),
+  nbSachets:       z.number().int().min(0).optional(),
+});
+
+export const addTeamMemberSchema = z.object({
+  nom:          z.string().min(1, 'Nom requis'),
+  quotas:       z.number().min(0).optional(),
+  activite:     z.string().optional(),
+  quantiteFini: z.number().min(0).optional(),
+  observation:  z.string().optional(),
+});
+
+export const updateTeamMemberSchema = z.object({
+  nom:          z.string().min(1).optional(),
+  quotas:       z.number().min(0).optional(),
+  activite:     z.string().optional(),
+  quantiteFini: z.number().min(0).optional(),
+  observation:  z.string().optional(),
+});
+
+export const upsertStockEntrySchema = z.object({
+  specification:    z.string().optional(),
+  fondusPoids:      z.number().min(0).optional(),
+  fondusNbSousVide: z.number().int().min(0).optional(),
+  tk:               z.number().min(0).optional(),
+  moisi:            z.number().min(0).optional(),
+  cuts:             z.number().min(0).optional(),
+  poquee:           z.number().min(0).optional(),
+  noirGourmet:      z.number().min(0).optional(),
+  noirTk:           z.number().min(0).optional(),
+  rougeUs:          z.number().min(0).optional(),
+  rougeEurope:      z.number().min(0).optional(),
+  validatedAt:      z.string().datetime().nullable().optional(),
+});
+
+export type UpsertReceptionInput  = z.infer<typeof upsertReceptionSchema>;
+export type UpsertPhaseInput      = z.infer<typeof upsertPhaseSchema>;
+export type AddTeamMemberInput    = z.infer<typeof addTeamMemberSchema>;
+export type UpdateTeamMemberInput = z.infer<typeof updateTeamMemberSchema>;
+export type UpsertStockEntryInput = z.infer<typeof upsertStockEntrySchema>;
