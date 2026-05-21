@@ -465,29 +465,35 @@ export class LotsService {
   }
 
   // ─── ÉQUIPE ──────────────────────────────────────────────────────────────────
-  async addTeamMember(phaseId: string, data: AddTeamMemberInput) {
-    const phase = await prisma.lotWorkflowPhase.findUnique({ where: { id: phaseId } });
+  async addTeamMember(lotId: string, phaseId: string, data: AddTeamMemberInput) {
+    const phase = await prisma.lotWorkflowPhase.findUnique({
+      where: { id: phaseId },
+      select: { isValidated: true, lotId: true },
+    });
     if (!phase) throw { statusCode: 404, message: 'Phase introuvable' };
+    if (phase.lotId !== lotId) throw { statusCode: 403, message: 'Phase non associée à ce lot' };
     if (phase.isValidated) throw { statusCode: 403, message: 'Phase verrouillée — modification impossible' };
     return (prisma.lotTeamMember.create as any)({ data: { phaseId, ...data } });
   }
 
-  async updateTeamMember(memberId: string, data: UpdateTeamMemberInput) {
+  async updateTeamMember(lotId: string, memberId: string, data: UpdateTeamMemberInput) {
     const member = await prisma.lotTeamMember.findUnique({
       where:   { id: memberId },
-      include: { phase: { select: { isValidated: true } } },
+      include: { phase: { select: { isValidated: true, lotId: true } } },
     });
     if (!member) throw { statusCode: 404, message: 'Membre introuvable' };
+    if (member.phase.lotId !== lotId) throw { statusCode: 403, message: 'Phase non associée à ce lot' };
     if (member.phase.isValidated) throw { statusCode: 403, message: 'Phase verrouillée — modification impossible' };
     return prisma.lotTeamMember.update({ where: { id: memberId }, data });
   }
 
-  async deleteTeamMember(memberId: string) {
+  async deleteTeamMember(lotId: string, memberId: string) {
     const member = await prisma.lotTeamMember.findUnique({
       where:   { id: memberId },
-      include: { phase: { select: { isValidated: true } } },
+      include: { phase: { select: { isValidated: true, lotId: true } } },
     });
     if (!member) throw { statusCode: 404, message: 'Membre introuvable' };
+    if (member.phase.lotId !== lotId) throw { statusCode: 403, message: 'Phase non associée à ce lot' };
     if (member.phase.isValidated) throw { statusCode: 403, message: 'Phase verrouillée — modification impossible' };
     await prisma.lotTeamMember.delete({ where: { id: memberId } });
   }

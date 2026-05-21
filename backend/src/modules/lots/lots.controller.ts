@@ -123,28 +123,32 @@ export class LotsController {
   async upsertPhase(req: Request, res: Response) {
     try {
       const { id, vanillaType, phaseType, index } = req.params;
-      const data = await lotsService.upsertPhase(id, vanillaType, phaseType, parseInt(index), req.body);
+      const phaseIndex = parseInt(index, 10);
+      if (isNaN(phaseIndex) || phaseIndex < 1) {
+        return sendError(res, 'Index de phase invalide', 422);
+      }
+      const data = await lotsService.upsertPhase(id, vanillaType, phaseType, phaseIndex, req.body);
       return sendSuccess(res, data);
     } catch (err: any) { return sendError(res, err.message, err.statusCode || 500); }
   }
 
   async addTeamMember(req: Request, res: Response) {
     try {
-      const data = await lotsService.addTeamMember(req.params.phaseId, req.body);
+      const data = await lotsService.addTeamMember(req.params.id, req.params.phaseId, req.body);
       return sendSuccess(res, data, 'Membre ajouté', 201);
     } catch (err: any) { return sendError(res, err.message, err.statusCode || 500); }
   }
 
   async updateTeamMember(req: Request, res: Response) {
     try {
-      const data = await lotsService.updateTeamMember(req.params.memberId, req.body);
+      const data = await lotsService.updateTeamMember(req.params.id, req.params.memberId, req.body);
       return sendSuccess(res, data);
     } catch (err: any) { return sendError(res, err.message, err.statusCode || 500); }
   }
 
   async deleteTeamMember(req: Request, res: Response) {
     try {
-      await lotsService.deleteTeamMember(req.params.memberId);
+      await lotsService.deleteTeamMember(req.params.id, req.params.memberId);
       return sendSuccess(res, null, 'Membre supprimé');
     } catch (err: any) { return sendError(res, err.message, err.statusCode || 500); }
   }
