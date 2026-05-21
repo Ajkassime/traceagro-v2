@@ -25,6 +25,13 @@ interface ReceptionSectionProps {
   data?: ReceptionData | null;
 }
 
+const Field = ({ label, children }: { label: string; children: React.ReactNode }) => (
+  <div>
+    <label className="block text-xs font-medium text-gray-400 mb-1">{label}</label>
+    {children}
+  </div>
+);
+
 export const ReceptionSection: React.FC<ReceptionSectionProps> = ({ lotId, data }) => {
   const qc = useQueryClient();
   const [form, setForm] = useState({
@@ -50,21 +57,26 @@ export const ReceptionSection: React.FC<ReceptionSectionProps> = ({ lotId, data 
       contrePesage: data.contrePesage ?? false,
       emplacement:  data.emplacement  ?? '',
       nbSousVide:   data.nbSousVide   != null ? String(data.nbSousVide)   : '',
-      odeur:        data?.odeur        ?? '',
-      etatFondu:    data?.etatFondu    ?? false,
-      moisissure:   data?.moisissure   ?? false,
+      odeur:        data.odeur        ?? '',
+      etatFondu:    data.etatFondu    ?? false,
+      moisissure:   data.moisissure   ?? false,
     });
   }, [data]);
 
   const invalidate = () => qc.invalidateQueries({ queryKey: ['lot-reception', lotId] });
 
+  const [submittedValidation, setSubmittedValidation] = useState(false);
+  const isLocked = !!data?.validatedAt || submittedValidation;
+
   const saveMutation = useMutation({
     mutationFn: (payload: object) => api.put(`/lots/${lotId}/reception`, payload),
-    onSuccess: () => { invalidate(); toast.success('Réception enregistrée'); },
-    onError:   () => toast.error('Erreur lors de l\'enregistrement'),
+    onSuccess: (response) => {
+      if (response.data?.data?.validatedAt) setSubmittedValidation(true);
+      invalidate();
+      toast.success('Réception enregistrée');
+    },
+    onError: () => toast.error('Erreur lors de l\'enregistrement'),
   });
-
-  const isLocked = !!data?.validatedAt;
 
   const buildPayload = (validate = false) => ({
     quantite:     form.quantite     ? parseFloat(form.quantite)     : undefined,
@@ -73,19 +85,12 @@ export const ReceptionSection: React.FC<ReceptionSectionProps> = ({ lotId, data 
     poids:        form.poids        ? parseFloat(form.poids)        : undefined,
     contrePesage: form.contrePesage,
     emplacement:  form.emplacement  || undefined,
-    nbSousVide:   form.nbSousVide   ? parseInt(form.nbSousVide)     : undefined,
+    nbSousVide:   form.nbSousVide   ? parseInt(form.nbSousVide, 10) : undefined,
     odeur:        form.odeur        || undefined,
     etatFondu:    form.etatFondu,
     moisissure:   form.moisissure,
     ...(validate ? { validatedAt: new Date().toISOString() } : {}),
   });
-
-  const Field = ({ label, children }: { label: string; children: React.ReactNode }) => (
-    <div>
-      <label className="block text-xs font-medium text-gray-400 mb-1">{label}</label>
-      {children}
-    </div>
-  );
 
   return (
     <Card>

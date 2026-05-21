@@ -27,6 +27,7 @@ export const TeamTable: React.FC<TeamTableProps> = ({ lotId, phaseId, members, i
   const qc = useQueryClient();
   const [newRow, setNewRow] = useState(EMPTY_MEMBER);
   const [addingRow, setAddingRow] = useState(false);
+  const [pendingDeleteIds, setPendingDeleteIds] = useState<Set<string>>(new Set());
 
   const invalidate = () => qc.invalidateQueries({ queryKey: ['lot-workflow', lotId] });
 
@@ -44,8 +45,13 @@ export const TeamTable: React.FC<TeamTableProps> = ({ lotId, phaseId, members, i
   });
 
   const deleteMember = useMutation({
-    mutationFn: (memberId: string) =>
-      api.delete(`/lots/${lotId}/workflow/phases/${phaseId}/team/${memberId}`),
+    mutationFn: (memberId: string) => {
+      setPendingDeleteIds(s => new Set(s).add(memberId));
+      return api.delete(`/lots/${lotId}/workflow/phases/${phaseId}/team/${memberId}`);
+    },
+    onSettled: (_: any, __: any, memberId: string) => {
+      setPendingDeleteIds(s => { const n = new Set(s); n.delete(memberId); return n; });
+    },
     onSuccess: () => { invalidate(); toast.success('Membre supprimé'); },
     onError: () => toast.error('Erreur lors de la suppression'),
   });
@@ -59,8 +65,8 @@ export const TeamTable: React.FC<TeamTableProps> = ({ lotId, phaseId, members, i
         <table className="w-full text-sm">
           <thead>
             <tr style={{ background: 'rgba(255,255,255,0.04)' }}>
-              {['Nom', 'Quotas', 'Activité', 'Qté fini', 'Observation', ''].map(h => (
-                <th key={h} className="text-left px-3 py-2 text-xs font-medium" style={{ color: 'var(--color-navy-400)' }}>
+              {['Nom', 'Quotas', 'Activité', 'Qté fini', 'Observation', ''].map((h, i) => (
+                <th key={i} className="text-left px-3 py-2 text-xs font-medium" style={{ color: 'var(--color-navy-400)' }}>
                   {h}
                 </th>
               ))}
@@ -78,7 +84,7 @@ export const TeamTable: React.FC<TeamTableProps> = ({ lotId, phaseId, members, i
                   {!isLocked && (
                     <button
                       onClick={() => deleteMember.mutate(m.id)}
-                      disabled={deleteMember.isPending}
+                      disabled={pendingDeleteIds.has(m.id)}
                       className="text-red-400 hover:text-red-300 transition-colors"
                     >
                       <Trash2 size={14} />
@@ -100,7 +106,8 @@ export const TeamTable: React.FC<TeamTableProps> = ({ lotId, phaseId, members, i
                     />
                   </td>
                 ))}
-                <td className="px-2 py-1.5 flex gap-1">
+                <td className="px-2 py-1.5">
+                  <div className="flex gap-1">
                   <Button
                     size="sm"
                     loading={addMember.isPending}
@@ -111,6 +118,7 @@ export const TeamTable: React.FC<TeamTableProps> = ({ lotId, phaseId, members, i
                   <Button size="sm" variant="ghost" onClick={() => { setAddingRow(false); setNewRow(EMPTY_MEMBER); }}>
                     ✕
                   </Button>
+                  </div>
                 </td>
               </tr>
             )}
