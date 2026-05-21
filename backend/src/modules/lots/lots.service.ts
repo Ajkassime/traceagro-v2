@@ -3,6 +3,13 @@ import { prisma } from '../../utils/prisma';
 import { generateLotNumber } from '../../utils/lotNumber';
 import { generateQRCode } from '../../utils/qrcode';
 import { config } from '../../config';
+import type {
+  UpsertReceptionInput,
+  UpsertPhaseInput,
+  AddTeamMemberInput,
+  UpdateTeamMemberInput,
+  UpsertStockEntryInput,
+} from './lots.schema';
 
 const LOT_INCLUDE = {
   producer: { select: { id: true, name: true, region: true, country: true } },
@@ -405,6 +412,98 @@ export class LotsService {
     return (prisma.processingStep.create as any)({
       data: { ...data, lotId, stepOrder: count + 1, startedAt: new Date(data.startedAt) },
       include: { photos: true },
+    });
+  }
+
+  private async findLotOrThrow(id: string) {
+    const lot = await prisma.lot.findUnique({ where: { id }, select: { id: true } });
+    if (!lot) throw { statusCode: 404, message: 'Lot introuvable' };
+    return lot;
+  }
+
+  // ─── RÉCEPTION ───────────────────────────────────────────────────────────────
+  async getReception(lotId: string) {
+    await this.findLotOrThrow(lotId);
+    return prisma.lotReception.findUnique({ where: { lotId } });
+  }
+
+  async upsertReception(lotId: string, data: UpsertReceptionInput) {
+    await this.findLotOrThrow(lotId);
+    return prisma.lotReception.upsert({
+      where:  { lotId },
+      update: data,
+      create: { lotId, ...data },
+    });
+  }
+
+  // ─── WORKFLOW PHASES ─────────────────────────────────────────────────────────
+  async getWorkflow(lotId: string) {
+    await this.findLotOrThrow(lotId);
+    return prisma.lotWorkflowPhase.findMany({
+      where:   { lotId },
+      include: { teamMembers: { orderBy: { createdAt: 'asc' } } },
+      orderBy: [{ vanillaType: 'asc' }, { phaseType: 'asc' }, { phaseIndex: 'asc' }],
+    });
+  }
+
+  async upsertPhase(
+    lotId: string,
+    vanillaType: string,
+    phaseType: string,
+    phaseIndex: number,
+    data: UpsertPhaseInput,
+  ) {
+    await this.findLotOrThrow(lotId);
+    return prisma.lotWorkflowPhase.upsert({
+      where: {
+        lotId_vanillaType_phaseType_phaseIndex: { lotId, vanillaType, phaseType, phaseIndex },
+      },
+      update: data,
+      create: { lotId, vanillaType, phaseType, phaseIndex, ...data },
+      include: { teamMembers: { orderBy: { createdAt: 'asc' } } },
+    });
+  }
+
+  // ─── ÉQUIPE ──────────────────────────────────────────────────────────────────
+  async addTeamMember(phaseId: string, data: AddTeamMemberInput) {
+    const phase = await prisma.lotWorkflowPhase.findUnique({ where: { id: phaseId } });
+    if (!phase) throw { statusCode: 404, message: 'Phase introuvable' };
+    if (phase.isValidated) throw { statusCode: 403, message: 'Phase verrouillée — modification impossible' };
+    return prisma.lotTeamMember.create({ data: { phaseId, ...data } });
+  }
+
+  async updateTeamMember(memberId: string, data: UpdateTeamMemberInput) {
+    const member = await prisma.lotTeamMember.findUnique({
+      where:   { id: memberId },
+      include: { phase: { select: { isValidated: true } } },
+    });
+    if (!member) throw { statusCode: 404, message: 'Membre introuvable' };
+    if (member.phase.isValidated) throw { statusCode: 403, message: 'Phase verrouillée — modification impossible' };
+    return prisma.lotTeamMember.update({ where: { id: memberId }, data });
+  }
+
+  async deleteTeamMember(memberId: string) {
+    const member = await prisma.lotTeamMember.findUnique({
+      where:   { id: memberId },
+      include: { phase: { select: { isValidated: true } } },
+    });
+    if (!member) throw { statusCode: 404, message: 'Membre introuvable' };
+    if (member.phase.isValidated) throw { statusCode: 403, message: 'Phase verrouillée — modification impossible' };
+    await prisma.lotTeamMember.delete({ where: { id: memberId } });
+  }
+
+  // ─── ENTRÉE STOCK ────────────────────────────────────────────────────────────
+  async getStockEntry(lotId: string) {
+    await this.findLotOrThrow(lotId);
+    return prisma.lotStockEntry.findUnique({ where: { lotId } });
+  }
+
+  async upsertStockEntry(lotId: string, data: UpsertStockEntryInput) {
+    await this.findLotOrThrow(lotId);
+    return prisma.lotStockEntry.upsert({
+      where:  { lotId },
+      update: data,
+      create: { lotId, ...data },
     });
   }
 
