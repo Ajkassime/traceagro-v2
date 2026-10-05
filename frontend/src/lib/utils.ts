@@ -8,33 +8,40 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function formatDate(date: string | Date, fmt = 'dd MMM yyyy') {
+  if (!date) return '—';
   const d = typeof date === 'string' ? parseISO(date) : date;
   return format(d, fmt, { locale: fr });
 }
 
 export function formatRelative(date: string | Date) {
+  if (!date) return '—';
   const d = typeof date === 'string' ? parseISO(date) : date;
   return formatDistanceToNow(d, { addSuffix: true, locale: fr });
 }
 
 export function formatKg(value: number) {
-  return `${value.toLocaleString('fr-FR')} kg`;
+  return `${(value ?? 0).toLocaleString('fr-FR')} kg`;
 }
 
-export const LOT_STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
-  harvest:    { label: 'Récolte',       color: 'text-vanilla-500',  bg: 'bg-vanilla-500/10' },
-  processing: { label: 'Transformation', color: 'text-blue-400',    bg: 'bg-blue-400/10' },
-  processed:  { label: 'Transformé',    color: 'text-purple-400',   bg: 'bg-purple-400/10' },
-  transit:    { label: 'En transit',    color: 'text-orange-400',   bg: 'bg-orange-400/10' },
-  exported:   { label: 'Exporté',       color: 'text-forest-500',   bg: 'bg-forest-500/10' },
-  rejected:   { label: 'Rejeté',        color: 'text-red-400',      bg: 'bg-red-400/10' },
+// Charte « Terre & Registre » :
+// Vérifié: texte #435432, fond #E5ECD9
+// À contrôler: texte #795015, fond #F5E8CC
+// Erreur: texte #963C47, fond #F8E6E8
+// En cours: texte #352638, fond #EAE2EB
+export const LOT_STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; symbol: string }> = {
+  harvest:    { label: 'Récolte',        color: 'text-[#795015]', bg: 'bg-[#F5E8CC]', symbol: '●' },
+  processing: { label: 'Transformation', color: 'text-[#352638]', bg: 'bg-[#EAE2EB]', symbol: '◐' },
+  processed:  { label: 'Transformé',     color: 'text-[#352638]', bg: 'bg-[#EAE2EB]', symbol: '◑' },
+  transit:    { label: 'En transit',     color: 'text-[#795015]', bg: 'bg-[#F5E8CC]', symbol: '➔' },
+  exported:   { label: 'Exporté',        color: 'text-[#435432]', bg: 'bg-[#E5ECD9]', symbol: '✓' },
+  rejected:   { label: 'Rejeté',         color: 'text-[#963C47]', bg: 'bg-[#F8E6E8]', symbol: '✕' },
 };
 
-export const SHIPMENT_STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
-  preparing:  { label: 'En préparation', color: 'text-vanilla-500', bg: 'bg-vanilla-500/10' },
-  in_transit: { label: 'En transit',     color: 'text-blue-400',    bg: 'bg-blue-400/10' },
-  delivered:  { label: 'Livré',          color: 'text-forest-500',  bg: 'bg-forest-500/10' },
-  cancelled:  { label: 'Annulé',         color: 'text-red-400',     bg: 'bg-red-400/10' },
+export const SHIPMENT_STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; symbol: string }> = {
+  preparing:  { label: 'En préparation', color: 'text-[#795015]', bg: 'bg-[#F5E8CC]', symbol: '●' },
+  in_transit: { label: 'En transit',     color: 'text-[#352638]', bg: 'bg-[#EAE2EB]', symbol: '➔' },
+  delivered:  { label: 'Livré',          color: 'text-[#435432]', bg: 'bg-[#E5ECD9]', symbol: '✓' },
+  cancelled:  { label: 'Annulé',         color: 'text-[#963C47]', bg: 'bg-[#F8E6E8]', symbol: '✕' },
 };
 
 export const CERT_TYPE_CONFIG: Record<string, { label: string; emoji: string }> = {
@@ -56,9 +63,8 @@ export const DOC_TYPE_CONFIG: Record<string, { label: string; emoji: string }> =
 };
 
 export function getQualityColor(score?: number | null): string {
-  if (!score) return 'text-gray-400';
-  if (score >= 8) return 'text-forest-400';
-  if (score >= 6) return 'text-vanilla-400';
-  if (score >= 4) return 'text-orange-400';
-  return 'text-red-400';
+  if (!score) return 'text-[#70656B]';
+  if (score >= 8) return 'text-[#435432]';
+  if (score >= 6) return 'text-[#795015]';
+  return 'text-[#963C47]';
 }

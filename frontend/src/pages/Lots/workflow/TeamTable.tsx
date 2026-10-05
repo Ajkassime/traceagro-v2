@@ -58,15 +58,15 @@ export const TeamTable: React.FC<TeamTableProps> = ({ lotId, phaseId, members, i
 
   return (
     <div className="mt-4">
-      <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: 'var(--color-navy-400)' }}>
+      <p className="text-xs font-semibold uppercase tracking-wider mb-2 text-[#70656B]">
         Formulaire équipe
       </p>
-      <div className="rounded-lg overflow-hidden border" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
+      <div className="rounded-[8px] overflow-hidden border border-[#D8CEC4]">
         <table className="w-full text-sm">
           <thead>
-            <tr style={{ background: 'rgba(255,255,255,0.04)' }}>
+            <tr className="bg-[#F5F0E7] border-b border-[#D8CEC4]">
               {['Nom', 'Quotas', 'Activité', 'Qté fini', 'Observation', ''].map((h, i) => (
-                <th key={i} className="text-left px-3 py-2 text-xs font-medium" style={{ color: 'var(--color-navy-400)' }}>
+                <th key={i} className="text-left px-3 py-2 text-xs font-semibold text-[#70656B]">
                   {h}
                 </th>
               ))}
@@ -74,18 +74,18 @@ export const TeamTable: React.FC<TeamTableProps> = ({ lotId, phaseId, members, i
           </thead>
           <tbody>
             {members.map(m => (
-              <tr key={m.id} style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-                <td className="px-3 py-2 text-white">{m.nom}</td>
-                <td className="px-3 py-2 text-gray-300">{m.quotas ?? '—'}</td>
-                <td className="px-3 py-2 text-gray-300">{m.activite ?? '—'}</td>
-                <td className="px-3 py-2 text-gray-300">{m.quantiteFini ?? '—'}</td>
-                <td className="px-3 py-2 text-gray-400 max-w-xs truncate">{m.observation ?? '—'}</td>
+              <tr key={m.id} className="border-t border-[#D8CEC4] hover:bg-[#F5F0E7]">
+                <td className="px-3 py-2 text-[#352638] font-medium">{m.nom}</td>
+                <td className="px-3 py-2 text-[#70656B]">{m.quotas ?? '—'}</td>
+                <td className="px-3 py-2 text-[#70656B]">{m.activite ?? '—'}</td>
+                <td className="px-3 py-2 text-[#352638] font-medium tabular-nums">{m.quantiteFini ?? '—'}</td>
+                <td className="px-3 py-2 text-[#70656B] max-w-xs truncate">{m.observation ?? '—'}</td>
                 <td className="px-3 py-2">
                   {!isLocked && (
                     <button
                       onClick={() => deleteMember.mutate(m.id)}
                       disabled={pendingDeleteIds.has(m.id)}
-                      className="text-red-400 hover:text-red-300 transition-colors"
+                      className="text-[#963C47] hover:text-[#AD5138] transition-colors"
                     >
                       <Trash2 size={14} />
                     </button>

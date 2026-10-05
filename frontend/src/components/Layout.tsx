@@ -5,13 +5,13 @@ import { Toaster } from 'react-hot-toast';
 
 export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
-    <div className="flex h-screen overflow-hidden" style={{ background: 'var(--color-bg)' }}>
+    <div className="flex h-screen overflow-hidden bg-[#F5F0E7] text-[#352638]">
       {/* Sidebar — desktop only */}
-      <div className="hidden md:flex">
+      <div className="hidden md:flex flex-shrink-0">
         <Sidebar />
       </div>
 
-      <main className="flex-1 flex flex-col overflow-hidden">
+      <main className="flex-1 flex flex-col min-w-0 overflow-hidden bg-[#F5F0E7]">
         <div className="flex-1 overflow-y-auto pb-20 md:pb-0">
           {children}
         </div>
@@ -26,14 +26,16 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
         position="top-center"
         toastOptions={{
           style: {
-            background: '#202b40',
-            color: '#e7e9ef',
-            border: '1px solid rgba(201,146,58,0.2)',
-            fontSize: 13,
-            fontFamily: 'Poppins, sans-serif',
+            background: '#FFFCF6',
+            color: '#352638',
+            border: '1px solid #D8CEC4',
+            borderRadius: '6px',
+            fontSize: '14px',
+            fontFamily: 'Manrope, sans-serif',
+            boxShadow: '0 4px 16px rgba(53, 38, 56, 0.08)',
           },
-          success: { iconTheme: { primary: '#1e5c6e', secondary: '#fff' } },
-          error:   { iconTheme: { primary: '#ff5724', secondary: '#fff' } },
+          success: { iconTheme: { primary: '#435432', secondary: '#FFFCF6' } },
+          error:   { iconTheme: { primary: '#963C47', secondary: '#FFFCF6' } },
         }}
       />
     </div>

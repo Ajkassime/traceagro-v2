@@ -93,8 +93,8 @@ export const PhaseAccordion: React.FC<PhaseAccordionProps> = ({
   return (
     <div className="rounded-xl border transition-all duration-200"
       style={{
-        borderColor: isLocked ? 'rgba(74,222,128,0.3)' : 'rgba(255,255,255,0.08)',
-        background:  isLocked ? 'rgba(34,197,94,0.04)' : 'rgba(255,255,255,0.02)',
+        borderColor: isLocked ? '#435432' : '#D8CEC4',
+        background:  isLocked ? '#E5ECD9' : '#FFFCF6',
       }}
     >
       {/* Header */}
@@ -106,33 +106,32 @@ export const PhaseAccordion: React.FC<PhaseAccordionProps> = ({
       >
         <div className="flex items-center gap-3">
           {isLocked
-            ? <CheckCircle size={16} className="text-green-400 flex-shrink-0" />
-            : <Clock size={16} className="text-gray-500 flex-shrink-0" />
+            ? <CheckCircle size={16} className="text-[#435432] flex-shrink-0" />
+            : <Clock size={16} className="text-[#70656B] flex-shrink-0" />
           }
-          <span className="font-medium text-white text-sm">{label}</span>
+          <span className="font-semibold text-[#352638] text-sm">{label}</span>
           {effectiveQuota && (
-            <span className="text-xs px-2 py-0.5 rounded-full font-mono"
-              style={{ background: 'rgba(42,122,144,0.2)', color: '#2a7a90' }}>
+            <span className="text-xs px-2 py-0.5 rounded-full font-mono bg-[#EAE2EB] text-[#352638] border border-[#D8CEC4]">
               {effectiveQuota}
             </span>
           )}
           {isLocked && (
-            <span className="text-xs flex items-center gap-1 text-gray-500">
+            <span className="text-xs flex items-center gap-1 text-[#435432] font-semibold">
               <Lock size={11} /> Verrouillé
             </span>
           )}
         </div>
-        {open ? <ChevronUp size={16} className="text-gray-500" /> : <ChevronDown size={16} className="text-gray-500" />}
+        {open ? <ChevronUp size={16} className="text-[#70656B]" /> : <ChevronDown size={16} className="text-[#70656B]" />}
       </button>
 
       {/* Body */}
       {open && (
-        <div className="px-4 pb-4 border-t" style={{ borderColor: 'rgba(255,255,255,0.06)' }}>
+        <div className="px-4 pb-4 border-t border-[#D8CEC4]">
           <div className="pt-4 space-y-3">
 
             {phaseType !== 'detecteur_metaux' && (
               <div>
-                <label className="block text-xs font-medium text-gray-400 mb-1">Nom responsable</label>
+                <label className="block text-xs font-semibold text-[#352638] mb-1">Nom responsable</label>
                 <input
                   className="input"
                   value={form.nomResponsable}
@@ -145,7 +144,7 @@ export const PhaseAccordion: React.FC<PhaseAccordionProps> = ({
 
             {phaseType !== 'detecteur_metaux' && (
               <div>
-                <label className="block text-xs font-medium text-gray-400 mb-1">Poids (kg)</label>
+                <label className="block text-xs font-semibold text-[#352638] mb-1">Poids (kg)</label>
                 <input
                   type="number"
                   step="0.1"
@@ -160,7 +159,7 @@ export const PhaseAccordion: React.FC<PhaseAccordionProps> = ({
 
             {phaseType === 'detecteur_metaux' && (
               <div>
-                <label className="block text-xs font-medium text-gray-400 mb-1">Autres</label>
+                <label className="block text-xs font-semibold text-[#352638] mb-1">Autres</label>
                 <input
                   className="input"
                   value={form.autres}
@@ -173,7 +172,7 @@ export const PhaseAccordion: React.FC<PhaseAccordionProps> = ({
 
             {phaseType === 'sous_vide' && (
               <div>
-                <label className="block text-xs font-medium text-gray-400 mb-1">Nombre de sachets</label>
+                <label className="block text-xs font-semibold text-[#352638] mb-1">Nombre de sachets</label>
                 <input
                   type="number"
                   className="input"
@@ -193,8 +192,8 @@ export const PhaseAccordion: React.FC<PhaseAccordionProps> = ({
                   onChange={e => setForm(f => ({ ...f, isNouvelEmploye: e.target.checked }))}
                   className="rounded"
                 />
-                <span className="text-sm text-gray-300">Nouvel employé</span>
-                <span className="text-xs text-gray-500">(quota : 15 kg/jour/pers)</span>
+                <span className="text-sm font-semibold text-[#352638]">Nouvel employé</span>
+                <span className="text-xs text-[#70656B]">(quota : 15 kg/jour/pers)</span>
               </label>
             )}
 
@@ -207,7 +206,7 @@ export const PhaseAccordion: React.FC<PhaseAccordionProps> = ({
                   disabled={isLocked}
                   className="rounded"
                 />
-                <span className="text-sm text-gray-300">Équipe Qualité ✓</span>
+                <span className="text-sm font-semibold text-[#352638]">Équipe Qualité ✓</span>
               </label>
             )}
 

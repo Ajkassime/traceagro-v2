@@ -41,11 +41,11 @@ export const IntelligencePage: React.FC = () => {
             ) : (
               <div className="space-y-2">
                 {(anomalies ?? []).map((a: any, i: number) => (
-                  <div key={i} className={`rounded-lg p-3 border flex gap-3 ${a.severity === 'critical' ? 'border-red-500/30 bg-red-500/5' : 'border-vanilla-500/30 bg-vanilla-500/5'}`}>
-                    <AlertTriangle size={16} className={a.severity === 'critical' ? 'text-red-400 mt-0.5' : 'text-vanilla-400 mt-0.5'} />
+                  <div key={i} className={`rounded-[6px] p-3.5 border flex gap-3 ${a.severity === 'critical' ? 'border-[#963C47]/30 bg-[#F8E6E8]' : 'border-[#795015]/30 bg-[#F5E8CC]'}`}>
+                    <AlertTriangle size={16} className={a.severity === 'critical' ? 'text-[#963C47] mt-0.5' : 'text-[#795015] mt-0.5'} />
                     <div>
-                      <p className="text-sm text-white">{a.description}</p>
-                      {a.lotNumber && <p className="text-xs text-gray-500 mt-0.5 font-mono">{a.lotNumber}</p>}
+                      <p className="text-sm font-semibold text-[#352638]">{a.description}</p>
+                      {a.lotNumber && <p className="text-xs text-[#70656B] mt-0.5 font-mono">{a.lotNumber}</p>}
                     </div>
                   </div>
                 ))}
@@ -55,7 +55,7 @@ export const IntelligencePage: React.FC = () => {
 
           {/* Trend chart */}
           <Card>
-            <CardHeader title="📈 Tendances sur 6 mois" />
+            <CardHeader title="Tendances sur 6 mois" subtitle="Évolution des volumes et qualités" />
             {trendsLoading ? <PageLoader /> : <TrendLineChart data={trends ?? []} />}
           </Card>
         </div>
@@ -64,20 +64,20 @@ export const IntelligencePage: React.FC = () => {
         <div className="space-y-4">
           {/* Producer ranking */}
           <Card>
-            <CardHeader title="🏆 Classement Producteurs" subtitle="Score IA composite" />
-            <div className="space-y-2">
+            <CardHeader title="Classement des Producteurs" subtitle="Score de régularité et qualité" />
+            <div className="space-y-2.5">
               {(ranking ?? []).slice(0, 8).map((p: any, i: number) => (
-                <div key={p.id} className="flex items-center gap-3 py-1">
-                  <span className={`text-sm font-bold w-5 text-center ${i === 0 ? 'text-vanilla-400' : i === 1 ? 'text-gray-300' : i === 2 ? 'text-orange-600' : 'text-gray-600'}`}>
+                <div key={p.id} className="flex items-center gap-3 py-1.5 border-b border-[#D8CEC4]/50 last:border-0">
+                  <span className={`text-sm font-serif font-bold w-5 text-center ${i === 0 ? 'text-[#AD5138]' : 'text-[#70656B]'}`}>
                     {i + 1}
                   </span>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm text-white truncate">{p.name}</p>
-                    <p className="text-xs text-gray-600">{p.region} · {p.totalLots} lots</p>
+                    <p className="text-sm font-semibold text-[#352638] truncate">{p.name}</p>
+                    <p className="text-xs text-[#70656B]">{p.region} · {p.totalLots} lots</p>
                   </div>
                   <div className="text-right">
-                    <p className={`text-sm font-bold ${p.score >= 8 ? 'text-forest-400' : p.score >= 6 ? 'text-vanilla-400' : 'text-orange-400'}`}>{p.score}</p>
-                    <p className="text-xs text-gray-600">/10</p>
+                    <p className={`text-sm font-mono font-bold ${p.score >= 8 ? 'text-[#435432]' : p.score >= 6 ? 'text-[#795015]' : 'text-[#963C47]'}`}>{p.score}</p>
+                    <p className="text-[10px] text-[#70656B]">/10</p>
                   </div>
                 </div>
               ))}

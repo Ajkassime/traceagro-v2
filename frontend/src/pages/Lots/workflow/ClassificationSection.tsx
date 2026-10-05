@@ -76,15 +76,14 @@ export const ClassificationSection: React.FC<ClassificationSectionProps> = ({ lo
                 key={key}
                 type="button"
                 onClick={() => setSelectedType(key)}
-                className={`p-4 rounded-xl border text-left transition-all ${
+                className={`p-4 rounded-[8px] border text-left transition-all ${
                   selectedType === key
-                    ? 'border-teal-400 bg-teal-400/10'
-                    : 'border-white/10 hover:border-white/20'
+                    ? 'border-[#352638] bg-[#EAE2EB]'
+                    : 'border-[#D8CEC4] bg-[#FFFCF6] hover:border-[#AD5138]'
                 }`}
-                style={{ background: selectedType === key ? undefined : 'rgba(255,255,255,0.02)' }}
               >
-                <p className="font-medium text-sm text-white">{label}</p>
-                <p className="text-xs text-gray-400 mt-1">{desc}</p>
+                <p className="font-semibold text-sm text-[#352638]">{label}</p>
+                <p className="text-xs text-[#70656B] mt-1">{desc}</p>
               </button>
             ))}
           </div>
@@ -93,23 +92,22 @@ export const ClassificationSection: React.FC<ClassificationSectionProps> = ({ lo
 
       {existingType && (
         <div className="mb-4 flex items-center gap-2">
-          <span className="text-xs px-2.5 py-1 rounded-full font-medium"
-            style={{ background: 'rgba(42,122,144,0.2)', color: '#2a7a90' }}>
+          <span className="text-xs px-2.5 py-1 rounded-full font-semibold bg-[#EAE2EB] text-[#352638] border border-[#D8CEC4]">
             {existingType === 'non_conditionne' ? 'Non conditionné' : 'Conditionné'}
           </span>
-          <span className="text-xs text-gray-500">Type verrouillé (phases en cours)</span>
+          <span className="text-xs text-[#70656B]">Type verrouillé (phases en cours)</span>
         </div>
       )}
 
       {/* Progress bar */}
       {selectedType && (
         <div className="mb-4">
-          <div className="h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.06)' }}>
+          <div className="h-1.5 rounded-full overflow-hidden bg-[#EAE2EB]">
             <div
               className="h-full rounded-full transition-all duration-500"
               style={{
                 width: `${(validatedCount / PHASE_SEQUENCE.length) * 100}%`,
-                background: 'linear-gradient(90deg, #1e5c6e, #2a7a90)',
+                background: validatedCount === PHASE_SEQUENCE.length ? '#435432' : '#352638',
               }}
             />
           </div>

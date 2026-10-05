@@ -56,23 +56,23 @@ export const ProducersList: React.FC = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
             {producers.map((p: any) => (
-              <Card key={p.id} hover onClick={() => navigate(`/producers/${p.id}`)} className="cursor-pointer">
+              <Card key={p.id} hover onClick={() => navigate(`/producers/${p.id}`)} className="cursor-pointer border border-[#D8CEC4] hover:border-[#AD5138]">
                 <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-forest-600/20 flex items-center justify-center text-forest-400 flex-shrink-0">
+                  <div className="w-10 h-10 rounded-[6px] bg-[#EAE2EB] flex items-center justify-center text-[#352638] flex-shrink-0">
                     <Users size={18} />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-medium text-white truncate">{p.name}</p>
-                    <div className="flex items-center gap-1 text-xs text-gray-500 mt-0.5">
-                      <MapPin size={11} />
+                    <p className="font-semibold text-[#352638] truncate">{p.name}</p>
+                    <div className="flex items-center gap-1 text-xs text-[#70656B] mt-0.5">
+                      <MapPin size={12} className="text-[#AD5138]" />
                       <span>{p.region}, {p.country}</span>
                     </div>
                   </div>
                 </div>
-                <div className="mt-3 flex items-center justify-between text-xs">
-                  <span className="text-gray-500">{p._count?.lots ?? 0} lots</span>
-                  {p.areaHectares && <span className="text-gray-500">{p.areaHectares} ha</span>}
-                  <div className="flex gap-1">
+                <div className="mt-4 pt-3 border-t border-[#D8CEC4]/60 flex items-center justify-between text-xs font-medium">
+                  <span className="text-[#70656B]">{p._count?.lots ?? 0} lots documentés</span>
+                  {p.areaHectares && <span className="text-[#352638]">{p.areaHectares} ha</span>}
+                  <div className="flex gap-1.5 bg-[#F5F0E7] px-2 py-0.5 rounded-[4px]">
                     {(p.certifications ?? []).map((c: any) => (
                       <span key={c.id} title={CERT_TYPE_CONFIG[c.type]?.label}>{CERT_TYPE_CONFIG[c.type]?.emoji ?? '📋'}</span>
                     ))}

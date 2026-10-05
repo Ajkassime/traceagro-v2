@@ -49,15 +49,15 @@ export const SettingsPage: React.FC = () => {
 
         {/* Profil */}
         <Card>
-          <CardHeader title="Mon profil" />
+          <CardHeader title="Mon profil" subtitle="Informations de compte" />
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-forest-600 flex items-center justify-center text-white font-bold text-lg">
-              {user?.firstName?.[0]}{user?.lastName?.[0]}
+            <div className="w-12 h-12 rounded-[6px] bg-[#352638] flex items-center justify-center text-[#FFFCF6] font-serif font-bold text-lg shadow-xs">
+              {user?.firstName?.[0] || 'A'}{user?.lastName?.[0] || 'P'}
             </div>
             <div>
-              <p className="font-medium text-white">{user?.firstName} {user?.lastName}</p>
-              <p className="text-sm text-gray-500">{user?.email}</p>
-              <span className="badge bg-forest-500/10 text-forest-400 mt-1">{user?.role}</span>
+              <p className="font-serif font-medium text-[#352638] text-base">{user?.firstName} {user?.lastName}</p>
+              <p className="text-xs text-[#70656B]">{user?.email}</p>
+              <span className="badge bg-[#EAE2EB] text-[#352638] border border-[#352638]/20 mt-1 capitalize">{user?.role?.replace('_', ' ')}</span>
             </div>
           </div>
         </Card>
@@ -72,12 +72,12 @@ export const SettingsPage: React.FC = () => {
           {isLoading ? <PageLoader /> : (
             <div className="space-y-2">
               {(products ?? []).map((p: any) => (
-                <div key={p.id} className="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-white/5 transition-colors">
+                <div key={p.id} className="flex items-center justify-between py-2.5 px-3 rounded-[6px] hover:bg-[#F5F0E7] transition-colors border border-transparent hover:border-[#D8CEC4]">
                   <div className="flex items-center gap-3">
-                    <Package size={16} className="text-gray-500" />
+                    <Package size={16} className="text-[#AD5138]" />
                     <div>
-                      <p className="text-sm font-medium text-white">{p.name}</p>
-                      <p className="text-xs text-gray-600">{p.category} · {p.unit} · {p._count?.lots ?? 0} lots</p>
+                      <p className="text-sm font-semibold text-[#352638]">{p.name}</p>
+                      <p className="text-xs text-[#70656B]">{p.category} · {p.unit} · {p._count?.lots ?? 0} lots documentés</p>
                     </div>
                   </div>
                   {user?.role === 'admin' && (

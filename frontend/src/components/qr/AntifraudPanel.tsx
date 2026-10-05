@@ -184,7 +184,7 @@ export const AntifraudPanel: React.FC<{ lotId: string }> = ({ lotId }) => {
     </div>
   );
 
-  const cfg = RISK_CONFIG[report.risk];
+  const cfg = RISK_CONFIG[report.risk as RiskLevel] || RISK_CONFIG.low;
   const deviceIcon = (d: string) => {
     if (/iPhone|Android Mobile/i.test(d)) return '📱';
     if (/iPad|Tablet/i.test(d))           return '📲';
@@ -227,7 +227,7 @@ export const AntifraudPanel: React.FC<{ lotId: string }> = ({ lotId }) => {
                 {report.alerts.length} alerte(s) détectée(s)
               </p>
               <ul className="mt-2 space-y-1">
-                {report.alerts.map((a, i) => (
+                {report.alerts.map((a: string, i: number) => (
                   <li key={i} className="text-xs text-gray-400 flex items-start gap-2">
                     <span className={`mt-0.5 flex-shrink-0 ${cfg.color}`}>⚠</span>
                     {a}
@@ -280,7 +280,7 @@ export const AntifraudPanel: React.FC<{ lotId: string }> = ({ lotId }) => {
             <p className="text-xs text-gray-500 text-center py-4">Aucun scan dans la dernière heure</p>
           ) : (
             <div className="space-y-2 mt-3">
-              {report.activeIps.map((ip, i) => (
+              {report.activeIps.map((ip: any, i: number) => (
                 <div key={i} className={`flex items-center justify-between p-2.5 rounded-lg ${ip.suspicious ? 'bg-red-500/10 border border-red-500/20' : 'bg-white/[0.03]'}`}>
                   <div className="flex items-center gap-2">
                     {ip.suspicious
@@ -309,7 +309,7 @@ export const AntifraudPanel: React.FC<{ lotId: string }> = ({ lotId }) => {
             <p className="text-xs text-gray-500 text-center py-4">Aucun scan dans les 24 dernières heures</p>
           ) : (
             <div className="space-y-2 mt-3">
-              {report.recentCountries.map((c, i) => {
+              {report.recentCountries.map((c: any, i: number) => {
                 const total24 = report.stats.last24h || 1;
                 const pct = Math.round((c.count / total24) * 100);
                 const COLORS = ['#22c55e', '#3b82f6', '#f59e0b', '#8b5cf6', '#ef4444'];
@@ -354,7 +354,7 @@ export const AntifraudPanel: React.FC<{ lotId: string }> = ({ lotId }) => {
           </div>
         ) : (
           <div className="mt-3 space-y-0 divide-y divide-white/[0.04]">
-            {report.recentScans.map((s, i) => (
+            {report.recentScans.map((s: any, i: number) => (
               <div key={s.id} className={`flex items-center gap-3 py-2.5 ${s.isSuspicious ? 'bg-red-500/5' : ''}`}>
                 <span className="text-base">{deviceIcon(s.device || '')}</span>
                 <div className="flex-1 min-w-0">

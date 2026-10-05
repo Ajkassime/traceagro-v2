@@ -85,31 +85,31 @@ export default function Clients() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {clients.map((client: any) => (
-              <Card key={client.id} className="p-4 hover:border-white/20 transition-all">
+              <Card key={client.id} className="p-5 border border-[#D8CEC4] hover:border-[#AD5138] transition-all">
                 <div className="flex items-start justify-between mb-3">
-                  <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
-                    style={{ background: 'rgba(30,92,110,0.15)', border: '1px solid rgba(30,92,110,0.3)' }}>
-                    <Building2 size={18} style={{ color: '#2a7a90' }} />
+                  <div className="w-10 h-10 rounded-[6px] bg-[#EAE2EB] flex items-center justify-center flex-shrink-0 text-[#352638]">
+                    <Building2 size={18} />
                   </div>
                   <button
                     onClick={() => handleDelete(client.id, client.name)}
                     disabled={deleting === client.id}
-                    className="text-red-500/40 hover:text-red-400 transition-colors p-1"
+                    className="text-[#70656B] hover:text-[#963C47] hover:bg-[#F8E6E8] p-1.5 rounded-[4px] transition-colors"
+                    title="Supprimer"
                   >
-                    <Trash2 size={14} />
+                    <Trash2 size={15} />
                   </button>
                 </div>
 
-                <p className="font-semibold text-white text-sm mb-1 truncate">{client.name}</p>
+                <p className="font-semibold text-[#352638] text-sm mb-1 truncate">{client.name}</p>
 
-                <div className="flex items-center gap-1 text-xs text-gray-500 mb-3">
-                  <Globe size={11} />
+                <div className="flex items-center gap-1.5 text-xs text-[#70656B] mb-3">
+                  <Globe size={13} className="text-[#AD5138]" />
                   <span>{client.country}</span>
                 </div>
 
-                <div className="pt-3 border-t border-white/[0.06]">
-                  <p className="text-xs text-gray-500">
-                    <span className="font-semibold text-gray-300">{client._count?.purchaseOrders ?? 0}</span> bon(s) de commande
+                <div className="pt-3 border-t border-[#D8CEC4]/60">
+                  <p className="text-xs text-[#70656B]">
+                    <span className="font-semibold text-[#352638]">{client._count?.purchaseOrders ?? 0}</span> bon(s) de commande associés
                   </p>
                 </div>
               </Card>

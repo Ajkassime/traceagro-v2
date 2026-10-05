@@ -1,190 +1,311 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    /* ── APL Brand Colors ── */
-    --apl-teal:        #1e5c6e;
-    --apl-teal-light:  #2a7a90;
-    --apl-teal-dark:   #154552;
-    --apl-gold:        #c9923a;
-    --apl-gold-light:  #e0aa55;
-    --apl-gold-dark:   #a87530;
+    /* ── Charte « Terre & Registre » ── */
+    --color-bg:              #F5F0E7; /* Ivoire de fibre (fond général) */
+    --color-surface:         #FFFCF6; /* Papier (cartes, formulaires, menus) */
+    --color-card:            #FFFCF6;
+    --color-sidebar:         #FFFCF6;
+    --color-primary:         #352638; /* Encre aubergine */
+    --color-primary-hover:   #4A354D;
+    --color-secondary:       #AD5138; /* Argile rouge */
+    --color-accent:          #D8DF72; /* Citron confit */
+    --color-text:            #352638; /* Texte principal */
+    --color-muted:           #70656B; /* Prune grisée (texte secondaire) */
+    --color-border:          #D8CEC4; /* Lin (séparateurs, contours de cartes) */
+    --color-input-border:    #96878E; /* Prune minérale (contour de champs) */
+    --color-tint:            #EAE2EB; /* Fond teinté encre doux */
 
-    /* ── Lineone Navy palette ── */
-    --color-navy-50:   #e7e9ef;
-    --color-navy-100:  #c2c9d6;
-    --color-navy-200:  #a3adc2;
-    --color-navy-300:  #697a9b;
-    --color-navy-400:  #5c6b8a;
-    --color-navy-450:  #465675;
-    --color-navy-500:  #384766;
-    --color-navy-600:  #313e59;
-    --color-navy-700:  #26334d;
-    --color-navy-750:  #222e45;
-    --color-navy-800:  #202b40;
-    --color-navy-900:  #192132;
+    /* États fonctionnels */
+    --status-verified-text:  #435432;
+    --status-verified-bg:    #E5ECD9;
+    --status-warning-text:   #795015;
+    --status-warning-bg:     #F5E8CC;
+    --status-error-text:     #963C47;
+    --status-error-bg:       #F8E6E8;
+    --status-progress-text:  #352638;
+    --status-progress-bg:    #EAE2EB;
 
-    /* ── App tokens ── */
-    --color-bg:      #192132;
-    --color-card:    #202b40;
-    --color-sidebar: #192132;
-    --color-border:  rgba(255, 255, 255, 0.07);
-    --color-primary: #1e5c6e;
-    --color-accent:  #c9923a;
-    --color-success: #10b981;
-    --color-warning: #ff9800;
-    --color-error:   #ff5724;
-    --color-info:    #0ea5e9;
-
-    /* ── Legacy ── */
-    --green:         #1e5c6e;
-    --ink:           #e7e9ef;
-    --mist:          #8b949e;
-    --slate:         #94a3b8;
-    --pale:          rgba(30, 92, 110, 0.12);
-    --cream:         rgba(255, 255, 255, 0.03);
-    --border:        rgba(255, 255, 255, 0.07);
-    --font-display:  'Poppins', sans-serif;
+    /* Police */
+    --font-serif: 'Fraunces', Georgia, serif;
+    --font-sans:  'Manrope', system-ui, -apple-system, sans-serif;
   }
 
-  .light {
-    --color-bg:      #f0f4f8;
-    --color-card:    #ffffff;
-    --color-sidebar: #ffffff;
-    --color-border:  rgba(0, 0, 0, 0.07);
-    --color-primary: #1e5c6e;
-    --color-accent:  #c9923a;
+  /* Thème clair fixe et strict : neutralise tout basculement sombre */
+  * {
+    box-sizing: border-box;
   }
 
-  * { box-sizing: border-box; }
-  html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    color-scheme: light !important;
+    background-color: var(--color-bg);
+  }
 
   body {
-    font-family: 'Poppins', 'Inter', ui-sans-serif, system-ui, sans-serif;
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 24px;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     background-color: var(--color-bg);
-    color: var(--color-navy-100);
+    color: var(--color-text);
     overflow-x: hidden;
   }
-  .light body, .light { color: #1a2332; }
 
-  ::-webkit-scrollbar { width: 4px; height: 4px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: rgba(201,146,58,0.25); border-radius: 3px; }
-  ::-webkit-scrollbar-thumb:hover { background: rgba(201,146,58,0.45); }
+  /* Titres avec Fraunces 500 */
+  h1, h2, h3, .font-serif, .font-display {
+    font-family: var(--font-serif);
+    font-weight: 500;
+  }
 
-  button, a, [role="button"] { -webkit-tap-highlight-color: transparent; }
+  /* Tableaux : 14px, chiffres tabulaires */
+  table {
+    font-size: 14px;
+    line-height: 22px;
+    font-feature-settings: 'tnum' 1;
+  }
+
+  /* Focus visible conforme WCAG AA : anneau argile 3px décalé de 3px */
+  :focus-visible {
+    outline: 3px solid #AD5138 !important;
+    outline-offset: 3px !important;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #D8CEC4;
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #96878E;
+  }
+
+  button, a, [role="button"] {
+    -webkit-tap-highlight-color: transparent;
+  }
 }
 
 @layer components {
+  /* Cartes : rayon 8px, contour lin 1px, marge intérieure 24px, fond papier */
   .card {
-    @apply rounded-xl border;
-    background: var(--color-card);
-    border-color: var(--color-border);
-    box-shadow: 0 2px 12px rgba(0,0,0,0.18);
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: 24px;
+    box-shadow: 0 1px 3px rgba(53, 38, 56, 0.04);
   }
+
   .card-hover {
-    @apply card transition-all duration-200;
+    @apply card transition-all duration-150;
   }
   .card-hover:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 28px rgba(0,0,0,0.28);
-    border-color: rgba(201, 146, 58, 0.2);
-  }
-  @media (hover: none) {
-    .card-hover:hover { transform: none; }
-    .card-hover:active { transform: scale(0.98); }
+    border-color: #AD5138;
+    box-shadow: 0 4px 12px rgba(53, 38, 56, 0.07);
   }
 
+  /* Bouton Principal : fond aubergine, texte papier, rayon 6px, hauteur 44px min */
   .btn-primary {
-    @apply inline-flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm transition-all duration-150 text-white;
-    background: linear-gradient(135deg, var(--apl-teal) 0%, var(--apl-teal-light) 100%);
-    min-height: 40px;
-    box-shadow: 0 2px 8px rgba(30,92,110,0.35);
+    @apply inline-flex items-center justify-center gap-2 font-semibold text-sm transition-all duration-150;
+    font-family: var(--font-sans);
+    font-weight: 600;
+    background-color: var(--color-primary);
+    color: var(--color-surface);
+    min-height: 44px;
+    padding-left: 18px;
+    padding-right: 18px;
+    border-radius: 6px;
+    border: 1px solid transparent;
   }
-  .btn-primary:hover { opacity: 0.92; transform: translateY(-1px); }
-  .btn-primary:active { transform: scale(0.97); }
+  .btn-primary:hover:not(:disabled) {
+    background-color: var(--color-primary-hover);
+  }
+  .btn-primary:active:not(:disabled) {
+    transform: translateY(1px);
+  }
+  .btn-primary:disabled {
+    background-color: var(--color-border);
+    color: var(--color-muted);
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
 
+  /* Bouton Secondaire : fond transparent, contour et texte aubergine */
   .btn-secondary {
-    @apply inline-flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm transition-all duration-150 border;
+    @apply inline-flex items-center justify-center gap-2 font-semibold text-sm transition-all duration-150;
+    font-family: var(--font-sans);
+    font-weight: 600;
+    background-color: transparent;
+    border: 1px solid var(--color-primary);
+    color: var(--color-primary);
+    min-height: 44px;
+    padding-left: 18px;
+    padding-right: 18px;
+    border-radius: 6px;
+  }
+  .btn-secondary:hover:not(:disabled) {
+    background-color: var(--color-tint);
+  }
+  .btn-secondary:active:not(:disabled) {
+    transform: translateY(1px);
+  }
+  .btn-secondary:disabled {
     border-color: var(--color-border);
-    color: var(--color-navy-200);
-    min-height: 40px;
+    color: var(--color-muted);
+    cursor: not-allowed;
   }
-  .btn-secondary:hover { background: rgba(255,255,255,0.05); }
 
+  /* Bouton Discret : texte aubergine, sans contour */
   .btn-ghost {
-    @apply inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-all duration-150;
-    color: var(--color-navy-300);
-    min-height: 36px;
+    @apply inline-flex items-center justify-center gap-2 font-semibold text-sm transition-all duration-150;
+    font-family: var(--font-sans);
+    font-weight: 600;
+    background-color: transparent;
+    color: var(--color-primary);
+    min-height: 44px;
+    padding-left: 14px;
+    padding-right: 14px;
+    border-radius: 6px;
   }
-  .btn-ghost:hover { color: #fff; background: rgba(255,255,255,0.06); }
+  .btn-ghost:hover:not(:disabled) {
+    background-color: var(--color-tint);
+  }
+  .btn-ghost:active:not(:disabled) {
+    transform: translateY(1px);
+  }
 
+  /* Bouton Destructif : fond #963C47, texte papier */
+  .btn-danger {
+    @apply inline-flex items-center justify-center gap-2 font-semibold text-sm transition-all duration-150;
+    font-family: var(--font-sans);
+    font-weight: 600;
+    background-color: #963C47;
+    color: var(--color-surface);
+    min-height: 44px;
+    padding-left: 18px;
+    padding-right: 18px;
+    border-radius: 6px;
+  }
+  .btn-danger:hover:not(:disabled) {
+    background-color: #7C2D38;
+  }
+  .btn-danger:active:not(:disabled) {
+    transform: translateY(1px);
+  }
+
+  /* Champs : contour #96878E, 16px de texte, hauteur 44px min */
   .input {
-    @apply w-full px-3 py-2.5 rounded-lg text-sm outline-none transition-all;
-    background: rgba(255,255,255,0.04);
-    border: 1px solid var(--color-border);
-    color: var(--color-navy-100);
-    font-size: 16px;
+    @apply w-full px-3 py-2.5 rounded text-base outline-none transition-all;
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-input-border);
+    color: var(--color-text);
+    min-height: 44px;
+    border-radius: 6px;
   }
-  @media (min-width: 640px) { .input { font-size: 0.875rem; } }
-  .input::placeholder { color: var(--color-navy-400); }
+  .input::placeholder {
+    color: var(--color-muted);
+  }
   .input:focus {
-    border-color: var(--apl-teal-light);
-    box-shadow: 0 0 0 3px rgba(30,92,110,0.2);
-    outline: none;
+    border-color: var(--color-secondary);
+    outline: 3px solid rgba(173, 81, 56, 0.25);
   }
-  .light .input { background: #f8fafc; color: #1a2332; border-color: rgba(0,0,0,0.12); }
 
-  .badge { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium; }
+  /* Badges de statut */
+  .badge {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold;
+    font-family: var(--font-sans);
+  }
 
+  .badge-verified {
+    background-color: var(--status-verified-bg);
+    color: var(--status-verified-text);
+    border: 1px solid rgba(67, 84, 50, 0.2);
+  }
+  .badge-warning {
+    background-color: var(--status-warning-bg);
+    color: var(--status-warning-text);
+    border: 1px solid rgba(121, 80, 21, 0.2);
+  }
+  .badge-error {
+    background-color: var(--status-error-bg);
+    color: var(--status-error-text);
+    border: 1px solid rgba(150, 60, 71, 0.2);
+  }
+  .badge-progress {
+    background-color: var(--status-progress-bg);
+    color: var(--status-progress-text);
+    border: 1px solid rgba(53, 38, 56, 0.2);
+  }
+  .badge-accent {
+    background-color: var(--color-accent);
+    color: var(--color-primary);
+    font-weight: 700;
+  }
+
+  /* Titre de page : Fraunces 500, 32px ordi, 28px mobile */
   .page-title {
-    @apply text-xl md:text-2xl font-bold text-white;
-    font-family: 'Poppins', sans-serif;
+    font-family: var(--font-serif);
+    font-weight: 500;
+    color: var(--color-primary);
+    font-size: 28px;
+    line-height: 34px;
     letter-spacing: -0.01em;
   }
-  .light .page-title { color: #1a2332; }
+  @media (min-width: 768px) {
+    .page-title {
+      font-size: 32px;
+      line-height: 38px;
+    }
+  }
 
   .section-label {
-    @apply text-xs font-semibold uppercase tracking-widest;
-    color: var(--color-navy-400);
+    @apply text-xs font-semibold uppercase tracking-wider;
+    color: var(--color-muted);
+    font-family: var(--font-sans);
   }
 
   .page-container {
-    @apply p-4 md:p-6 lg:p-8;
-    padding-bottom: calc(1.5rem + env(safe-area-inset-bottom));
+    padding: 16px;
+    max-width: 1440px;
+    margin: 0 auto;
+  }
+  @media (min-width: 768px) {
+    .page-container {
+      padding: 32px;
+    }
   }
 
-  .grid-responsive-2 { @apply grid grid-cols-1 sm:grid-cols-2 gap-4; }
-  .grid-responsive-3 { @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4; }
-  .grid-responsive-4 { @apply grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4; }
-
-  .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-  .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+  .table-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
 }
 
-/* Recharts */
+/* Recharts Terre & Registre */
 .recharts-tooltip-wrapper .recharts-default-tooltip {
-  background: #202b40 !important;
-  border: 1px solid rgba(201,146,58,0.2) !important;
-  border-radius: 8px !important;
-  font-size: 12px !important;
+  background: #FFFCF6 !important;
+  border: 1px solid #D8CEC4 !important;
+  border-radius: 6px !important;
+  color: #352638 !important;
+  box-shadow: 0 4px 16px rgba(53, 38, 56, 0.08) !important;
+  font-family: 'Manrope', sans-serif !important;
+  font-size: 13px !important;
 }
 
-/* Animations */
-.animate-fade-in { animation: fadeIn 0.3s ease-in-out; }
-.animate-slide-up { animation: slideUp 0.3s ease-out; }
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
-@keyframes slideUp {
-  from { transform: translateY(16px); opacity: 0; }
-  to   { transform: translateY(0);    opacity: 1; }
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

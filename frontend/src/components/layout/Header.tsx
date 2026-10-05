@@ -1,5 +1,5 @@
 import React from 'react';
-import { Bell, Sun, Moon, Globe, ArrowLeft } from 'lucide-react';
+import { Bell, Globe, ArrowLeft } from 'lucide-react';
 import { useAuthStore } from '../../stores/authStore';
 import { useNavigate } from 'react-router-dom';
 
@@ -12,42 +12,52 @@ interface HeaderProps {
 }
 
 export const Header: React.FC<HeaderProps> = ({ title, subtitle, children, action, backTo }) => {
-  const { theme, toggleTheme, toggleLanguage, language } = useAuthStore();
+  const { toggleLanguage, language } = useAuthStore();
   const navigate = useNavigate();
 
   return (
     <header
-      className="flex items-center justify-between h-16 px-6 border-b border-white/[0.06] flex-shrink-0"
-      style={{ background: 'var(--color-card)' }}
+      className="flex items-center justify-between h-20 px-6 sm:px-8 border-b border-[#D8CEC4] bg-[#FFFCF6] flex-shrink-0 z-10"
     >
-      <div className="flex items-center gap-3 min-w-0">
+      <div className="flex items-center gap-4 min-w-0">
         {backTo && (
           <button
             onClick={() => navigate(backTo)}
-            className="btn-ghost p-1.5 rounded-lg flex-shrink-0"
+            className="p-2 rounded-[6px] text-[#70656B] hover:text-[#352638] hover:bg-[#EAE2EB] transition-colors flex-shrink-0"
             title="Retour"
+            aria-label="Retour"
           >
             <ArrowLeft size={18} />
           </button>
         )}
         <div className="min-w-0">
-          {title && <h1 className="page-title text-lg truncate">{title}</h1>}
-          {subtitle && <p className="text-xs text-gray-500 truncate">{subtitle}</p>}
+          {title && <h1 className="page-title text-xl sm:text-2xl truncate">{title}</h1>}
+          {subtitle && <p className="text-xs font-medium text-[#70656B] truncate mt-0.5">{subtitle}</p>}
           {children}
         </div>
       </div>
 
-      <div className="flex items-center gap-2 flex-shrink-0">
-        {action && <div className="flex items-center gap-2 mr-2">{action}</div>}
-        <button className="btn-ghost p-2" onClick={toggleTheme} title={theme === 'dark' ? 'Mode clair' : 'Mode sombre'}>
-          {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+      <div className="flex items-center gap-3 flex-shrink-0">
+        {action && <div className="flex items-center gap-2 mr-1">{action}</div>}
+
+        <button
+          className="flex items-center gap-1.5 px-3 py-2 rounded-[6px] text-xs font-semibold text-[#352638] hover:bg-[#EAE2EB] transition-colors border border-[#D8CEC4]"
+          onClick={toggleLanguage}
+          title="Changer de langue"
+          aria-label="Changer de langue"
+        >
+          <Globe size={15} className="text-[#AD5138]" />
+          <span>{language.toUpperCase()}</span>
         </button>
-        <button className="btn-ghost p-2 text-xs" onClick={toggleLanguage} title="Changer de langue">
-          <Globe size={16} className="mr-1" />
-          {language.toUpperCase()}
-        </button>
-        <button className="btn-ghost p-2 relative" onClick={() => navigate('/notifications')}>
+
+        <button
+          className="p-2.5 rounded-[6px] text-[#352638] hover:bg-[#EAE2EB] transition-colors border border-[#D8CEC4] relative"
+          onClick={() => navigate('/notifications')}
+          title="Notifications"
+          aria-label="Notifications"
+        >
           <Bell size={18} />
+          <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[#AD5138]" />
         </button>
       </div>
     </header>

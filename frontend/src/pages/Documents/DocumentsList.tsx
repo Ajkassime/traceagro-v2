@@ -17,17 +17,17 @@ import { differenceInDays, parseISO } from 'date-fns';
 
 /* ── Couleur expiration ─────────────────────────────────────────────────── */
 const expiryClass = (days: number) =>
-  days <= 7  ? 'bg-red-500/20 text-red-400 border-red-500/30' :
-  days <= 30 ? 'bg-orange-500/20 text-orange-400 border-orange-500/30' :
-  'bg-vanilla-500/20 text-vanilla-400 border-vanilla-500/30';
+  days <= 7  ? 'bg-[#F8E6E8] text-[#963C47] border-[#963C47]/30' :
+  days <= 30 ? 'bg-[#F5E8CC] text-[#795015] border-[#795015]/30' :
+  'bg-[#EAE2EB] text-[#352638] border-[#352638]/20';
 
 /* ── Stat Card mini ─────────────────────────────────────────────────────── */
-const StatMini: React.FC<{ icon: React.ReactNode; label: string; value: string | number; color?: string }> = ({ icon, label, value, color }) => (
-  <div className="p-4 bg-white/[0.03] rounded-xl border border-white/[0.06] flex items-center gap-3">
-    <div className={`w-9 h-9 rounded-lg bg-white/5 flex items-center justify-center ${color || 'text-gray-400'}`}>{icon}</div>
+const StatMini: React.FC<{ icon: React.ReactNode; label: string; value: string | number; color?: string }> = ({ icon, label, value }) => (
+  <div className="p-4 bg-[#FFFCF6] rounded-[8px] border border-[#D8CEC4] flex items-center gap-3 shadow-xs">
+    <div className="w-9 h-9 rounded-[6px] bg-[#EAE2EB] flex items-center justify-center text-[#352638]">{icon}</div>
     <div>
-      <p className="text-xs text-gray-500">{label}</p>
-      <p className="text-lg font-bold text-white">{value}</p>
+      <p className="text-xs font-semibold uppercase tracking-wider text-[#70656B]">{label}</p>
+      <p className="text-lg font-serif font-medium text-[#352638]">{value}</p>
     </div>
   </div>
 );
@@ -160,17 +160,20 @@ export const DocumentsList: React.FC = () => {
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-7 gap-2">
           {Object.entries(DOC_TYPE_CONFIG).map(([key, cfg]: [string, any]) => {
             const count = (stats?.byType ?? []).find((t: any) => t.type === key)?.count ?? (docs ?? []).filter((d: any) => d.docType === key).length;
+            const isSelected = filterType === key;
             return (
               <button
                 key={key}
                 onClick={() => setFilterType(f => f === key ? '' : key)}
-                className={`p-3 rounded-xl border text-left transition-all ${
-                  filterType === key ? 'border-forest-500/50 bg-forest-500/10' : 'border-white/[0.06] bg-white/[0.02] hover:border-white/10'
+                className={`p-3 rounded-[8px] border text-left transition-all ${
+                  isSelected
+                    ? 'border-[#352638] bg-[#352638] text-[#FFFCF6]'
+                    : 'border-[#D8CEC4] bg-[#FFFCF6] text-[#352638] hover:border-[#AD5138]'
                 }`}
               >
                 <span className="text-xl">{cfg.emoji}</span>
-                <p className={`text-lg font-bold mt-1 ${count > 0 ? 'text-white' : 'text-gray-600'}`}>{count}</p>
-                <p className="text-xs text-gray-500 leading-tight mt-0.5">{cfg.label}</p>
+                <p className={`text-lg font-serif font-medium mt-1 ${isSelected ? 'text-[#FFFCF6]' : count > 0 ? 'text-[#352638]' : 'text-[#70656B]'}`}>{count}</p>
+                <p className={`text-xs leading-tight mt-0.5 ${isSelected ? 'text-[#D8DF72]' : 'text-[#70656B]'}`}>{cfg.label}</p>
               </button>
             );
           })}
@@ -179,7 +182,7 @@ export const DocumentsList: React.FC = () => {
         {/* ── Filtres & recherche ──────────────────────────────────── */}
         <div className="flex flex-wrap gap-3 items-center">
           <div className="relative flex-1 min-w-48">
-            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#70656B]" />
             <input
               className="input pl-9 text-sm"
               placeholder="Rechercher un document..."
@@ -187,12 +190,16 @@ export const DocumentsList: React.FC = () => {
               onChange={e => setSearch(e.target.value)}
             />
           </div>
-          <div className="flex gap-1 p-1 bg-white/[0.03] rounded-lg border border-white/[0.06]">
+          <div className="flex gap-1 p-1 bg-[#FFFCF6] rounded-[6px] border border-[#D8CEC4]">
             {([['all', 'Tous'], ['lot', '📦 Lots'], ['producer', '👤 Producteurs'], ['shipment', '🚢 Expéditions']] as const).map(([k, l]) => (
               <button
                 key={k}
                 onClick={() => setFilterEntity(k)}
-                className={`px-3 py-1.5 text-xs rounded-md transition-all ${filterEntity === k ? 'bg-white/10 text-white' : 'text-gray-400 hover:text-gray-200'}`}
+                className={`px-3 py-1.5 text-xs rounded-[4px] font-medium transition-all ${
+                  filterEntity === k
+                    ? 'bg-[#352638] text-[#FFFCF6]'
+                    : 'text-[#70656B] hover:text-[#352638] hover:bg-[#F5F0E7]'
+                }`}
               >
                 {l}
               </button>
@@ -219,47 +226,47 @@ export const DocumentsList: React.FC = () => {
             {filteredDocs.map((doc: any) => {
               const cfg = DOC_TYPE_CONFIG[doc.docType] as any;
               return (
-                <div key={doc.id} className="flex items-start gap-3 p-4 bg-white/[0.03] rounded-xl border border-white/[0.06] hover:border-white/10 transition-all group">
+                <div key={doc.id} className="flex items-start gap-3 p-4 bg-[#FFFCF6] rounded-[8px] border border-[#D8CEC4] hover:border-[#AD5138] transition-all group shadow-xs">
 
                   {/* Icône */}
-                  <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-xl flex-shrink-0">{cfg?.emoji}</div>
+                  <div className="w-10 h-10 rounded-[6px] bg-[#EAE2EB] flex items-center justify-center text-xl flex-shrink-0">{cfg?.emoji}</div>
 
                   {/* Contenu */}
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-200 truncate">{doc.name}</p>
-                    <p className="text-xs text-gray-500">{cfg?.label}</p>
+                    <p className="text-sm font-semibold text-[#352638] truncate">{doc.name}</p>
+                    <p className="text-xs text-[#70656B]">{cfg?.label}</p>
 
                     {/* Associations */}
                     <div className="flex flex-wrap gap-1.5 mt-1.5">
                       {doc.lot && (
-                        <button onClick={() => navigate(`/lots/${doc.lot.id}`)} className="flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-forest-500/10 text-forest-400 hover:bg-forest-500/20 transition-colors">
+                        <button onClick={() => navigate(`/lots/${doc.lot.id}`)} className="flex items-center gap-1 text-xs px-2 py-0.5 rounded-[4px] bg-[#EAE2EB] text-[#352638] hover:bg-[#D8CEC4] transition-colors font-medium">
                           <Package size={10} /> {doc.lot.lotNumber}
                         </button>
                       )}
                       {doc.producer && (
-                        <button onClick={() => navigate(`/producers/${doc.producer.id}`)} className="flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 transition-colors">
+                        <button onClick={() => navigate(`/producers/${doc.producer.id}`)} className="flex items-center gap-1 text-xs px-2 py-0.5 rounded-[4px] bg-[#E5ECD9] text-[#435432] hover:bg-[#D8DF72] transition-colors font-medium">
                           👤 {doc.producer.name}
                         </button>
                       )}
                       {doc.shipment && (
-                        <button onClick={() => navigate(`/shipments/${doc.shipment.id}`)} className="flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 hover:bg-cyan-500/20 transition-colors">
+                        <button onClick={() => navigate(`/shipments/${doc.shipment.id}`)} className="flex items-center gap-1 text-xs px-2 py-0.5 rounded-[4px] bg-[#F5E8CC] text-[#795015] hover:bg-[#EAE2EB] transition-colors font-medium">
                           <Ship size={10} /> {doc.shipment.reference}
                         </button>
                       )}
                     </div>
 
-                    <p className="text-xs text-gray-600 mt-1">{formatDate(doc.createdAt)}</p>
-                    {doc.notes && <p className="text-xs text-gray-600 mt-0.5 truncate italic">{doc.notes}</p>}
+                    <p className="text-xs text-[#70656B] mt-1">{formatDate(doc.createdAt)}</p>
+                    {doc.notes && <p className="text-xs text-[#70656B] mt-0.5 truncate italic">{doc.notes}</p>}
                   </div>
 
                   {/* Actions */}
                   <div className="flex flex-col gap-1 flex-shrink-0">
                     <a href={doc.fileUrl} target="_blank" rel="noopener noreferrer">
-                      <button className="p-1.5 rounded-lg bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 transition-colors">
+                      <button className="p-1.5 rounded-[6px] bg-[#F5F0E7] text-[#70656B] hover:text-[#352638] hover:bg-[#EAE2EB] transition-colors">
                         <ExternalLink size={13} />
                       </button>
                     </a>
-                    <button onClick={() => setDeleteId(doc.id)} className="p-1.5 rounded-lg bg-white/5 text-gray-600 hover:text-red-400 hover:bg-red-500/10 transition-colors">
+                    <button onClick={() => setDeleteId(doc.id)} className="p-1.5 rounded-[6px] bg-[#F5F0E7] text-[#70656B] hover:text-[#963C47] hover:bg-[#F8E6E8] transition-colors">
                       <Trash2 size={13} />
                     </button>
                   </div>
@@ -274,40 +281,40 @@ export const DocumentsList: React.FC = () => {
       <Modal open={createOpen} onClose={() => setCreateOpen(false)} title="Ajouter un document" size="lg">
         <form onSubmit={create} className="space-y-4">
           <div>
-            <label className="block text-xs font-medium text-gray-400 mb-1.5">Nom du document *</label>
+            <label className="block text-xs font-semibold text-[#352638] mb-1.5">Nom du document *</label>
             <input className="input" placeholder="Certificat phytosanitaire N°2026-..." value={form.name} onChange={e => setF('name', e.target.value)} required />
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-gray-400 mb-1.5">Type de document *</label>
+            <label className="block text-xs font-semibold text-[#352638] mb-1.5">Type de document *</label>
             <select className="input" value={form.docType} onChange={e => setF('docType', e.target.value)}>
               {docTypeOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
             </select>
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-gray-400 mb-1.5">URL du fichier *</label>
+            <label className="block text-xs font-semibold text-[#352638] mb-1.5">URL du fichier *</label>
             <input className="input" type="url" placeholder="https://drive.google.com/..." value={form.fileUrl} onChange={e => setF('fileUrl', e.target.value)} required />
-            <p className="text-xs text-gray-600 mt-1">Lien vers Google Drive, Dropbox, ou URL directe du fichier</p>
+            <p className="text-xs text-[#70656B] mt-1">Lien vers Google Drive, Dropbox, ou URL directe du fichier</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             <div>
-              <label className="block text-xs font-medium text-gray-400 mb-1.5">Lot associé</label>
+              <label className="block text-xs font-semibold text-[#352638] mb-1.5">Lot associé</label>
               <select className="input text-sm" value={form.lotId} onChange={e => setF('lotId', e.target.value)}>
                 <option value="">— Aucun lot —</option>
                 {(lotsData ?? []).map((l: any) => <option key={l.id} value={l.id}>{l.lotNumber}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-400 mb-1.5">Producteur associé</label>
+              <label className="block text-xs font-semibold text-[#352638] mb-1.5">Producteur associé</label>
               <select className="input text-sm" value={form.producerId} onChange={e => setF('producerId', e.target.value)}>
                 <option value="">— Aucun producteur —</option>
                 {(producersData ?? []).map((p: any) => <option key={p.id} value={p.id}>{p.name}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-400 mb-1.5">Expédition associée</label>
+              <label className="block text-xs font-semibold text-[#352638] mb-1.5">Expédition associée</label>
               <select className="input text-sm" value={form.shipmentId} onChange={e => setF('shipmentId', e.target.value)}>
                 <option value="">— Aucune expédition —</option>
                 {(shipmentsData ?? []).map((s: any) => <option key={s.id} value={s.id}>{s.reference}</option>)}
@@ -316,7 +323,7 @@ export const DocumentsList: React.FC = () => {
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-gray-400 mb-1.5">Notes</label>
+            <label className="block text-xs font-semibold text-[#352638] mb-1.5">Notes</label>
             <textarea className="input h-16 resize-none" placeholder="Notes additionnelles..." value={form.notes} onChange={e => setF('notes', e.target.value)} />
           </div>
 
@@ -329,7 +336,7 @@ export const DocumentsList: React.FC = () => {
 
       {/* ── Modal: Confirmer suppression ─────────────────────────────── */}
       <Modal open={!!deleteId} onClose={() => setDeleteId(null)} title="Supprimer le document" size="sm">
-        <p className="text-sm text-gray-400 mb-4">Cette action est irréversible. Le fichier ne sera pas supprimé du serveur de stockage.</p>
+        <p className="text-sm text-[#70656B] mb-4">Cette action est irréversible. Le fichier ne sera pas supprimé du serveur de stockage.</p>
         <div className="flex justify-end gap-2">
           <Button variant="secondary" onClick={() => setDeleteId(null)}>Annuler</Button>
           <Button variant="danger" onClick={deleteDoc}>Supprimer</Button>

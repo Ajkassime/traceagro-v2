@@ -19,17 +19,19 @@ export const Button: React.FC<ButtonProps> = ({
   disabled,
   ...props
 }) => {
-  const base = 'inline-flex items-center gap-2 font-medium rounded-lg transition-all duration-150 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed';
+  const base = 'inline-flex items-center justify-center gap-2 font-semibold transition-all duration-150 select-none';
+  
   const variants = {
-    primary:   'bg-forest-600 hover:bg-forest-500 text-white',
-    secondary: 'border border-white/10 text-gray-300 hover:bg-white/5 hover:text-white',
-    ghost:     'text-gray-400 hover:text-white hover:bg-white/5',
-    danger:    'bg-red-600/20 text-red-400 hover:bg-red-600/30 border border-red-500/20',
+    primary:   'bg-[#352638] text-[#FFFCF6] hover:bg-[#4A354D] active:translate-y-px disabled:bg-[#D8CEC4] disabled:text-[#70656B]',
+    secondary: 'bg-transparent border border-[#352638] text-[#352638] hover:bg-[#EAE2EB] active:translate-y-px disabled:border-[#D8CEC4] disabled:text-[#70656B]',
+    ghost:     'bg-transparent text-[#352638] hover:bg-[#EAE2EB] active:translate-y-px disabled:text-[#70656B]',
+    danger:    'bg-[#963C47] text-[#FFFCF6] hover:bg-[#7C2D38] active:translate-y-px disabled:bg-[#D8CEC4] disabled:text-[#70656B]',
   };
+
   const sizes = {
-    sm: 'text-xs px-3 py-1.5',
-    md: 'text-sm px-4 py-2',
-    lg: 'text-base px-6 py-3',
+    sm: 'text-xs min-h-[36px] px-3 rounded-[6px]',
+    md: 'text-sm min-h-[44px] px-[18px] rounded-[6px]',
+    lg: 'text-base min-h-[48px] px-6 rounded-[6px]',
   };
 
   return (
@@ -38,8 +40,17 @@ export const Button: React.FC<ButtonProps> = ({
       disabled={disabled || loading}
       {...props}
     >
-      {loading ? <Loader2 size={14} className="animate-spin" /> : icon}
-      {children}
+      {loading ? (
+        <>
+          <Loader2 size={16} className="animate-spin text-current" />
+          <span>Enregistrement…</span>
+        </>
+      ) : (
+        <>
+          {icon && <span className="flex-shrink-0">{icon}</span>}
+          {children}
+        </>
+      )}
     </button>
   );
 };

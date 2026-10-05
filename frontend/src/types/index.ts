@@ -34,6 +34,7 @@ export interface Producer {
   isActive: boolean;
   certifications?: Certification[];
   photos?: ProducerPhoto[];
+  lots?: Lot[];
   _count?: { lots: number; certifications: number };
 }
 

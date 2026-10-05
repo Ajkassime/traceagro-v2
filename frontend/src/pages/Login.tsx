@@ -29,46 +29,46 @@ export const Login: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4" style={{ background: 'var(--color-bg)' }}>
-      {/* Background gradient */}
-      <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, rgba(30,92,110,0.08) 0%, transparent 50%, rgba(201,146,58,0.05) 100%)' }} />
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full blur-3xl" style={{ background: 'rgba(30,92,110,0.06)' }} />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full blur-3xl" style={{ background: 'rgba(201,146,58,0.06)' }} />
-      </div>
-
+    <div className="min-h-screen flex items-center justify-center p-4 bg-[#F5F0E7] text-[#352638]">
       <div className="w-full max-w-sm relative z-10 animate-slide-up">
 
-        {/* Logo APL */}
+        {/* Logo et Identité Terre & Registre */}
         <div className="flex flex-col items-center mb-8">
-          <img
-            src="/logo-apl.svg"
-            alt="APL Vanilla"
-            style={{ width: 150, height: 'auto', objectFit: 'contain', marginBottom: 12 }}
-          />
-          <p className="text-xs" style={{ color: 'var(--color-navy-400)', letterSpacing: '0.05em' }}>
-            TraceAgro · APL Madagascar v2.0
+          <div className="w-16 h-16 rounded-[8px] bg-[#352638] flex items-center justify-center text-[#FFFCF6] font-serif font-bold text-2xl mb-3 shadow-sm border border-[#D8CEC4]">
+            TA
+          </div>
+          <h1 className="font-serif font-medium text-2xl text-[#352638] tracking-tight">
+            TraceAgro
+          </h1>
+          <p className="text-xs font-semibold uppercase tracking-wider text-[#AD5138] mt-1">
+            Terre & Registre
           </p>
         </div>
 
-        {/* Card */}
-        <div className="card p-6">
-          <h2 className="font-display font-semibold text-white mb-6 text-center">Connexion</h2>
+        {/* Carte de Connexion */}
+        <div className="card shadow-md">
+          <h2 className="font-serif font-medium text-xl text-[#352638] mb-6 text-center">
+            Connexion au registre
+          </h2>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs font-medium text-gray-400 mb-1.5">Adresse email</label>
+              <label className="block text-xs font-semibold text-[#70656B] mb-1.5">
+                Adresse email
+              </label>
               <input
                 type="email"
                 className="input"
-                placeholder="vous@traceagro.mg"
+                placeholder="agent@traceagro.mg"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-400 mb-1.5">Mot de passe</label>
+              <label className="block text-xs font-semibold text-[#70656B] mb-1.5">
+                Mot de passe
+              </label>
               <div className="relative">
                 <input
                   type={showPwd ? 'text' : 'password'}
@@ -81,7 +81,8 @@ export const Login: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setShowPwd(!showPwd)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#70656B] hover:text-[#352638]"
+                  aria-label={showPwd ? 'Masquer' : 'Afficher'}
                 >
                   {showPwd ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
@@ -91,26 +92,22 @@ export const Login: React.FC = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full flex items-center justify-center py-3 rounded-lg font-medium text-sm text-white transition-all duration-150"
-              style={{
-                background: 'linear-gradient(135deg, #1e5c6e 0%, #2a7a90 100%)',
-                boxShadow: '0 2px 8px rgba(30,92,110,0.35)',
-                opacity: loading ? 0.7 : 1,
-                minHeight: 44,
-              }}
+              className="btn-primary w-full mt-2"
             >
-              {loading ? 'Connexion...' : 'Se connecter'}
+              {loading ? 'Connexion en cours…' : 'Accéder au registre'}
             </button>
           </form>
 
-          <div className="mt-4 p-3 rounded-lg" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
-            <p className="text-xs text-gray-500 text-center">Compte de démonstration :</p>
-            <p className="text-xs text-gray-400 text-center mt-1 font-mono">admin@traceagro.mg / Admin1234!</p>
+          <div className="mt-5 p-3 rounded-[6px] bg-[#F5F0E7] border border-[#D8CEC4]">
+            <p className="text-xs text-[#70656B] text-center font-medium">Compte de test :</p>
+            <p className="text-xs text-[#352638] text-center mt-1 font-mono font-semibold">
+              admin@traceagro.mg / Admin1234!
+            </p>
           </div>
         </div>
 
-        <p className="text-center text-xs mt-6" style={{ color: 'var(--color-navy-500)' }}>
-          © 2026 APL Vanilla & Spices · Madagascar
+        <p className="text-center text-xs mt-6 text-[#70656B]">
+          © 2026 TraceAgro · Madagascar
         </p>
       </div>
     </div>

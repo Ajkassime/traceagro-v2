@@ -78,22 +78,22 @@ export const LotPublicPage: React.FC = () => {
 
   // ── Loading ──
   if (isLoading) return (
-    <div className="min-h-screen flex flex-col items-center justify-center gap-4" style={{ background: '#0a0f0d' }}>
-      <div className="w-12 h-12 rounded-2xl bg-[#1b4332] flex items-center justify-center animate-pulse">
-        <Leaf size={24} className="text-[#22c55e]" />
+    <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-[#F5F0E7]">
+      <div className="w-12 h-12 rounded-[8px] bg-[#352638] flex items-center justify-center animate-pulse shadow-sm">
+        <Leaf size={24} className="text-[#D8DF72]" />
       </div>
-      <p className="text-[#8b949e] text-sm">{T('Chargement du passeport numérique...', 'Loading digital passport...')}</p>
+      <p className="text-[#70656B] text-sm font-medium">{T('Chargement du passeport numérique...', 'Loading digital passport...')}</p>
     </div>
   );
 
   // ── Not found ──
   if (error || !lot) return (
-    <div className="min-h-screen flex flex-col items-center justify-center gap-4 p-6" style={{ background: '#0a0f0d' }}>
-      <div className="w-16 h-16 rounded-2xl bg-red-900/20 border border-red-500/20 flex items-center justify-center">
-        <Package size={32} className="text-red-400" />
+    <div className="min-h-screen flex flex-col items-center justify-center gap-4 p-6 bg-[#F5F0E7]">
+      <div className="w-16 h-16 rounded-[8px] bg-[#F8E6E8] border border-[#963C47]/20 flex items-center justify-center">
+        <Package size={32} className="text-[#963C47]" />
       </div>
-      <p className="text-white font-bold text-xl">{T('Lot introuvable', 'Lot not found')}</p>
-      <p className="text-[#8b949e] text-sm">{T('Ce QR code ne correspond à aucun lot enregistré.', 'This QR code does not match any registered lot.')}</p>
+      <p className="text-[#352638] font-serif font-medium text-xl">{T('Lot introuvable', 'Lot not found')}</p>
+      <p className="text-[#70656B] text-sm text-center">{T('Ce QR code ne correspond à aucun lot enregistré dans le registre.', 'This QR code does not match any registered lot.')}</p>
     </div>
   );
 
@@ -103,37 +103,36 @@ export const LotPublicPage: React.FC = () => {
   const shipment  = lot.shipmentLots?.[0]?.shipment;
 
   return (
-    <div className="min-h-screen text-white" style={{ background: '#0a0f0d', fontFamily: "'Inter', sans-serif" }}>
+    <div className="min-h-screen bg-[#F5F0E7] text-[#352638] font-sans">
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {/* HEADER                                                                 */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      <header style={{ background: 'linear-gradient(135deg, #0d1117 0%, #111816 100%)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+      <header className="bg-[#FFFCF6] border-b border-[#D8CEC4]">
         <div className="max-w-2xl mx-auto px-5 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #1b4332, #2d6a4f)' }}>
-              <Leaf size={20} className="text-[#52b788]" />
+            <div className="w-10 h-10 rounded-[6px] bg-[#352638] flex items-center justify-center text-[#FFFCF6] font-serif font-bold text-base shadow-xs">
+              TA
             </div>
             <div>
-              <p className="font-bold text-white text-sm">TraceAgro APL</p>
-              <p className="text-xs" style={{ color: '#6e7681' }}>
+              <p className="font-serif font-medium text-[#352638] text-base leading-tight">TraceAgro</p>
+              <p className="text-xs text-[#AD5138] font-semibold uppercase tracking-wider">
                 {T('Traçabilité certifiée · Madagascar', 'Certified Traceability · Madagascar')}
               </p>
             </div>
           </div>
           <div className="flex items-center gap-3">
             {/* Badge Vérifié */}
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full" style={{ background: '#22c55e18', border: '1px solid #22c55e40' }}>
-              <CheckCircle size={13} className="text-[#22c55e]" />
-              <span className="text-xs font-semibold text-[#22c55e]">{T('Vérifié', 'Verified')}</span>
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#E5ECD9] border border-[#435432]/20">
+              <CheckCircle size={13} className="text-[#435432]" />
+              <span className="text-xs font-semibold text-[#435432]">{T('Vérifié', 'Verified')}</span>
             </div>
             {/* Toggle langue */}
             <button
               onClick={() => setLang(l => l === 'fr' ? 'en' : 'fr')}
-              className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors"
-              style={{ background: '#161b22', border: '1px solid rgba(255,255,255,0.08)', color: '#8b949e' }}
+              className="flex items-center gap-1 px-3 py-1.5 rounded-[6px] text-xs font-semibold bg-[#FFFCF6] border border-[#D8CEC4] text-[#352638] hover:bg-[#EAE2EB] transition-colors"
             >
-              <Globe size={12} />
+              <Globe size={13} className="text-[#AD5138]" />
               {lang.toUpperCase()}
             </button>
           </div>
@@ -143,34 +142,30 @@ export const LotPublicPage: React.FC = () => {
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {/* HERO — Identité du lot                                                 */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {/* HERO — Identité du lot                                                 */}
+      {/* ══════════════════════════════════════════════════════════════════════ */}
       <div className="max-w-2xl mx-auto px-5 pt-6 pb-2">
-        <div className="rounded-2xl p-5 relative overflow-hidden"
-          style={{ background: 'linear-gradient(135deg, #111816 0%, #161b22 100%)', border: '1px solid rgba(255,255,255,0.07)' }}>
-          {/* Fond décoratif */}
-          <div className="absolute right-0 top-0 w-32 h-32 rounded-full opacity-10 pointer-events-none"
-            style={{ background: `radial-gradient(circle, ${statusCfg.color} 0%, transparent 70%)`, transform: 'translate(30%, -30%)' }} />
-
+        <div className="rounded-[8px] p-6 relative overflow-hidden bg-[#FFFCF6] border border-[#D8CEC4] shadow-xs">
           <div className="relative">
             {/* Numéro + produit */}
             <div className="flex items-start justify-between mb-4">
               <div>
-                <p className="text-xs mb-1" style={{ color: '#6e7681' }}>{T('PASSEPORT NUMÉRIQUE', 'DIGITAL PASSPORT')}</p>
-                <p className="font-mono text-2xl font-bold" style={{ color: '#d4a853' }}>{lot.lotNumber}</p>
-                <p className="text-lg font-semibold text-white mt-0.5">{lot.product?.name}</p>
-                <p className="text-sm mt-0.5" style={{ color: '#8b949e' }}>{lot.product?.category}</p>
+                <p className="text-xs font-semibold uppercase tracking-wider text-[#70656B] mb-1">{T('PASSEPORT NUMÉRIQUE', 'DIGITAL PASSPORT')}</p>
+                <p className="font-mono text-2xl font-bold text-[#352638]">{lot.lotNumber}</p>
+                <p className="text-lg font-serif font-medium text-[#352638] mt-0.5">{lot.product?.name}</p>
+                <p className="text-xs text-[#70656B] mt-0.5">{lot.product?.category}</p>
               </div>
               {/* Score qualité */}
               {lot.qualityScore && (
                 <div className="text-center">
-                  <div className="w-16 h-16 rounded-full flex flex-col items-center justify-center"
-                    style={{ background: lot.qualityScore >= 8 ? '#22c55e18' : lot.qualityScore >= 6 ? '#f59e0b18' : '#ef444418',
-                             border: `2px solid ${lot.qualityScore >= 8 ? '#22c55e' : lot.qualityScore >= 6 ? '#f59e0b' : '#ef4444'}` }}>
-                    <span className="text-xl font-bold" style={{ color: lot.qualityScore >= 8 ? '#22c55e' : lot.qualityScore >= 6 ? '#f59e0b' : '#ef4444' }}>
+                  <div className="w-16 h-16 rounded-full flex flex-col items-center justify-center bg-[#E5ECD9] border-2 border-[#435432]">
+                    <span className="text-xl font-bold font-mono text-[#435432]">
                       {lot.qualityScore.toFixed(1)}
                     </span>
-                    <span className="text-[10px]" style={{ color: '#6e7681' }}>/10</span>
+                    <span className="text-[10px] text-[#70656B]">/10</span>
                   </div>
-                  <p className="text-[10px] mt-1" style={{ color: '#6e7681' }}>{T('Qualité', 'Quality')}</p>
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-[#70656B] mt-1">{T('Qualité', 'Quality')}</p>
                 </div>
               )}
             </div>
@@ -179,33 +174,25 @@ export const LotPublicPage: React.FC = () => {
             <div className="grid grid-cols-3 gap-3">
               <MiniStat icon={<Scale size={14} />} label={T('Quantité', 'Quantity')} value={`${lot.quantityKg} kg`} />
               <MiniStat icon={<Calendar size={14} />} label={T('Récolte', 'Harvest')} value={formatDate(lot.harvestDate, lang)} small />
-              <div className="rounded-xl p-3 text-center" style={{ background: `${statusCfg.color}15`, border: `1px solid ${statusCfg.color}30` }}>
-                <div className="w-5 h-5 rounded-full mx-auto mb-1" style={{ background: statusCfg.color }} />
-                <p className="text-xs font-semibold" style={{ color: statusCfg.color }}>{statusCfg.label}</p>
-                <p className="text-[10px] mt-0.5" style={{ color: '#6e7681' }}>Status</p>
+              <div className="rounded-[6px] p-3 text-center bg-[#F5F0E7] border border-[#D8CEC4]">
+                <p className="text-xs font-bold text-[#352638]">{statusCfg.label}</p>
+                <p className="text-[10px] uppercase font-semibold text-[#70656B] mt-0.5">Statut</p>
               </div>
             </div>
 
             {/* Badge Anti-Contrefaçon & compteur de scans */}
-            <div className="mt-3 flex flex-wrap items-center gap-2">
+            <div className="mt-4 pt-3 border-t border-[#D8CEC4]/60 flex flex-wrap items-center gap-2">
               {/* Badge Authentifié */}
-              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs"
-                style={{ background: 'rgba(82,183,136,0.1)', border: '1px solid rgba(82,183,136,0.25)', color: '#52b788' }}>
-                <Shield size={11} />
+              <div className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#E5ECD9] border border-[#435432]/30 text-[#435432]">
+                <Shield size={12} />
                 <span>{T('Authentifié TraceAgro', 'TraceAgro Authenticated')}</span>
               </div>
 
-              {/* Compteur scans avec couleur contextuelle */}
+              {/* Compteur scans */}
               {scanCount > 0 && (
-                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs"
-                  style={{
-                    background: scanCount > 500 ? 'rgba(239,68,68,0.1)' : 'rgba(255,255,255,0.04)',
-                    border: `1px solid ${scanCount > 500 ? 'rgba(239,68,68,0.2)' : 'rgba(255,255,255,0.08)'}`,
-                    color: scanCount > 500 ? '#f87171' : '#6e7681'
-                  }}>
-                  <Eye size={11} />
+                <div className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-[#F5F0E7] border border-[#D8CEC4] text-[#70656B]">
+                  <Eye size={12} />
                   <span>{scanCount} {T('consultation(s)', 'consultation(s)')}</span>
-                  {scanCount > 500 && <span>⚠️</span>}
                 </div>
               )}
             </div>
@@ -220,13 +207,13 @@ export const LotPublicPage: React.FC = () => {
       {/* NAVIGATION TABS                                                        */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
       <div className="max-w-2xl mx-auto px-5 mt-4">
-        <div className="flex gap-1 overflow-x-auto pb-1 scrollbar-none">
+        <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none">
           {TABS.map((t, i) => (
             <button key={i} onClick={() => setTab(i)}
-              className="flex-shrink-0 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200"
+              className="flex-shrink-0 px-4 py-2.5 rounded-[6px] text-xs font-semibold transition-all duration-150"
               style={tab === i
-                ? { background: '#1b4332', color: '#52b788', border: '1px solid #2d6a4f' }
-                : { background: '#161b22', color: '#6e7681', border: '1px solid rgba(255,255,255,0.05)' }
+                ? { background: '#352638', color: '#FFFCF6', border: '1px solid #352638' }
+                : { background: '#FFFCF6', color: '#70656B', border: '1px solid #D8CEC4' }
               }>
               {t}
             </button>
@@ -342,19 +329,18 @@ export const LotPublicPage: React.FC = () => {
                   <img src={lot.producer.photos[0].url} alt={lot.producer.name}
                     className="w-20 h-20 rounded-2xl object-cover flex-shrink-0" />
                 ) : (
-                  <div className="w-20 h-20 rounded-2xl flex items-center justify-center flex-shrink-0"
-                    style={{ background: '#1b433218', border: '1px solid #2d6a4f40' }}>
-                    <Users size={32} className="text-[#52b788] opacity-60" />
+                  <div className="w-20 h-20 rounded-2xl flex items-center justify-center flex-shrink-0 bg-[#EAE2EB] border border-[#D8CEC4]">
+                    <Users size={32} className="text-[#352638] opacity-60" />
                   </div>
                 )}
                 <div>
-                  <p className="text-lg font-bold text-white">{lot.producer?.name}</p>
-                  <div className="flex items-center gap-1 mt-1" style={{ color: '#8b949e' }}>
+                  <p className="text-lg font-serif font-bold text-[#352638]">{lot.producer?.name}</p>
+                  <div className="flex items-center gap-1 mt-1 text-[#70656B]">
                     <MapPin size={13} />
                     <span className="text-sm">{lot.producer?.region}, {lot.producer?.country}</span>
                   </div>
                   {lot.producer?.village && (
-                    <p className="text-sm mt-0.5" style={{ color: '#6e7681' }}>{T('Village :', 'Village:')} {lot.producer.village}</p>
+                    <p className="text-sm mt-0.5 text-[#70656B]">{T('Village :', 'Village:')} {lot.producer.village}</p>
                   )}
                 </div>
               </div>
@@ -425,15 +411,14 @@ export const LotPublicPage: React.FC = () => {
                   {lot.processingSteps.map((step: any, i: number) => (
                     <div key={step.id} className="flex gap-4">
                       {/* Bullet */}
-                      <div className="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center z-10 relative"
-                        style={{ background: '#1b4332', border: '2px solid #2d6a4f' }}>
-                        <span className="text-sm font-bold text-[#52b788]">{i + 1}</span>
+                      <div className="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center z-10 relative bg-[#EAE2EB] border-2 border-[#352638]">
+                        <span className="text-sm font-bold text-[#352638]">{i + 1}</span>
                       </div>
 
                       {/* Contenu */}
-                      <div className="flex-1 rounded-xl p-4 mb-1" style={{ background: '#111816', border: '1px solid rgba(255,255,255,0.06)' }}>
-                        <p className="font-semibold text-white">{step.stepName}</p>
-                        <div className="flex flex-wrap gap-3 mt-2 text-xs" style={{ color: '#8b949e' }}>
+                      <div className="flex-1 rounded-[8px] p-4 mb-1 bg-[#FFFCF6] border border-[#D8CEC4] shadow-xs">
+                        <p className="font-semibold text-[#352638]">{step.stepName}</p>
+                        <div className="flex flex-wrap gap-3 mt-2 text-xs text-[#70656B]">
                           <span>📅 {formatDate(step.startedAt, lang)}</span>
                           {step.operatorName && <span>👤 {step.operatorName}</span>}
                           {step.location    && <span>📍 {step.location}</span>}
@@ -513,17 +498,15 @@ export const LotPublicPage: React.FC = () => {
                 <div className="space-y-2">
                   {lot.documents.map((doc: any) => (
                     <a key={doc.id} href={doc.fileUrl} target="_blank" rel="noopener noreferrer"
-                      className="flex items-center gap-3 rounded-xl p-3 transition-colors"
-                      style={{ background: '#161b22', border: '1px solid rgba(255,255,255,0.06)' }}>
-                      <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
-                        style={{ background: '#3b82f618', border: '1px solid #3b82f630' }}>
-                        <FileCheck size={16} className="text-[#3b82f6]" />
+                      className="flex items-center gap-3 rounded-[8px] p-3 transition-colors bg-[#FFFCF6] border border-[#D8CEC4] hover:border-[#AD5138] shadow-xs">
+                      <div className="w-9 h-9 rounded-[6px] flex items-center justify-center flex-shrink-0 bg-[#EAE2EB] border border-[#D8CEC4]">
+                        <FileCheck size={16} className="text-[#352638]" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-white truncate">{doc.name}</p>
-                        <p className="text-xs" style={{ color: '#6e7681' }}>{doc.docType}</p>
+                        <p className="text-sm font-semibold text-[#352638] truncate">{doc.name}</p>
+                        <p className="text-xs text-[#70656B]">{doc.docType}</p>
                       </div>
-                      <ExternalLink size={14} style={{ color: '#6e7681' }} />
+                      <ExternalLink size={14} className="text-[#70656B]" />
                     </a>
                   ))}
                 </div>
@@ -536,32 +519,31 @@ export const LotPublicPage: React.FC = () => {
         {tab === 4 && (
           <Section title={T('🚢 Expédition', '🚢 Shipment')}>
             {!shipment ? (
-              <div className="text-center py-8" style={{ color: '#6e7681' }}>
+              <div className="text-center py-8 text-[#70656B]">
                 <Package size={32} className="mx-auto mb-2 opacity-40" />
                 <p className="text-sm">{T('Aucune expédition associée à ce lot', 'No shipment associated with this lot')}</p>
               </div>
             ) : (
               <div className="space-y-3">
-                <div className="rounded-xl p-4" style={{ background: '#161b22', border: '1px solid rgba(255,255,255,0.06)' }}>
+                <div className="rounded-[8px] p-4 bg-[#FFFCF6] border border-[#D8CEC4] shadow-xs">
                   <div className="flex items-center justify-between mb-3">
-                    <p className="font-mono font-bold text-[#d4a853]">{shipment.reference}</p>
-                    <span className="text-xs px-2.5 py-1 rounded-full font-medium"
-                      style={{ background: '#3b82f618', color: '#3b82f6', border: '1px solid #3b82f630' }}>
+                    <p className="font-mono font-bold text-[#AD5138]">{shipment.reference}</p>
+                    <span className="text-xs px-2.5 py-1 rounded-full font-semibold bg-[#EAE2EB] text-[#352638] border border-[#D8CEC4]">
                       {shipment.status?.toUpperCase()}
                     </span>
                   </div>
 
                   <div className="flex items-center gap-2 text-sm">
-                    <div className="flex-1 rounded-lg p-2.5 text-center" style={{ background: '#0d1117' }}>
-                      <p className="text-xs mb-0.5" style={{ color: '#6e7681' }}>{T('Départ', 'Departure')}</p>
-                      <p className="font-medium text-white text-xs">{shipment.departureLocation || '—'}</p>
-                      {shipment.departureDate && <p className="text-[10px] mt-0.5" style={{ color: '#8b949e' }}>{formatDate(shipment.departureDate, lang)}</p>}
+                    <div className="flex-1 rounded-[6px] p-2.5 text-center bg-[#F5F0E7] border border-[#D8CEC4]">
+                      <p className="text-xs mb-0.5 text-[#70656B]">{T('Départ', 'Departure')}</p>
+                      <p className="font-semibold text-[#352638] text-xs">{shipment.departureLocation || '—'}</p>
+                      {shipment.departureDate && <p className="text-[10px] mt-0.5 text-[#70656B]">{formatDate(shipment.departureDate, lang)}</p>}
                     </div>
-                    <ArrowRight size={16} className="flex-shrink-0 text-[#52b788]" />
-                    <div className="flex-1 rounded-lg p-2.5 text-center" style={{ background: '#0d1117' }}>
-                      <p className="text-xs mb-0.5" style={{ color: '#6e7681' }}>{T('Arrivée', 'Arrival')}</p>
-                      <p className="font-medium text-white text-xs">{shipment.arrivalLocation || '—'}</p>
-                      {shipment.actualArrival && <p className="text-[10px] mt-0.5" style={{ color: '#8b949e' }}>{formatDate(shipment.actualArrival, lang)}</p>}
+                    <ArrowRight size={16} className="flex-shrink-0 text-[#352638]" />
+                    <div className="flex-1 rounded-[6px] p-2.5 text-center bg-[#F5F0E7] border border-[#D8CEC4]">
+                      <p className="text-xs mb-0.5 text-[#70656B]">{T('Arrivée', 'Arrival')}</p>
+                      <p className="font-semibold text-[#352638] text-xs">{shipment.arrivalLocation || '—'}</p>
+                      {shipment.actualArrival && <p className="text-[10px] mt-0.5 text-[#70656B]">{formatDate(shipment.actualArrival, lang)}</p>}
                     </div>
                   </div>
                 </div>
@@ -597,39 +579,39 @@ export const LotPublicPage: React.FC = () => {
 // ─── Composants internes ──────────────────────────────────────────────────────
 
 const Section: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
-  <div className="rounded-2xl overflow-hidden" style={{ background: '#0d1117', border: '1px solid rgba(255,255,255,0.06)' }}>
-    <div className="px-5 py-3 border-b" style={{ borderColor: 'rgba(255,255,255,0.05)', background: '#111816' }}>
-      <p className="text-sm font-semibold text-white">{title}</p>
+  <div className="rounded-[8px] overflow-hidden bg-[#FFFCF6] border border-[#D8CEC4] shadow-xs">
+    <div className="px-5 py-3.5 border-b border-[#D8CEC4] bg-[#F5F0E7]/60">
+      <p className="text-sm font-serif font-medium text-[#352638]">{title}</p>
     </div>
     <div className="p-5">{children}</div>
   </div>
 );
 
 const MiniStat: React.FC<{ icon: React.ReactNode; label: string; value: string; small?: boolean }> = ({ icon, label, value, small }) => (
-  <div className="rounded-xl p-3" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}>
-    <div className="flex items-center gap-1.5 mb-1 text-[#52b788]">{icon}<span className="text-[10px] text-[#6e7681]">{label}</span></div>
-    <p className={cn('font-semibold text-white', small ? 'text-xs' : 'text-sm')}>{value}</p>
+  <div className="rounded-[6px] p-3 bg-[#F5F0E7] border border-[#D8CEC4]">
+    <div className="flex items-center gap-1.5 mb-1 text-[#AD5138]">{icon}<span className="text-[10px] font-semibold uppercase text-[#70656B]">{label}</span></div>
+    <p className={cn('font-serif font-medium text-[#352638]', small ? 'text-xs' : 'text-sm')}>{value}</p>
   </div>
 );
 
 const InfoCard: React.FC<{ icon: string; label: string; value: string; small?: boolean }> = ({ icon, label, value, small }) => (
-  <div className="rounded-xl p-3" style={{ background: '#161b22', border: '1px solid rgba(255,255,255,0.06)' }}>
-    <p className="text-xs mb-1" style={{ color: '#6e7681' }}>{icon} {label}</p>
-    <p className={cn('font-medium text-white', small ? 'text-xs' : 'text-sm')}>{value}</p>
+  <div className="rounded-[6px] p-3.5 bg-[#FFFCF6] border border-[#D8CEC4]">
+    <p className="text-xs font-semibold text-[#70656B] mb-1">{icon} {label}</p>
+    <p className={cn('font-semibold text-[#352638]', small ? 'text-xs' : 'text-sm')}>{value}</p>
   </div>
 );
 
-const ComplianceBadge: React.FC<{ icon: string; title: string; desc: string; ok?: boolean; color: string }> = ({ icon, title, desc, ok, color }) => (
-  <div className="rounded-xl p-4 flex items-start gap-3" style={{ background: ok ? `${color}0d` : '#161b22', border: `1px solid ${ok ? color + '30' : 'rgba(255,255,255,0.06)'}` }}>
+const ComplianceBadge: React.FC<{ icon: string; title: string; desc: string; ok?: boolean; color: string }> = ({ icon, title, desc, ok }) => (
+  <div className={cn('rounded-[6px] p-4 flex items-start gap-3 border', ok ? 'bg-[#E5ECD9] border-[#435432]/30 text-[#435432]' : 'bg-[#FFFCF6] border-[#D8CEC4] text-[#70656B]')}>
     <span className="text-2xl flex-shrink-0">{icon}</span>
     <div className="flex-1">
-      <p className="font-semibold text-sm" style={{ color: ok ? color : '#c9d1d9' }}>{title}</p>
-      <p className="text-xs mt-1" style={{ color: '#8b949e' }}>{desc}</p>
+      <p className="font-semibold text-sm text-[#352638]">{title}</p>
+      <p className="text-xs mt-1 text-[#70656B]">{desc}</p>
     </div>
     <div className="flex-shrink-0 mt-0.5">
       {ok
-        ? <CheckCircle size={18} style={{ color }} />
-        : <AlertTriangle size={18} className="text-[#6e7681]" />
+        ? <CheckCircle size={18} className="text-[#435432]" />
+        : <AlertTriangle size={18} className="text-[#795015]" />
       }
     </div>
   </div>
@@ -643,22 +625,26 @@ const LotProgressBar: React.FC<{ status: string; lang: 'fr' | 'en' }> = ({ statu
   const current = statusMap[status] ?? 0;
 
   return (
-    <div className="mt-3 px-1">
+    <div className="mt-4 px-2">
       <div className="flex items-center justify-between relative">
-        <div className="absolute left-0 right-0 top-3 h-0.5" style={{ background: '#1e2a22' }} />
-        <div className="absolute left-0 top-3 h-0.5 transition-all duration-700"
-          style={{ background: 'linear-gradient(to right, #22c55e, #52b788)', width: `${(current / 4) * 100}%` }} />
+        <div className="absolute left-3 right-3 top-3 h-[2px] bg-[#D8CEC4]" />
+        <div className="absolute left-3 top-3 h-[2px] transition-all duration-700 bg-[#AD5138]"
+          style={{ width: `calc(${(current / 4) * 100}% - 24px)` }} />
         {steps.map((s, i) => (
-          <div key={i} className="flex flex-col items-center gap-1 z-10">
-            <div className="w-6 h-6 rounded-full flex items-center justify-center transition-all duration-300"
-              style={i <= current
-                ? { background: '#22c55e', border: '2px solid #22c55e' }
-                : { background: '#0d1117', border: '2px solid #2a3a2a' }
-              }>
-              {i < current && <CheckCircle size={12} className="text-white" />}
-              {i === current && <div className="w-2 h-2 rounded-full bg-white" />}
+          <div key={i} className="flex flex-col items-center gap-1.5 z-10">
+            <div className={cn(
+              'w-6 h-6 rounded-full flex items-center justify-center transition-all duration-300 text-xs font-bold border-2',
+              i === current
+                ? 'bg-[#D8DF72] text-[#352638] border-[#352638] shadow-xs'
+                : i < current
+                ? 'bg-[#352638] text-[#FFFCF6] border-[#352638]'
+                : 'bg-[#FFFCF6] text-[#70656B] border-[#D8CEC4]'
+            )}>
+              {i < current ? '✓' : i + 1}
             </div>
-            <span className="text-[9px] text-center" style={{ color: i <= current ? '#52b788' : '#6e7681' }}>{s}</span>
+            <span className={cn('text-[10px] text-center font-medium', i === current ? 'text-[#352638] font-bold' : 'text-[#70656B]')}>
+              {s}
+            </span>
           </div>
         ))}
       </div>

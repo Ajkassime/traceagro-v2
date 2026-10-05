@@ -175,19 +175,19 @@ export const MapPage: React.FC = () => {
   const allCoords: [number, number][] = producers.map((p) => [p.latitude, p.longitude]);
 
   return (
-    <div className="flex flex-col h-screen bg-gray-950 overflow-hidden">
+    <div className="flex flex-col h-screen bg-[#F5F0E7] overflow-hidden text-[#352638]">
       {/* ── Top bar ── */}
-      <div className="flex-none flex items-center justify-between px-4 py-3 bg-gray-900 border-b border-gray-800 z-10">
+      <div className="flex-none flex items-center justify-between px-6 py-3.5 bg-[#FFFCF6] border-b border-[#D8CEC4] z-10 shadow-xs">
         <div className="flex items-center gap-3">
-          <Globe size={20} className="text-emerald-400" />
-          <span className="font-bold text-white text-lg">TraceAgro · Cartographie</span>
-          <span className="text-xs text-gray-400 ml-2">Intelligence géographique temps réel</span>
+          <Globe size={20} className="text-[#AD5138]" />
+          <span className="font-serif font-medium text-[#352638] text-lg">TraceAgro · Cartographie</span>
+          <span className="text-xs text-[#70656B] ml-2 font-medium">Intelligence géographique du registre</span>
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={() => refetch()} className="p-2 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-300 transition-colors" title="Rafraîchir">
+          <button onClick={() => refetch()} className="p-2 rounded-[6px] bg-[#F5F0E7] hover:bg-[#EAE2EB] text-[#352638] border border-[#D8CEC4] transition-colors" title="Rafraîchir">
             <RefreshCw size={15} />
           </button>
-          <button onClick={() => setShowPanel((v) => !v)} className="p-2 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-300 transition-colors" title="Panneau">
+          <button onClick={() => setShowPanel((v) => !v)} className="p-2 rounded-[6px] bg-[#F5F0E7] hover:bg-[#EAE2EB] text-[#352638] border border-[#D8CEC4] transition-colors" title="Panneau">
             <Maximize2 size={15} />
           </button>
         </div>
@@ -196,9 +196,9 @@ export const MapPage: React.FC = () => {
       <div className="flex flex-1 min-h-0">
         {/* ── Left panel ── */}
         {showPanel && (
-          <div className="flex-none w-72 bg-gray-900 border-r border-gray-800 flex flex-col overflow-y-auto z-10">
+          <div className="flex-none w-72 bg-[#FFFCF6] border-r border-[#D8CEC4] flex flex-col overflow-y-auto z-10">
             {/* Stats strip */}
-            <div className="grid grid-cols-2 gap-2 p-3 border-b border-gray-800">
+            <div className="grid grid-cols-2 gap-2 p-3 border-b border-[#D8CEC4]">
               <StatBadge icon={<Package size={13} />} label="Producteurs" value={stats.totalProducers} color="emerald" />
               <StatBadge icon={<Truck size={13} />} label="Expéditions" value={stats.totalShipments} color="blue" />
               <StatBadge icon={<Eye size={13} />} label="Scans 30j" value={stats.totalScansLast30d} color="purple" />
@@ -206,17 +206,17 @@ export const MapPage: React.FC = () => {
             </div>
 
             {/* Layer selector */}
-            <div className="p-3 border-b border-gray-800">
-              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-1"><Layers size={12} /> Couches</p>
+            <div className="p-3 border-b border-[#D8CEC4]">
+              <p className="text-xs font-semibold text-[#70656B] uppercase tracking-wider mb-2 flex items-center gap-1"><Layers size={12} className="text-[#AD5138]" /> Couches</p>
               <div className="space-y-1">
                 {LAYERS.map((l) => (
                   <button
                     key={l.id}
                     onClick={() => setActiveLayer(l.id as any)}
-                    className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+                    className={`w-full flex items-center gap-2 px-3 py-2 rounded-[6px] text-sm font-semibold transition-all ${
                       activeLayer === l.id
-                        ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-900/40'
-                        : 'text-gray-300 hover:bg-gray-800'
+                        ? 'bg-[#352638] text-[#FFFCF6] shadow-xs'
+                        : 'text-[#70656B] hover:bg-[#F5F0E7] hover:text-[#352638]'
                     }`}
                   >
                     <span>{l.icon}</span>
@@ -228,18 +228,18 @@ export const MapPage: React.FC = () => {
             </div>
 
             {/* Tile selector */}
-            <div className="p-3 border-b border-gray-800">
-              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Fond de carte</p>
-              <div className="flex gap-1">
+            <div className="p-3 border-b border-[#D8CEC4]">
+              <p className="text-xs font-semibold text-[#70656B] uppercase tracking-wider mb-2">Fond de carte</p>
+              <div className="flex gap-1.5">
                 {(['osm', 'satellite', 'terrain'] as const).map((t) => (
                   <button
                     key={t}
                     onClick={() => setTileStyle(t)}
-                    className={`flex-1 py-1.5 rounded text-xs font-medium transition-all ${
-                      tileStyle === t ? 'bg-emerald-600 text-white' : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                    className={`flex-1 py-1.5 rounded-[6px] text-xs font-semibold transition-all border ${
+                      tileStyle === t ? 'bg-[#352638] text-[#FFFCF6] border-[#352638]' : 'bg-[#FFFCF6] text-[#70656B] border-[#D8CEC4] hover:bg-[#F5F0E7]'
                     }`}
                   >
-                    {t === 'osm' ? '🗺️ OSM' : t === 'satellite' ? '🛰️ Sat' : '⛰️ Terrain'}
+                    {t === 'osm' ? '🗺️ OSM' : t === 'satellite' ? '🛰️ Sat' : '⛰️ Relief'}
                   </button>
                 ))}
               </div>
@@ -247,20 +247,20 @@ export const MapPage: React.FC = () => {
 
             {/* EUDR filter */}
             {(activeLayer === 'producers' || activeLayer === 'eudr') && (
-              <div className="p-3 border-b border-gray-800">
-                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-1"><Filter size={12} /> Filtre EUDR</p>
+              <div className="p-3 border-b border-[#D8CEC4]">
+                <p className="text-xs font-semibold text-[#70656B] uppercase tracking-wider mb-2 flex items-center gap-1"><Filter size={12} /> Filtre EUDR</p>
                 <div className="flex gap-1">
                   {(['all', 'low', 'medium', 'high'] as const).map((r) => (
                     <button
                       key={r}
                       onClick={() => setFilterRisk(r)}
-                      className={`flex-1 py-1 rounded text-xs font-medium transition-all ${
+                      className={`flex-1 py-1 rounded-[4px] text-xs font-semibold transition-all border ${
                         filterRisk === r
-                          ? r === 'all' ? 'bg-gray-600 text-white'
-                            : r === 'low' ? 'bg-green-600 text-white'
-                            : r === 'medium' ? 'bg-yellow-600 text-white'
-                            : 'bg-red-600 text-white'
-                          : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                          ? r === 'all' ? 'bg-[#352638] text-[#FFFCF6] border-[#352638]'
+                            : r === 'low' ? 'bg-[#E5ECD9] text-[#435432] border-[#435432]'
+                            : r === 'medium' ? 'bg-[#F5E8CC] text-[#795015] border-[#795015]'
+                            : 'bg-[#F8E6E8] text-[#963C47] border-[#963C47]'
+                          : 'bg-[#FFFCF6] text-[#70656B] border-[#D8CEC4] hover:bg-[#F5F0E7]'
                       }`}
                     >
                       {r === 'all' ? 'Tous' : r === 'low' ? '✅' : r === 'medium' ? '⚠️' : '🔴'}
@@ -466,38 +466,38 @@ export const MapPage: React.FC = () => {
 
           {/* ── Floating layer badge ── */}
           <div className="absolute top-4 right-4 z-[1000] pointer-events-none">
-            <div className="bg-gray-900/90 backdrop-blur-md px-3 py-2 rounded-xl border border-gray-700 shadow-xl">
-              <div className="flex items-center gap-2 text-sm font-semibold text-white">
+            <div className="bg-[#FFFCF6]/95 backdrop-blur-md px-3 py-2 rounded-[8px] border border-[#D8CEC4] shadow-md">
+              <div className="flex items-center gap-2 text-sm font-semibold text-[#352638]">
                 {LAYERS.find((l) => l.id === activeLayer)?.icon}
                 <span>{LAYERS.find((l) => l.id === activeLayer)?.label}</span>
               </div>
               {activeLayer === 'scans' && (
-                <p className="text-xs text-purple-400 mt-0.5">{scanLogs.length} scans · 30 derniers jours</p>
+                <p className="text-xs text-[#352638] mt-0.5">{scanLogs.length} scans · 30 derniers jours</p>
               )}
               {activeLayer === 'shipments' && (
-                <p className="text-xs text-blue-400 mt-0.5">{shipmentFlows.length} flux actifs</p>
+                <p className="text-xs text-[#352638] mt-0.5">{shipmentFlows.length} flux actifs</p>
               )}
               {activeLayer === 'producers' && (
-                <p className="text-xs text-emerald-400 mt-0.5">Score moyen : {stats.avgScore}/100</p>
+                <p className="text-xs text-[#435432] mt-0.5">Score moyen : {stats.avgScore}/100</p>
               )}
               {activeLayer === 'eudr' && (
-                <p className="text-xs text-red-400 mt-0.5">{stats.eudrHighRisk} producteur(s) à risque</p>
+                <p className="text-xs text-[#963C47] mt-0.5">{stats.eudrHighRisk} producteur(s) à risque</p>
               )}
               {activeLayer === 'chrono' && (
-                <p className="text-xs text-yellow-400 mt-0.5">Période : {MONTHS[chronoMonth]}</p>
+                <p className="text-xs text-[#795015] mt-0.5">Période : {MONTHS[chronoMonth]}</p>
               )}
             </div>
           </div>
 
           {/* ── Bottom stats bar ── */}
           <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-[1000] pointer-events-none">
-            <div className="flex gap-2 bg-gray-900/90 backdrop-blur-md px-4 py-2 rounded-full border border-gray-700 shadow-xl">
+            <div className="flex gap-2 bg-[#FFFCF6]/95 backdrop-blur-md px-4 py-2 rounded-[8px] border border-[#D8CEC4] shadow-md">
               <MiniStat label="Producteurs" value={stats.totalProducers} />
-              <div className="w-px bg-gray-700" />
+              <div className="w-px bg-[#D8CEC4]" />
               <MiniStat label="Expéditions" value={stats.totalShipments} />
-              <div className="w-px bg-gray-700" />
+              <div className="w-px bg-[#D8CEC4]" />
               <MiniStat label="Scans QR" value={stats.totalScansLast30d} />
-              <div className="w-px bg-gray-700" />
+              <div className="w-px bg-[#D8CEC4]" />
               <MiniStat label="Score moy." value={`${stats.avgScore}/100`} />
             </div>
           </div>
@@ -517,92 +517,92 @@ const LAYERS = [
 ];
 
 // ─── Small components ─────────────────────────────────────────────────────────
-const StatBadge: React.FC<{ icon: React.ReactNode; label: string; value: number; color: string }> = ({ icon, label, value, color }) => (
-  <div className={`bg-gray-800 rounded-lg p-2 flex flex-col gap-1`}>
-    <div className={`flex items-center gap-1 text-${color}-400 text-xs`}>{icon}{label}</div>
-    <span className="text-white font-bold text-lg leading-none">{value}</span>
+const StatBadge: React.FC<{ icon: React.ReactNode; label: string; value: number; color: string }> = ({ icon, label, value }) => (
+  <div className="bg-[#FFFCF6] rounded-[6px] border border-[#D8CEC4] p-2 flex flex-col gap-1 shadow-xs">
+    <div className="flex items-center gap-1 text-[#70656B] text-xs font-semibold">{icon}{label}</div>
+    <span className="text-[#352638] font-serif font-bold text-lg leading-none">{value}</span>
   </div>
 );
 
 const LegendItem: React.FC<{ color: string; label: string; size?: string }> = ({ color, label }) => (
   <div className="flex items-center gap-2">
     <div className="w-3 h-3 rounded-full flex-none" style={{ backgroundColor: color }} />
-    <span className="text-xs text-gray-400">{label}</span>
+    <span className="text-xs text-[#70656B]">{label}</span>
   </div>
 );
 
 const MiniStat: React.FC<{ label: string; value: number | string }> = ({ label, value }) => (
   <div className="text-center px-1">
-    <div className="text-white font-bold text-sm">{value}</div>
-    <div className="text-gray-500 text-xs">{label}</div>
+    <div className="text-[#352638] font-bold font-serif text-sm">{value}</div>
+    <div className="text-[#70656B] text-xs">{label}</div>
   </div>
 );
 
 const ProducerDetailPanel: React.FC<{ producer: ProducerMapData; onClose: () => void; onNavigate: () => void }> = ({ producer, onClose, onNavigate }) => (
-  <div className="p-3 bg-gray-800/60 m-2 rounded-xl border border-gray-700">
+  <div className="p-3 bg-[#FFFCF6] m-2 rounded-[8px] border border-[#D8CEC4] shadow-xs">
     <div className="flex items-start justify-between mb-2">
       <div>
-        <p className="font-bold text-white text-sm">{producer.name}</p>
-        <p className="text-xs text-gray-400">{producer.region}</p>
+        <p className="font-bold text-[#352638] text-sm">{producer.name}</p>
+        <p className="text-xs text-[#70656B]">{producer.region}</p>
       </div>
-      <button onClick={onClose} className="text-gray-500 hover:text-white text-lg leading-none">×</button>
+      <button onClick={onClose} className="text-[#70656B] hover:text-[#352638] text-lg leading-none">×</button>
     </div>
     {/* Score gauge */}
     <div className="mb-2">
       <div className="flex justify-between text-xs mb-1">
-        <span className="text-gray-400">Score composite</span>
+        <span className="text-[#70656B]">Score composite</span>
         <span className="font-bold" style={{ color: scoreColor(producer.compositeScore) }}>{producer.compositeScore}/100</span>
       </div>
-      <div className="h-2 bg-gray-700 rounded-full overflow-hidden">
+      <div className="h-2 bg-[#EAE2EB] rounded-full overflow-hidden">
         <div className="h-full rounded-full transition-all" style={{ width: `${producer.compositeScore}%`, backgroundColor: scoreColor(producer.compositeScore) }} />
       </div>
     </div>
     <div className="grid grid-cols-3 gap-1 mb-2 text-center">
-      <div className="bg-gray-900 rounded p-1"><p className="text-white font-bold text-sm">{producer.lotCount}</p><p className="text-gray-500 text-xs">Lots</p></div>
-      <div className="bg-gray-900 rounded p-1"><p className="text-white font-bold text-sm">{producer.activeCertifications}</p><p className="text-gray-500 text-xs">Certs</p></div>
-      <div className="bg-gray-900 rounded p-1"><p className="text-white font-bold text-sm">{producer.totalScans}</p><p className="text-gray-500 text-xs">Scans</p></div>
+      <div className="bg-[#F5F0E7] rounded-[4px] p-1 border border-[#D8CEC4]"><p className="text-[#352638] font-bold text-sm">{producer.lotCount}</p><p className="text-[#70656B] text-xs">Lots</p></div>
+      <div className="bg-[#F5F0E7] rounded-[4px] p-1 border border-[#D8CEC4]"><p className="text-[#352638] font-bold text-sm">{producer.activeCertifications}</p><p className="text-[#70656B] text-xs">Certs</p></div>
+      <div className="bg-[#F5F0E7] rounded-[4px] p-1 border border-[#D8CEC4]"><p className="text-[#352638] font-bold text-sm">{producer.totalScans}</p><p className="text-[#70656B] text-xs">Scans</p></div>
     </div>
     <div className="flex items-center gap-1 mb-3">
-      <span className="text-xs text-gray-400">EUDR :</span>
+      <span className="text-xs text-[#70656B]">EUDR :</span>
       <span className="text-xs font-semibold px-2 py-0.5 rounded-full" style={{ backgroundColor: eudrColor(producer.eudrRisk) + '33', color: eudrColor(producer.eudrRisk) }}>
         {producer.eudrRisk === 'low' ? '✅ Conforme' : producer.eudrRisk === 'medium' ? '⚠️ Modéré' : '🔴 Risque élevé'}
       </span>
     </div>
     {producer.recentLots.length > 0 && (
       <div className="mb-3">
-        <p className="text-xs text-gray-500 mb-1">Derniers lots</p>
+        <p className="text-xs text-[#70656B] mb-1">Derniers lots</p>
         {producer.recentLots.map((l) => (
           <div key={l.id} className="flex justify-between text-xs py-0.5">
-            <span className="text-gray-300">{l.lotNumber}</span>
-            <span className="text-gray-500">{l.quantityKg} kg</span>
+            <span className="text-[#352638] font-mono">{l.lotNumber}</span>
+            <span className="text-[#70656B] tabular-nums">{l.quantityKg} kg</span>
           </div>
         ))}
       </div>
     )}
-    <button onClick={onNavigate} className="w-full text-xs py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-1">
+    <button onClick={onNavigate} className="w-full text-xs py-1.5 bg-[#352638] hover:bg-[#352638]/90 text-[#FFFCF6] rounded-[6px] font-semibold transition-colors flex items-center justify-center gap-1">
       Voir le profil <ChevronRight size={12} />
     </button>
   </div>
 );
 
 const ShipmentDetailPanel: React.FC<{ shipment: ShipmentMapData; onClose: () => void; onNavigate: () => void }> = ({ shipment, onClose, onNavigate }) => {
-  const statusColor = shipment.status === 'delivered' ? '#22c55e' : shipment.status === 'transit' ? '#3b82f6' : '#f59e0b';
+  const statusColor = shipment.status === 'delivered' ? '#435432' : shipment.status === 'transit' ? '#352638' : '#795015';
   return (
-    <div className="p-3 bg-gray-800/60 m-2 rounded-xl border border-gray-700">
+    <div className="p-3 bg-[#FFFCF6] m-2 rounded-[8px] border border-[#D8CEC4] shadow-xs">
       <div className="flex items-start justify-between mb-2">
         <div>
-          <p className="font-bold text-white text-sm">{shipment.reference}</p>
-          <p className="text-xs" style={{ color: statusColor }}>{shipment.status}</p>
+          <p className="font-bold text-[#352638] text-sm">{shipment.reference}</p>
+          <p className="text-xs font-medium" style={{ color: statusColor }}>{shipment.status}</p>
         </div>
-        <button onClick={onClose} className="text-gray-500 hover:text-white text-lg leading-none">×</button>
+        <button onClick={onClose} className="text-[#70656B] hover:text-[#352638] text-lg leading-none">×</button>
       </div>
-      <div className="text-xs text-gray-400 space-y-1 mb-2">
+      <div className="text-xs text-[#70656B] space-y-1 mb-2">
         <p>🚢 {shipment.carrierName}</p>
         <p>📍 {shipment.departureLocation} → {shipment.arrivalLocation}</p>
         {shipment.totalWeightKg && <p>⚖️ {shipment.totalWeightKg} kg</p>}
       </div>
-      <p className="text-xs text-gray-500 mb-1">{shipment.shipmentLots.length} lot(s)</p>
-      <button onClick={onNavigate} className="w-full text-xs py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-1">
+      <p className="text-xs text-[#70656B] mb-1">{shipment.shipmentLots.length} lot(s)</p>
+      <button onClick={onNavigate} className="w-full text-xs py-1.5 bg-[#352638] hover:bg-[#352638]/90 text-[#FFFCF6] rounded-[6px] font-semibold transition-colors flex items-center justify-center gap-1">
         Voir l'expédition <ChevronRight size={12} />
       </button>
     </div>

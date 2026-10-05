@@ -120,13 +120,13 @@ export default function PurchaseOrders() {
         {/* Filtres */}
         <div className="flex flex-wrap gap-3 items-center">
           <div className="relative flex-1 min-w-48">
-            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#70656B]" />
             <input className="input pl-9 text-sm" placeholder="Rechercher PO, client, lot..." value={search} onChange={e => setSearch(e.target.value)} />
           </div>
-          <div className="flex gap-1 p-1 bg-white/[0.03] rounded-lg border border-white/[0.06]">
+          <div className="flex gap-1 p-1 bg-[#FFFCF6] rounded-[6px] border border-[#D8CEC4]">
             {[['', 'Tous'], ['pending', 'En attente'], ['in_production', 'Production'], ['ready', 'Prêt'], ['shipped', 'Expédié'], ['delivered', 'Livré']].map(([k, l]) => (
               <button key={k} onClick={() => setStatusFilter(k)}
-                className={`px-3 py-1.5 text-xs rounded-md transition-all ${statusFilter === k ? 'bg-white/10 text-white' : 'text-gray-400 hover:text-gray-200'}`}>{l}</button>
+                className={`px-3 py-1.5 text-xs rounded-[4px] font-medium transition-all ${statusFilter === k ? 'bg-[#352638] text-[#FFFCF6]' : 'text-[#70656B] hover:text-[#352638] hover:bg-[#F5F0E7]'}`}>{l}</button>
             ))}
           </div>
         </div>
@@ -143,31 +143,31 @@ export default function PurchaseOrders() {
               const isLate = new Date(order.deliveryDate) < new Date() && !['delivered', 'cancelled'].includes(order.status)
 
               return (
-                <Card key={order.id} className="p-4 hover:border-white/20 transition-all">
+                <Card key={order.id} className="p-4 hover:border-[#AD5138] transition-all">
                   <div className="flex items-start justify-between gap-4">
 
                     {/* Infos principales */}
                     <div className="flex items-start gap-4 flex-1 min-w-0">
-                      <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
+                      <div className="w-10 h-10 rounded-[6px] flex items-center justify-center flex-shrink-0"
                         style={{ background: cfg.bg, border: `1px solid ${cfg.color}30` }}>
                         <StatusIcon size={18} style={{ color: cfg.color }} />
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 flex-wrap mb-1">
-                          <span className="font-mono text-sm font-bold text-white">{order.poNumber}</span>
+                          <span className="font-mono text-sm font-bold text-[#352638]">{order.poNumber}</span>
                           <span className="text-xs px-2 py-0.5 rounded-full font-medium" style={{ background: cfg.bg, color: cfg.color }}>{cfg.label}</span>
-                          {isLate && <span className="text-xs px-2 py-0.5 rounded-full bg-red-500/15 text-red-400 font-medium">⚠️ En retard</span>}
+                          {isLate && <span className="text-xs px-2 py-0.5 rounded-full bg-[#F8E6E8] text-[#963C47] font-semibold border border-[#963C47]/20">⚠️ En retard</span>}
                         </div>
-                        <div className="flex items-center gap-3 flex-wrap text-xs text-gray-400">
-                          <span className="font-medium text-gray-300">{order.client?.name}</span>
-                          <span className="text-gray-600">·</span>
-                          <span className="font-mono text-blue-400">{order.lot?.lotNumber}</span>
-                          <span className="text-gray-600">·</span>
-                          <span>{order.quantityKg} kg</span>
-                          <span className="text-gray-600">·</span>
+                        <div className="flex items-center gap-3 flex-wrap text-xs text-[#70656B]">
+                          <span className="font-semibold text-[#352638]">{order.client?.name}</span>
+                          <span className="text-[#D8CEC4]">·</span>
+                          <span className="font-mono font-medium text-[#AD5138]">{order.lot?.lotNumber}</span>
+                          <span className="text-[#D8CEC4]">·</span>
+                          <span className="font-medium text-[#352638] tabular-nums">{order.quantityKg} kg</span>
+                          <span className="text-[#D8CEC4]">·</span>
                           <span>📍 {order.destination}</span>
-                          <span className="text-gray-600">·</span>
-                          <span className={isLate ? 'text-red-400' : ''}>
+                          <span className="text-[#D8CEC4]">·</span>
+                          <span className={isLate ? 'text-[#963C47] font-medium' : ''}>
                             <Calendar size={10} className="inline mr-1" />
                             {new Date(order.deliveryDate).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' })}
                           </span>
@@ -176,15 +176,15 @@ export default function PurchaseOrders() {
                         {/* Specs techniques */}
                         {(order.specGrade || order.specPackaging || order.specCertifications?.length > 0) && (
                           <div className="flex items-center gap-2 flex-wrap mt-2">
-                            {order.specGrade && <span className="text-xs px-1.5 py-0.5 rounded bg-white/5 text-gray-400">{order.specGrade}</span>}
+                            {order.specGrade && <span className="text-xs px-2 py-0.5 rounded-[4px] bg-[#EAE2EB] text-[#352638] font-medium">{order.specGrade}</span>}
                             {order.specHumidityMin && order.specHumidityMax && (
-                              <span className="text-xs px-1.5 py-0.5 rounded bg-white/5 text-gray-400">
+                              <span className="text-xs px-2 py-0.5 rounded-[4px] bg-[#EAE2EB] text-[#352638] font-medium">
                                 💧 {order.specHumidityMin}–{order.specHumidityMax}%
                               </span>
                             )}
-                            {order.specPackaging && <span className="text-xs px-1.5 py-0.5 rounded bg-white/5 text-gray-400">📦 {order.specPackaging}</span>}
+                            {order.specPackaging && <span className="text-xs px-2 py-0.5 rounded-[4px] bg-[#EAE2EB] text-[#352638] font-medium">📦 {order.specPackaging}</span>}
                             {(order.specCertifications ?? []).map((c: string) => (
-                              <span key={c} className="text-xs px-1.5 py-0.5 rounded bg-green-500/10 text-green-400">✓ {c}</span>
+                              <span key={c} className="text-xs px-2 py-0.5 rounded-[4px] bg-[#E5ECD9] text-[#435432] font-medium">✓ {c}</span>
                             ))}
                           </div>
                         )}
@@ -195,13 +195,13 @@ export default function PurchaseOrders() {
                     <div className="flex items-center gap-2 flex-shrink-0">
                       {order.status === 'pending' && (
                         <button onClick={() => updateStatus(order.id, 'in_production')}
-                          className="text-xs px-3 py-1.5 rounded-lg bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 transition-all">
+                          className="text-xs px-3 py-1.5 rounded-[6px] bg-[#EAE2EB] text-[#352638] hover:bg-[#D8CEC4] transition-all font-semibold">
                           → Production
                         </button>
                       )}
                       {order.status === 'in_production' && (
                         <button onClick={() => updateStatus(order.id, 'ready')}
-                          className="text-xs px-3 py-1.5 rounded-lg bg-green-500/10 text-green-400 hover:bg-green-500/20 transition-all">
+                          className="text-xs px-3 py-1.5 rounded-[6px] bg-[#E5ECD9] text-[#435432] hover:bg-[#D8DF72] transition-all font-semibold">
                           → Prêt
                         </button>
                       )}
@@ -220,8 +220,8 @@ export default function PurchaseOrders() {
 
           {/* Numéro PO */}
           <div>
-            <label className="block text-xs font-medium text-gray-400 mb-1.5">
-              N° PO <span className="text-gray-600">(laisser vide pour génération auto)</span>
+            <label className="block text-xs font-semibold text-[#352638] mb-1.5">
+              N° PO <span className="text-[#70656B] font-normal">(laisser vide pour génération auto)</span>
             </label>
             <input className="input font-mono" placeholder="PO-2026-001 (depuis votre ERP)" value={form.poNumber} onChange={e => setF('poNumber', e.target.value)} />
           </div>
@@ -229,7 +229,7 @@ export default function PurchaseOrders() {
           <div className="grid grid-cols-2 gap-4">
             {/* Client */}
             <div>
-              <label className="block text-xs font-medium text-gray-400 mb-1.5">Client *</label>
+              <label className="block text-xs font-semibold text-[#352638] mb-1.5">Client *</label>
               <select className="input" required value={form.clientId} onChange={e => setF('clientId', e.target.value)}>
                 <option value="">-- Choisir un client --</option>
                 {(clients ?? []).map((c: any) => <option key={c.id} value={c.id}>{c.name} — {c.country}</option>)}
@@ -238,7 +238,7 @@ export default function PurchaseOrders() {
 
             {/* Destination */}
             <div>
-              <label className="block text-xs font-medium text-gray-400 mb-1.5">Destination *</label>
+              <label className="block text-xs font-semibold text-[#352638] mb-1.5">Destination *</label>
               <input className="input" placeholder="France, Royaume-Uni..." required value={form.destination} onChange={e => setF('destination', e.target.value)} />
             </div>
           </div>
@@ -246,7 +246,7 @@ export default function PurchaseOrders() {
           <div className="grid grid-cols-2 gap-4">
             {/* Lot */}
             <div>
-              <label className="block text-xs font-medium text-gray-400 mb-1.5">Lot source *</label>
+              <label className="block text-xs font-semibold text-[#352638] mb-1.5">Lot source *</label>
               <select className="input" required value={form.lotId} onChange={e => setF('lotId', e.target.value)}>
                 <option value="">-- Choisir un lot --</option>
                 {(lotsData ?? []).map((l: any) => {
@@ -255,7 +255,7 @@ export default function PurchaseOrders() {
                 })}
               </select>
               {selectedLot && (
-                <p className="text-xs mt-1" style={{ color: availableKg < 100 ? '#f87171' : '#4ade80' }}>
+                <p className="text-xs mt-1" style={{ color: availableKg < 100 ? '#963C47' : '#435432' }}>
                   Disponible : <strong>{availableKg.toFixed(1)} kg</strong>
                 </p>
               )}
@@ -263,40 +263,40 @@ export default function PurchaseOrders() {
 
             {/* Quantité */}
             <div>
-              <label className="block text-xs font-medium text-gray-400 mb-1.5">Quantité demandée (kg) *</label>
+              <label className="block text-xs font-semibold text-[#352638] mb-1.5">Quantité demandée (kg) *</label>
               <input
                 className="input" type="number" min="1" max={availableKg} step="0.1"
                 placeholder="250" required value={form.quantityKg}
                 onChange={e => setF('quantityKg', e.target.value)}
-                style={{ borderColor: form.quantityKg && parseFloat(form.quantityKg) > availableKg ? '#f87171' : '' }}
+                style={{ borderColor: form.quantityKg && parseFloat(form.quantityKg) > availableKg ? '#963C47' : '' }}
               />
               {form.quantityKg && parseFloat(form.quantityKg) > availableKg && (
-                <p className="text-xs text-red-400 mt-1">⚠️ Dépasse la quantité disponible</p>
+                <p className="text-xs text-[#963C47] mt-1">⚠️ Dépasse la quantité disponible</p>
               )}
             </div>
           </div>
 
           {/* Date livraison */}
           <div>
-            <label className="block text-xs font-medium text-gray-400 mb-1.5">Date de livraison souhaitée *</label>
+            <label className="block text-xs font-semibold text-[#352638] mb-1.5">Date de livraison souhaitée *</label>
             <input type="date" className="input" required value={form.deliveryDate} onChange={e => setF('deliveryDate', e.target.value)} />
           </div>
 
           {/* ── Spécifications techniques ── */}
-          <div className="border border-white/[0.06] rounded-xl p-4 space-y-4">
-            <p className="text-xs font-semibold text-gray-300 uppercase tracking-wider">📋 Spécifications techniques</p>
+          <div className="border border-[#D8CEC4] bg-[#F5F0E7] rounded-[8px] p-4 space-y-4">
+            <p className="text-xs font-semibold text-[#352638] uppercase tracking-wider">📋 Spécifications techniques</p>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-medium text-gray-400 mb-1.5">Grade</label>
-                <select className="input" value={form.specGrade} onChange={e => setF('specGrade', e.target.value)}>
+                <label className="block text-xs font-semibold text-[#352638] mb-1.5">Grade</label>
+                <select className="input bg-[#FFFCF6]" value={form.specGrade} onChange={e => setF('specGrade', e.target.value)}>
                   <option value="">-- Non spécifié --</option>
                   {GRADES.map(g => <option key={g} value={g}>{g}</option>)}
                 </select>
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-400 mb-1.5">Conditionnement</label>
-                <select className="input" value={form.specPackaging} onChange={e => setF('specPackaging', e.target.value)}>
+                <label className="block text-xs font-semibold text-[#352638] mb-1.5">Conditionnement</label>
+                <select className="input bg-[#FFFCF6]" value={form.specPackaging} onChange={e => setF('specPackaging', e.target.value)}>
                   <option value="">-- Non spécifié --</option>
                   {PACKAGINGS.map(p => <option key={p} value={p}>{p}</option>)}
                 </select>
@@ -305,28 +305,28 @@ export default function PurchaseOrders() {
 
             <div className="grid grid-cols-3 gap-3">
               <div>
-                <label className="block text-xs font-medium text-gray-400 mb-1.5">Humidité min (%)</label>
-                <input className="input" type="number" step="0.1" placeholder="28" value={form.specHumidityMin} onChange={e => setF('specHumidityMin', e.target.value)} />
+                <label className="block text-xs font-semibold text-[#352638] mb-1.5">Humidité min (%)</label>
+                <input className="input bg-[#FFFCF6]" type="number" step="0.1" placeholder="28" value={form.specHumidityMin} onChange={e => setF('specHumidityMin', e.target.value)} />
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-400 mb-1.5">Humidité max (%)</label>
-                <input className="input" type="number" step="0.1" placeholder="32" value={form.specHumidityMax} onChange={e => setF('specHumidityMax', e.target.value)} />
+                <label className="block text-xs font-semibold text-[#352638] mb-1.5">Humidité max (%)</label>
+                <input className="input bg-[#FFFCF6]" type="number" step="0.1" placeholder="32" value={form.specHumidityMax} onChange={e => setF('specHumidityMax', e.target.value)} />
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-400 mb-1.5">Longueur min (cm)</label>
-                <input className="input" type="number" step="0.5" placeholder="14" value={form.specLengthMin} onChange={e => setF('specLengthMin', e.target.value)} />
+                <label className="block text-xs font-semibold text-[#352638] mb-1.5">Longueur min (cm)</label>
+                <input className="input bg-[#FFFCF6]" type="number" step="0.5" placeholder="14" value={form.specLengthMin} onChange={e => setF('specLengthMin', e.target.value)} />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-gray-400 mb-2">Certifications requises</label>
+              <label className="block text-xs font-semibold text-[#352638] mb-2">Certifications requises</label>
               <div className="flex flex-wrap gap-2">
                 {CERTIFICATIONS.map(cert => (
                   <button key={cert} type="button" onClick={() => toggleCert(cert)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all border ${
+                    className={`px-3 py-1.5 rounded-[6px] text-xs font-medium transition-all border ${
                       form.specCertifications.includes(cert)
-                        ? 'bg-green-500/15 text-green-400 border-green-500/30'
-                        : 'bg-white/[0.03] text-gray-400 border-white/[0.08] hover:border-white/20'
+                        ? 'bg-[#E5ECD9] text-[#435432] border-[#435432]'
+                        : 'bg-[#FFFCF6] text-[#70656B] border-[#D8CEC4] hover:border-[#AD5138]'
                     }`}>
                     {form.specCertifications.includes(cert) ? '✓ ' : ''}{cert}
                   </button>
@@ -335,8 +335,8 @@ export default function PurchaseOrders() {
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-gray-400 mb-1.5">Notes libres</label>
-              <textarea className="input h-16 resize-none" placeholder="Instructions spéciales, remarques client..." value={form.specNotes} onChange={e => setF('specNotes', e.target.value)} />
+              <label className="block text-xs font-semibold text-[#352638] mb-1.5">Notes libres</label>
+              <textarea className="input bg-[#FFFCF6] h-16 resize-none" placeholder="Instructions spéciales, remarques client..." value={form.specNotes} onChange={e => setF('specNotes', e.target.value)} />
             </div>
           </div>
 

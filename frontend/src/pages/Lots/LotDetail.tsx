@@ -15,7 +15,7 @@ import { Button } from '../../components/ui/Button';
 import { StatusBadge, ScoreBadge } from '../../components/ui/Badge';
 import { Modal } from '../../components/ui/Modal';
 import { PageLoader } from '../../components/ui/Spinner';
-import { LOT_STATUS_CONFIG, formatDate, formatKg } from '../../lib/utils';
+import { LOT_STATUS_CONFIG, formatDate, formatKg, cn } from '../../lib/utils';
 import api from '../../lib/api';
 import toast from 'react-hot-toast';
 import { LotWorkflow } from './workflow/LotWorkflow';
@@ -73,62 +73,50 @@ const LotQuantityBar: React.FC<{ lot: any }> = ({ lot }) => {
   const isExhausted = available <= 0;
 
   return (
-    <div ref={ref} className="p-4 rounded-xl border transition-all duration-500"
-      style={{
-        background: 'rgba(255,255,255,0.02)',
-        borderColor: isExhausted ? 'rgba(248,113,113,0.3)' : isLow ? 'rgba(251,146,60,0.3)' : 'rgba(255,255,255,0.07)',
-        opacity: visible ? 1 : 0,
-        transform: visible ? 'translateY(0)' : 'translateY(12px)',
-      }}
-    >
+    <div ref={ref} className="p-4 rounded-[8px] border transition-all duration-300 bg-[#FFFCF6] border-[#D8CEC4]">
       <div className="flex items-center justify-between mb-3">
-        <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--color-navy-400)' }}>
-          Répartition du lot
+        <p className="text-xs font-semibold uppercase tracking-wider text-[#70656B]">
+          Répartition des volumes
         </p>
         {isExhausted && (
-          <span className="text-xs px-2 py-0.5 rounded-full font-medium animate-pulse"
-            style={{ background: 'rgba(248,113,113,0.15)', color: '#f87171' }}>
-            ⚠️ Lot épuisé
+          <span className="text-xs px-2.5 py-0.5 rounded-full font-semibold bg-[#F8E6E8] text-[#963C47]">
+            ⚠ Lot épuisé
           </span>
         )}
         {isLow && !isExhausted && (
-          <span className="text-xs px-2 py-0.5 rounded-full font-medium animate-pulse"
-            style={{ background: 'rgba(251,146,60,0.15)', color: '#fb923c' }}>
-            ⚠️ Stock faible ({Math.round(availPct)}%)
+          <span className="text-xs px-2.5 py-0.5 rounded-full font-semibold bg-[#F5E8CC] text-[#795015]">
+            ▲ Stock faible ({Math.round(availPct)}%)
           </span>
         )}
       </div>
 
-      {/* Barre animée */}
-      <div className="h-3 rounded-full overflow-hidden flex mb-4"
-        style={{ background: 'rgba(255,255,255,0.05)' }}>
-        <div className="h-full transition-all duration-1000 ease-out"
+      {/* Barre claire */}
+      <div className="h-3 rounded-full overflow-hidden flex mb-4 bg-[#EAE2EB]">
+        <div className="h-full transition-all duration-1000 ease-out bg-[#AD5138]"
           style={{
             width: visible ? `${resPct}%` : '0%',
-            background: 'linear-gradient(90deg, #c9923a, #e0aa55)',
-            borderRadius: resPct === 100 ? '6px' : '6px 0 0 6px',
+            borderRadius: resPct === 100 ? '9999px' : '9999px 0 0 9999px',
           }} />
-        <div className="h-full transition-all duration-1000 ease-out"
+        <div className="h-full transition-all duration-1000 ease-out bg-[#435432]"
           style={{
             width: visible ? `${availPct}%` : '0%',
             transitionDelay: '150ms',
-            background: isExhausted ? 'rgba(248,113,113,0.3)' : 'linear-gradient(90deg, #1e5c6e, #2a7a90)',
-            borderRadius: resPct === 0 ? '6px' : '0 6px 6px 0',
+            borderRadius: resPct === 0 ? '9999px' : '0 9999px 9999px 0',
           }} />
       </div>
 
       {/* Compteurs */}
       <div className="grid grid-cols-3 gap-3 text-center">
         {[
-          { label: 'Total initial', value: animTotal, color: 'text-white' },
-          { label: 'Réservé / En cours', value: animRes, color: 'text-amber-400' },
-          { label: 'Disponible', value: animAvail, color: isExhausted ? 'text-red-400' : isLow ? 'text-orange-400' : 'text-teal-400' },
+          { label: 'Total initial', value: animTotal, color: 'text-[#352638]' },
+          { label: 'Réservé / En cours', value: animRes, color: 'text-[#AD5138]' },
+          { label: 'Disponible', value: animAvail, color: isExhausted ? 'text-[#963C47]' : isLow ? 'text-[#795015]' : 'text-[#435432]' },
         ].map(({ label, value, color }) => (
-          <div key={label}>
-            <p className={`text-xl font-bold tabular-nums ${color}`}>
-              {value.toLocaleString()} <span className="text-sm font-normal opacity-60">kg</span>
+          <div key={label} className="p-2.5 rounded-[6px] bg-[#F5F0E7]">
+            <p className={cn('text-lg font-serif font-medium tabular-nums', color)}>
+              {value.toLocaleString('fr-FR')} <span className="text-xs font-sans font-normal text-[#70656B]">kg</span>
             </p>
-            <p className="text-xs mt-0.5" style={{ color: 'var(--color-navy-400)' }}>{label}</p>
+            <p className="text-[11px] font-semibold text-[#70656B] mt-0.5">{label}</p>
           </div>
         ))}
       </div>
@@ -138,11 +126,11 @@ const LotQuantityBar: React.FC<{ lot: any }> = ({ lot }) => {
 
 // ─── Config icônes timeline ───────────────────────────────────────────────────
 const EVENT_CONFIG: Record<string, { icon: any; color: string; bg: string; label: string }> = {
-  created:              { icon: Leaf,          color: '#4ade80', bg: 'rgba(34,197,94,0.12)',   label: 'Lot créé' },
-  po_created:           { icon: ClipboardList, color: '#c9923a', bg: 'rgba(201,146,58,0.12)',  label: 'Bon de commande' },
-  conditioning_started: { icon: Factory,       color: '#60a5fa', bg: 'rgba(96,165,250,0.12)',  label: 'Conditionnement démarré' },
-  conditioning_done:    { icon: CheckCircle,   color: '#4ade80', bg: 'rgba(34,197,94,0.12)',   label: 'Conditionnement terminé' },
-  shipped:              { icon: Ship,          color: '#a78bfa', bg: 'rgba(167,139,250,0.12)', label: 'Expédié' },
+  created:              { icon: Leaf,          color: '#435432', bg: '#E5ECD9', label: 'Lot créé' },
+  po_created:           { icon: ClipboardList, color: '#AD5138', bg: '#F5E8CC', label: 'Bon de commande' },
+  conditioning_started: { icon: Factory,       color: '#352638', bg: '#EAE2EB', label: 'Conditionnement démarré' },
+  conditioning_done:    { icon: CheckCircle,   color: '#435432', bg: '#E5ECD9', label: 'Conditionnement terminé' },
+  shipped:              { icon: Ship,          color: '#352638', bg: '#EAE2EB', label: 'Expédié' },
   delivered:            { icon: CheckCircle,   color: '#34d399', bg: 'rgba(52,211,153,0.12)',  label: 'Livré' },
   split:                { icon: Package,       color: '#fb923c', bg: 'rgba(245,158,11,0.12)',  label: 'Sous-lot créé' },
   step:                 { icon: Clock,         color: '#94a3b8', bg: 'rgba(148,163,184,0.08)', label: 'Étape de transformation' },
@@ -358,19 +346,18 @@ export const LotDetail: React.FC = () => {
 
       {/* Header avec animation slide-down */}
       <Header>
-        <div className="flex items-center gap-3 transition-all duration-500"
-          style={{ opacity: headerVisible ? 1 : 0, transform: headerVisible ? 'translateY(0)' : 'translateY(-10px)' }}>
+        <div className="flex items-center gap-3">
           <Button variant="ghost" size="sm" onClick={() => navigate('/lots')} icon={<ArrowLeft size={16} />}>Retour</Button>
           <div>
-            <h1 className="font-mono text-lg font-bold" style={{ color: '#2a7a90' }}>{lot.lotNumber}</h1>
-            <p className="text-xs text-gray-500">{lot.product?.name} · {lot.producer?.name}</p>
+            <h1 className="font-mono text-lg font-bold text-[#352638]">{lot.lotNumber}</h1>
+            <p className="text-xs text-[#70656B]">{lot.product?.name} · {lot.producer?.name}</p>
           </div>
-          <StatusBadge config={LOT_STATUS_CONFIG[lot.status]} />
+          <StatusBadge config={LOT_STATUS_CONFIG[lot.status] || { label: lot.status }} />
         </div>
       </Header>
 
       {/* Tab navigation */}
-      <div className="flex border-b px-6" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
+      <div className="flex border-b px-6 bg-[#FFFCF6] border-[#D8CEC4]">
         {([
           { key: 'overview',  label: "Vue d'ensemble" },
           { key: 'workflow',  label: 'Processus de réception' },
@@ -380,10 +367,10 @@ export const LotDetail: React.FC = () => {
             key={key}
             type="button"
             onClick={() => setActiveTab(key)}
-            className={`px-4 py-3 text-sm font-medium transition-all border-b-2 -mb-px ${
+            className={`px-5 py-3 text-sm font-semibold transition-all border-b-2 -mb-px ${
               activeTab === key
-                ? 'border-teal-400 text-teal-400'
-                : 'border-transparent text-gray-500 hover:text-gray-300'
+                ? 'border-[#AD5138] text-[#352638] bg-[#EAE2EB]/40'
+                : 'border-transparent text-[#70656B] hover:text-[#352638]'
             }`}
           >
             {label}

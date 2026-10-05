@@ -17,67 +17,66 @@ import toast from 'react-hot-toast';
 
 /* ── Icône par statut ──────────────────────────────────────────────────── */
 const StatusIcon: React.FC<{ status: string }> = ({ status }) => {
-  if (status === 'delivered')  return <CheckCircle size={14} className="text-forest-400" />;
-  if (status === 'in_transit') return <Truck size={14} className="text-blue-400" />;
-  if (status === 'cancelled')  return <AlertCircle size={14} className="text-red-400" />;
-  return <Clock size={14} className="text-vanilla-400" />;
+  if (status === 'delivered')  return <CheckCircle size={14} className="text-[#435432]" />;
+  if (status === 'in_transit') return <Truck size={14} className="text-[#352638]" />;
+  if (status === 'cancelled')  return <AlertCircle size={14} className="text-[#963C47]" />;
+  return <Clock size={14} className="text-[#795015]" />;
 };
 
 /* ── Carte expédition ──────────────────────────────────────────────────── */
 const ShipmentCard: React.FC<{ s: any; onClick: () => void }> = ({ s, onClick }) => {
   const cfg = SHIPMENT_STATUS_CONFIG[s.status] ?? SHIPMENT_STATUS_CONFIG.preparing;
   const lots = s.shipmentLots ?? [];
-  const totalQty = lots.reduce((acc: number, sl: any) => acc + (sl.lot?.actualQuantity || sl.lot?.expectedQuantity || 0), 0);
 
   return (
     <div
       onClick={onClick}
-      className="p-4 bg-white/[0.03] rounded-xl border border-white/[0.06] hover:border-forest-500/30 hover:bg-white/[0.05] transition-all cursor-pointer group"
+      className="p-5 bg-[#FFFCF6] rounded-[8px] border border-[#D8CEC4] hover:border-[#AD5138] hover:shadow-sm transition-all cursor-pointer group"
     >
       {/* Header carte */}
       <div className="flex items-start justify-between gap-3 mb-3">
         <div className="flex items-start gap-3">
-          <div className="w-10 h-10 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center flex-shrink-0">
+          <div className="w-10 h-10 rounded-[6px] bg-[#EAE2EB] border border-[#D8CEC4] flex items-center justify-center flex-shrink-0 text-[#352638]">
             {s.transportMode === 'aerien'
               ? <span style={{ fontSize: 18 }}>✈️</span>
-              : <Ship size={18} className="text-blue-400" />
+              : <Ship size={18} />
             }
           </div>
           <div>
-            <p className="font-mono text-sm font-bold text-white group-hover:text-forest-400 transition-colors">{s.reference}</p>
-            <p className="text-xs text-gray-500">{s.carrierName}</p>
+            <p className="font-mono text-sm font-bold text-[#352638] group-hover:text-[#AD5138] transition-colors">{s.reference}</p>
+            <p className="text-xs text-[#70656B]">{s.carrierName}</p>
           </div>
         </div>
         <StatusBadge config={cfg} />
       </div>
 
       {/* Itinéraire */}
-      <div className="flex items-center gap-2 mb-3">
-        <div className="flex items-center gap-1">
-          <MapPin size={11} className="text-gray-600 flex-shrink-0" />
-          <span className="text-xs text-gray-400 truncate">{s.departureLocation}</span>
+      <div className="flex items-center gap-2 mb-3 bg-[#F5F0E7] p-2 rounded-[6px]">
+        <div className="flex items-center gap-1 min-w-0">
+          <MapPin size={12} className="text-[#AD5138] flex-shrink-0" />
+          <span className="text-xs text-[#352638] font-medium truncate">{s.departureLocation}</span>
         </div>
-        <ChevronRight size={12} className="text-gray-600 flex-shrink-0" />
-        <div className="flex items-center gap-1">
-          <MapPin size={11} className="text-gray-600 flex-shrink-0" />
-          <span className="text-xs text-gray-400 truncate">{s.arrivalLocation}</span>
+        <ChevronRight size={12} className="text-[#70656B] flex-shrink-0" />
+        <div className="flex items-center gap-1 min-w-0">
+          <MapPin size={12} className="text-[#435432] flex-shrink-0" />
+          <span className="text-xs text-[#352638] font-medium truncate">{s.arrivalLocation}</span>
         </div>
       </div>
 
       {/* Progress bar */}
-      <div className="h-1.5 bg-white/5 rounded-full overflow-hidden mb-3">
+      <div className="h-2 bg-[#EAE2EB] rounded-full overflow-hidden mb-3">
         <div className={`h-full rounded-full ${
-          s.status === 'preparing' ? 'w-1/3 bg-vanilla-500' :
-          s.status === 'in_transit' ? 'w-2/3 bg-blue-500' :
-          s.status === 'delivered' ? 'w-full bg-forest-500' : 'w-0'
+          s.status === 'preparing' ? 'w-1/3 bg-[#795015]' :
+          s.status === 'in_transit' ? 'w-2/3 bg-[#352638]' :
+          s.status === 'delivered' ? 'w-full bg-[#435432]' : 'w-0'
         }`} />
       </div>
 
       {/* Footer */}
-      <div className="flex justify-between text-xs text-gray-500">
-        <span className="flex items-center gap-1"><Package size={11} /> {s._count?.shipmentLots ?? lots.length} lot(s)</span>
-        {s.containerNumber && <span className="font-mono">{s.containerNumber}</span>}
-        {s.expectedArrival && <span className="flex items-center gap-1"><Calendar size={11} /> {formatDate(s.expectedArrival)}</span>}
+      <div className="flex justify-between text-xs text-[#70656B] pt-2 border-t border-[#D8CEC4]/60">
+        <span className="flex items-center gap-1"><Package size={12} /> {s._count?.shipmentLots ?? lots.length} lot(s)</span>
+        {s.containerNumber && <span className="font-mono text-[#352638] font-semibold">{s.containerNumber}</span>}
+        {s.expectedArrival && <span className="flex items-center gap-1"><Calendar size={12} /> {formatDate(s.expectedArrival)}</span>}
       </div>
     </div>
   );

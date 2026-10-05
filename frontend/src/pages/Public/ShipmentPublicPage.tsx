@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import api from '../../lib/api';
 import { formatDate } from '../../lib/utils';
+import { StatusBadge } from '../../components/ui/Badge';
 
 /* ── Types de docs EUDR ─────────────────────────────────────────────────── */
 const DOC_CONFIG: Record<string, { label: string; emoji: string; color: string }> = {
@@ -87,20 +88,20 @@ export const ShipmentPublicPage: React.FC = () => {
 
   /* ── Chargement / erreur ─────────────────────────────────────────────── */
   if (isLoading) return (
-    <div className="min-h-screen bg-gray-950 flex items-center justify-center">
+    <div className="min-h-screen bg-[#F5F0E7] flex items-center justify-center">
       <div className="text-center">
-        <div className="w-12 h-12 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-        <p className="text-gray-400 text-sm">Chargement du passeport numérique...</p>
+        <div className="w-12 h-12 border-2 border-[#352638] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+        <p className="text-[#70656B] text-sm font-medium">Chargement du passeport numérique d'expédition...</p>
       </div>
     </div>
   );
 
   if (error || !shipment) return (
-    <div className="min-h-screen bg-gray-950 flex items-center justify-center p-4">
-      <div className="text-center max-w-sm">
-        <AlertCircle size={48} className="mx-auto text-red-400 mb-4" />
-        <h2 className="text-xl font-bold text-white mb-2">Expédition introuvable</h2>
-        <p className="text-gray-400 text-sm">Cette expédition n'existe pas ou n'est plus accessible.</p>
+    <div className="min-h-screen bg-[#F5F0E7] flex items-center justify-center p-4">
+      <div className="text-center max-w-sm p-6 bg-[#FFFCF6] border border-[#D8CEC4] rounded-[8px]">
+        <AlertCircle size={44} className="mx-auto text-[#963C47] mb-3" />
+        <h2 className="text-xl font-serif font-medium text-[#352638] mb-2">Expédition introuvable</h2>
+        <p className="text-[#70656B] text-sm">Cette expédition n'existe pas ou n'est plus accessible dans le registre.</p>
       </div>
     </div>
   );
@@ -117,24 +118,26 @@ export const ShipmentPublicPage: React.FC = () => {
 
   /* ═══════════════════════════════════════════════ RENDER ═══════════════ */
   return (
-    <div className="min-h-screen bg-gray-950 text-white">
+    <div className="min-h-screen bg-[#F5F0E7] text-[#352638] font-sans">
 
       {/* ── Barre supérieure ─────────────────────────────────────────── */}
-      <div className="sticky top-0 z-10 bg-gray-900/80 backdrop-blur-xl border-b border-white/[0.06]">
-        <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center">
-              <Leaf size={14} className="text-white" />
+      <div className="sticky top-0 z-10 bg-[#FFFCF6] border-b border-[#D8CEC4] shadow-xs">
+        <div className="max-w-4xl mx-auto px-5 py-3.5 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-[6px] bg-[#352638] flex items-center justify-center text-[#FFFCF6] font-serif font-bold text-sm">
+              TA
             </div>
-            <span className="text-sm font-semibold text-white">TraceAgro</span>
-            <span className="text-gray-600 mx-1">·</span>
-            <span className="text-xs text-gray-400">APL Madagascar</span>
+            <div>
+              <span className="text-sm font-serif font-medium text-[#352638]">TraceAgro</span>
+              <span className="text-[#D8CEC4] mx-2">·</span>
+              <span className="text-xs font-semibold uppercase tracking-wider text-[#AD5138]">APL Madagascar</span>
+            </div>
           </div>
           <button
             onClick={() => setLang(l => l === 'fr' ? 'en' : 'fr')}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-white/[0.06] rounded-lg text-xs text-gray-300 hover:bg-white/10 transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-[#FFFCF6] border border-[#D8CEC4] rounded-[6px] text-xs font-semibold text-[#352638] hover:bg-[#EAE2EB] transition-colors"
           >
-            <Globe size={12} />
+            <Globe size={13} className="text-[#AD5138]" />
             {lang === 'fr' ? '🇫🇷 FR' : '🇬🇧 EN'}
           </button>
         </div>
@@ -142,98 +145,95 @@ export const ShipmentPublicPage: React.FC = () => {
 
       <div className="max-w-4xl mx-auto px-4 py-8 space-y-6">
 
-        {/* ── Hero ─────────────────────────────────────────────────────── */}
-        <div className="relative rounded-2xl overflow-hidden bg-gradient-to-br from-gray-800 to-gray-900 border border-white/[0.08] p-6">
-          {/* Badge statut */}
-          <div className={`absolute top-4 right-4 flex items-center gap-1.5 px-3 py-1.5 ${statusCfg.bg} rounded-full`}>
-            <span className={statusCfg.color}>{statusCfg.icon}</span>
-            <span className={`text-xs font-medium ${statusCfg.color}`}>{statusCfg.label}</span>
-          </div>
-
-          <div className="flex items-start gap-4">
-            <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-500/20 to-cyan-500/20 border border-blue-500/30 flex items-center justify-center flex-shrink-0">
-              <Ship size={24} className="text-blue-400" />
+        {/* ── Carte principale ────────────────────────────────────────── */}
+        <div className="bg-[#FFFCF6] rounded-[8px] border border-[#D8CEC4] p-6 shadow-xs relative">
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 rounded-[6px] bg-[#EAE2EB] border border-[#D8CEC4] flex items-center justify-center flex-shrink-0 text-[#352638]">
+                <Ship size={22} />
+              </div>
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wider text-[#70656B] mb-1">{t.title}</p>
+                <h1 className="text-2xl font-mono font-bold text-[#352638]">{shipment.reference}</h1>
+                <p className="text-xs font-medium text-[#70656B] mt-0.5">{shipment.carrierName}</p>
+              </div>
             </div>
-            <div>
-              <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">{t.title}</p>
-              <h1 className="text-2xl font-bold text-white">{shipment.reference}</h1>
-              <p className="text-gray-400 text-sm mt-1">{shipment.carrierName}</p>
-            </div>
+            <StatusBadge config={statusCfg} />
           </div>
 
           {/* Badges certifications */}
           <div className="flex flex-wrap gap-2 mt-5">
             {hasEUDR && (
-              <span className="flex items-center gap-1.5 px-3 py-1 bg-blue-500/10 border border-blue-500/30 rounded-full text-xs text-blue-400">
+              <span className="flex items-center gap-1.5 px-3 py-1 bg-[#EAE2EB] border border-[#352638]/20 rounded-full text-xs font-semibold text-[#352638]">
                 🇪🇺 EUDR Compliant
               </span>
             )}
             {hasOrganic && (
-              <span className="flex items-center gap-1.5 px-3 py-1 bg-emerald-500/10 border border-emerald-500/30 rounded-full text-xs text-emerald-400">
+              <span className="flex items-center gap-1.5 px-3 py-1 bg-[#E5ECD9] border border-[#435432]/30 rounded-full text-xs font-semibold text-[#435432]">
                 🌿 Certifié Bio
               </span>
             )}
             {hasFairTrade && (
-              <span className="flex items-center gap-1.5 px-3 py-1 bg-amber-500/10 border border-amber-500/30 rounded-full text-xs text-amber-400">
+              <span className="flex items-center gap-1.5 px-3 py-1 bg-[#F5E8CC] border border-[#795015]/30 rounded-full text-xs font-semibold text-[#795015]">
                 ⚖️ Fair Trade
               </span>
             )}
-            <span className="flex items-center gap-1.5 px-3 py-1 bg-emerald-500/10 border border-emerald-500/30 rounded-full text-xs text-emerald-400">
-              <Shield size={10} /> {t.certified}
+            <span className="flex items-center gap-1.5 px-3 py-1 bg-[#E5ECD9] border border-[#435432]/30 rounded-full text-xs font-semibold text-[#435432]">
+              <Shield size={11} /> {t.certified}
             </span>
           </div>
 
           {/* Stats rapides */}
-          <div className="grid grid-cols-3 gap-4 mt-6 pt-5 border-t border-white/[0.06]">
+          <div className="grid grid-cols-3 gap-4 mt-6 pt-5 border-t border-[#D8CEC4]">
             <div className="text-center">
-              <p className="text-2xl font-bold text-white">{lots.length}</p>
-              <p className="text-xs text-gray-500 mt-0.5">{t.lotsIncluded}</p>
+              <p className="text-2xl font-serif font-medium text-[#352638]">{lots.length}</p>
+              <p className="text-xs text-[#70656B] mt-0.5">{t.lotsIncluded}</p>
             </div>
-            <div className="text-center border-x border-white/[0.06]">
-              <p className="text-2xl font-bold text-white">{totalQty.toFixed(0)} <span className="text-sm font-normal text-gray-400">kg</span></p>
-              <p className="text-xs text-gray-500 mt-0.5">{t.totalQty}</p>
+            <div className="text-center border-x border-[#D8CEC4]">
+              <p className="text-2xl font-serif font-medium text-[#352638]">{totalQty.toFixed(0)} <span className="text-sm font-sans font-normal text-[#70656B]">kg</span></p>
+              <p className="text-xs text-[#70656B] mt-0.5">{t.totalQty}</p>
             </div>
             <div className="text-center">
-              <p className={`text-2xl font-bold ${parseFloat(avgScore) >= 8 ? 'text-emerald-400' : parseFloat(avgScore) >= 6 ? 'text-amber-400' : 'text-red-400'}`}>{avgScore}<span className="text-sm font-normal text-gray-400">/10</span></p>
-              <p className="text-xs text-gray-500 mt-0.5">{t.avgScore}</p>
+              <p className={`text-2xl font-serif font-medium ${parseFloat(avgScore) >= 8 ? 'text-[#435432]' : parseFloat(avgScore) >= 6 ? 'text-[#795015]' : 'text-[#963C47]'}`}>{avgScore}<span className="text-sm font-sans font-normal text-[#70656B]">/10</span></p>
+              <p className="text-xs text-[#70656B] mt-0.5">{t.avgScore}</p>
             </div>
           </div>
         </div>
 
         {/* ── Progress livraison ────────────────────────────────────────── */}
-        <div className="p-4 bg-gray-900 rounded-xl border border-white/[0.06]">
-          <div className="flex justify-between text-xs text-gray-500 mb-2">
+        <div className="p-4 bg-[#FFFCF6] rounded-[8px] border border-[#D8CEC4]">
+          <div className="flex justify-between text-xs font-semibold text-[#70656B] mb-2">
             <span>🏭 {lang === 'fr' ? 'Préparation' : 'Preparation'}</span>
             <span>🚢 {lang === 'fr' ? 'En transit' : 'In transit'}</span>
             <span>✅ {lang === 'fr' ? 'Livré' : 'Delivered'}</span>
           </div>
-          <div className="h-2.5 bg-gray-800 rounded-full overflow-hidden">
+          <div className="h-2.5 bg-[#EAE2EB] rounded-full overflow-hidden">
             <div className={`h-full rounded-full transition-all duration-1000 ${
-              shipment.status === 'preparing' ? 'w-1/3 bg-amber-500' :
-              shipment.status === 'in_transit' ? 'w-2/3 bg-blue-500' :
-              shipment.status === 'delivered' ? 'w-full bg-emerald-500' : 'w-0'
+              shipment.status === 'preparing' ? 'w-1/3 bg-[#795015]' :
+              shipment.status === 'in_transit' ? 'w-2/3 bg-[#352638]' :
+              shipment.status === 'delivered' ? 'w-full bg-[#435432]' : 'w-0'
             }`} />
           </div>
         </div>
 
         {/* ── Onglets ───────────────────────────────────────────────────── */}
-        <div className="flex gap-1 p-1 bg-gray-900 rounded-xl border border-white/[0.06] overflow-x-auto">
+        <div className="flex gap-1.5 p-1.5 bg-[#FFFCF6] rounded-[8px] border border-[#D8CEC4] overflow-x-auto">
           {([
-            { key: 'overview',    label: t.overview,    icon: <Ship size={13} /> },
-            { key: 'lots',        label: t.lots,        icon: <Package size={13} />, count: lots.length },
-            { key: 'documents',   label: t.documents,   icon: <FileText size={13} />, count: docs.length },
-            { key: 'compliance',  label: t.compliance,  icon: <Award size={13} /> },
+            { key: 'overview',    label: t.overview,    icon: <Ship size={14} /> },
+            { key: 'lots',        label: t.lots,        icon: <Package size={14} />, count: lots.length },
+            { key: 'documents',   label: t.documents,   icon: <FileText size={14} />, count: docs.length },
+            { key: 'compliance',  label: t.compliance,  icon: <Award size={14} /> },
           ] as const).map(item => (
             <button
               key={item.key}
               onClick={() => setTab(item.key)}
-              className={`flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-lg transition-all whitespace-nowrap ${
-                tab === item.key ? 'bg-white/10 text-white' : 'text-gray-400 hover:text-gray-200'
+              className={`flex items-center gap-1.5 px-4 py-2 text-xs font-semibold rounded-[6px] transition-all whitespace-nowrap ${
+                tab === item.key ? 'bg-[#352638] text-[#FFFCF6]' : 'text-[#70656B] hover:text-[#352638]'
               }`}
             >
               {item.icon} {item.label}
               {'count' in item && item.count !== undefined && (
-                <span className="ml-1 px-1.5 py-0.5 rounded-full bg-white/10 text-gray-300">{item.count}</span>
+                <span className="ml-1 px-1.5 py-0.5 rounded-full bg-[#EAE2EB] text-[#352638] text-[10px]">{item.count}</span>
               )}
             </button>
           ))}
@@ -242,9 +242,9 @@ export const ShipmentPublicPage: React.FC = () => {
         {/* ════════════════ TAB: APERÇU ════════════════════════════════ */}
         {tab === 'overview' && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="bg-gray-900 rounded-xl border border-white/[0.06] p-5">
-              <h3 className="text-sm font-semibold text-white mb-4 flex items-center gap-2">
-                <Truck size={14} className="text-blue-400" />
+            <div className="bg-[#FFFCF6] rounded-[8px] border border-[#D8CEC4] p-5 shadow-xs">
+              <h3 className="text-sm font-semibold text-[#352638] mb-4 flex items-center gap-2">
+                <Truck size={14} className="text-[#352638]" />
                 {lang === 'fr' ? 'Informations logistiques' : 'Logistics information'}
               </h3>
               <div className="space-y-3">
@@ -255,31 +255,31 @@ export const ShipmentPublicPage: React.FC = () => {
                 <PubRow label={t.depDate}    value={shipment.departureDate ? formatDate(shipment.departureDate) : '—'} icon={<Calendar size={12} />} />
                 <PubRow label={t.arrDate}    value={shipment.expectedArrival ? formatDate(shipment.expectedArrival) : '—'} icon={<Calendar size={12} />} />
                 {shipment.actualArrival && (
-                  <PubRow label={t.realArr}  value={formatDate(shipment.actualArrival)} color="text-emerald-400" />
+                  <PubRow label={t.realArr}  value={formatDate(shipment.actualArrival)} color="text-[#435432]" />
                 )}
               </div>
             </div>
 
             {/* Origine des lots */}
-            <div className="bg-gray-900 rounded-xl border border-white/[0.06] p-5">
-              <h3 className="text-sm font-semibold text-white mb-4 flex items-center gap-2">
-                <MapPin size={14} className="text-emerald-400" />
+            <div className="bg-[#FFFCF6] rounded-[8px] border border-[#D8CEC4] p-5 shadow-xs">
+              <h3 className="text-sm font-semibold text-[#352638] mb-4 flex items-center gap-2">
+                <MapPin size={14} className="text-[#AD5138]" />
                 {lang === 'fr' ? "Origines producteurs" : "Producer origins"}
               </h3>
               {lots.length === 0 ? (
-                <p className="text-sm text-gray-500">{lang === 'fr' ? 'Aucun lot' : 'No lots'}</p>
+                <p className="text-sm text-[#70656B]">{lang === 'fr' ? 'Aucun lot' : 'No lots'}</p>
               ) : (
                 <div className="space-y-2">
                   {Array.from(new Set(lots.map((l: any) => l?.producer?.name))).slice(0, 6).map((name: any, i: number) => {
                     const prod = lots.find((l: any) => l?.producer?.name === name)?.producer;
                     return (
-                      <div key={i} className="flex items-center gap-2 p-2 bg-gray-800 rounded-lg">
-                        <div className="w-7 h-7 rounded-full bg-emerald-500/20 flex items-center justify-center text-xs text-emerald-400 font-bold flex-shrink-0">
+                      <div key={i} className="flex items-center gap-2 p-2 bg-[#F5F0E7] rounded-[6px] border border-[#D8CEC4]">
+                        <div className="w-7 h-7 rounded-full bg-[#EAE2EB] flex items-center justify-center text-xs text-[#352638] font-bold flex-shrink-0">
                           {name?.charAt(0)}
                         </div>
                         <div>
-                          <p className="text-xs font-medium text-gray-200">{name}</p>
-                          <p className="text-xs text-gray-500">{prod?.region}, {prod?.country || 'Madagascar'}</p>
+                          <p className="text-xs font-semibold text-[#352638]">{name}</p>
+                          <p className="text-xs text-[#70656B]">{prod?.region}, {prod?.country || 'Madagascar'}</p>
                         </div>
                       </div>
                     );
@@ -294,25 +294,25 @@ export const ShipmentPublicPage: React.FC = () => {
         {tab === 'lots' && (
           <div className="space-y-3">
             {lots.length === 0 ? (
-              <div className="bg-gray-900 rounded-xl border border-white/[0.06] p-8 text-center">
-                <Package size={32} className="mx-auto text-gray-600 mb-3" />
-                <p className="text-gray-500">{lang === 'fr' ? 'Aucun lot dans cette expédition' : 'No lots in this shipment'}</p>
+              <div className="bg-[#FFFCF6] rounded-[8px] border border-[#D8CEC4] p-8 text-center shadow-xs">
+                <Package size={32} className="mx-auto text-[#70656B] mb-3" />
+                <p className="text-[#70656B]">{lang === 'fr' ? 'Aucun lot dans cette expédition' : 'No lots in this shipment'}</p>
               </div>
             ) : lots.map((lot: any, i: number) => (
-              <div key={lot.id || i} className="bg-gray-900 rounded-xl border border-white/[0.06] p-4">
+              <div key={lot.id || i} className="bg-[#FFFCF6] rounded-[8px] border border-[#D8CEC4] p-4 shadow-xs">
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <p className="font-mono text-sm text-emerald-400 font-bold">{lot.lotNumber}</p>
-                    <p className="text-xs text-gray-400 mt-0.5">{lot.product?.name} · {lot.product?.category}</p>
-                    <p className="text-xs text-gray-500">{lot.producer?.name} · {lot.producer?.region}</p>
+                    <p className="font-mono text-sm text-[#AD5138] font-bold">{lot.lotNumber}</p>
+                    <p className="text-xs text-[#70656B] mt-0.5">{lot.product?.name} · {lot.product?.category}</p>
+                    <p className="text-xs text-[#70656B]">{lot.producer?.name} · {lot.producer?.region}</p>
                   </div>
                   <div className="text-right">
                     {lot.qualityScore && (
-                      <div className={`text-lg font-bold ${lot.qualityScore >= 8 ? 'text-emerald-400' : lot.qualityScore >= 6 ? 'text-amber-400' : 'text-red-400'}`}>
+                      <div className={`text-lg font-bold ${lot.qualityScore >= 8 ? 'text-[#435432]' : lot.qualityScore >= 6 ? 'text-[#795015]' : 'text-[#963C47]'}`}>
                         {lot.qualityScore}/10
                       </div>
                     )}
-                    <p className="text-xs text-gray-500">{(lot.actualQuantity || lot.expectedQuantity || 0).toFixed(1)} kg</p>
+                    <p className="text-xs text-[#70656B] font-medium tabular-nums">{(lot.actualQuantity || lot.expectedQuantity || 0).toFixed(1)} kg</p>
                   </div>
                 </div>
 
@@ -320,7 +320,7 @@ export const ShipmentPublicPage: React.FC = () => {
                 {(lot.producer?.certifications ?? []).length > 0 && (
                   <div className="flex flex-wrap gap-1.5 mt-3">
                     {lot.producer.certifications.map((cert: any, ci: number) => (
-                      <span key={ci} className="px-2 py-0.5 text-xs rounded-full bg-white/5 text-gray-400">
+                      <span key={ci} className="px-2 py-0.5 text-xs rounded-full bg-[#EAE2EB] text-[#352638] font-medium">
                         {cert.type === 'organic' ? '🌿 Bio' : cert.type === 'fair_trade' ? '⚖️ Fair Trade' : cert.type === 'eudr' ? '🇪🇺 EUDR' : cert.type}
                       </span>
                     ))}
@@ -335,23 +335,23 @@ export const ShipmentPublicPage: React.FC = () => {
         {tab === 'documents' && (
           <div className="space-y-3">
             {docs.length === 0 ? (
-              <div className="bg-gray-900 rounded-xl border border-white/[0.06] p-8 text-center">
-                <FileText size={32} className="mx-auto text-gray-600 mb-3" />
-                <p className="text-gray-500">{lang === 'fr' ? 'Aucun document joint' : 'No documents attached'}</p>
+              <div className="bg-[#FFFCF6] rounded-[8px] border border-[#D8CEC4] p-8 text-center shadow-xs">
+                <FileText size={32} className="mx-auto text-[#70656B] mb-3" />
+                <p className="text-[#70656B]">{lang === 'fr' ? 'Aucun document joint' : 'No documents attached'}</p>
               </div>
             ) : docs.map((doc: any) => {
               const dc = DOC_CONFIG[doc.docType] ?? DOC_CONFIG.other;
               return (
-                <div key={doc.id} className="bg-gray-900 rounded-xl border border-white/[0.06] p-4 hover:border-white/10 transition-colors">
+                <div key={doc.id} className="bg-[#FFFCF6] rounded-[8px] border border-[#D8CEC4] p-4 hover:border-[#AD5138] transition-colors shadow-xs">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-gray-800 flex items-center justify-center text-xl flex-shrink-0">{dc.emoji}</div>
+                    <div className="w-10 h-10 rounded-[6px] bg-[#EAE2EB] flex items-center justify-center text-xl flex-shrink-0">{dc.emoji}</div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-200 truncate">{doc.name}</p>
+                      <p className="text-sm font-semibold text-[#352638] truncate">{doc.name}</p>
                       <p className={`text-xs ${dc.color}`}>{dc.label}</p>
-                      <p className="text-xs text-gray-600">{formatDate(doc.createdAt)}</p>
+                      <p className="text-xs text-[#70656B]">{formatDate(doc.createdAt)}</p>
                     </div>
                     <a href={doc.fileUrl} target="_blank" rel="noopener noreferrer"
-                      className="flex items-center gap-1.5 px-3 py-1.5 bg-white/[0.06] rounded-lg text-xs text-gray-300 hover:bg-white/10 transition-colors flex-shrink-0">
+                      className="flex items-center gap-1.5 px-3 py-1.5 bg-[#F5F0E7] rounded-[6px] text-xs font-semibold text-[#352638] hover:bg-[#EAE2EB] transition-colors flex-shrink-0">
                       <ExternalLink size={12} /> {t.verifyDoc}
                     </a>
                   </div>
@@ -365,19 +365,19 @@ export const ShipmentPublicPage: React.FC = () => {
         {tab === 'compliance' && (
           <div className="space-y-4">
             {/* Statut global */}
-            <div className={`p-5 rounded-xl border ${hasEUDR ? 'bg-emerald-500/5 border-emerald-500/20' : 'bg-amber-500/5 border-amber-500/20'}`}>
+            <div className={`p-5 rounded-[8px] border ${hasEUDR ? 'bg-[#E5ECD9] border-[#435432]/30' : 'bg-[#F5E8CC] border-[#795015]/30'}`}>
               <div className="flex items-start gap-3">
-                {hasEUDR ? <CheckCircle size={22} className="text-emerald-400 flex-shrink-0 mt-0.5" /> : <Clock size={22} className="text-amber-400 flex-shrink-0 mt-0.5" />}
+                {hasEUDR ? <CheckCircle size={22} className="text-[#435432] flex-shrink-0 mt-0.5" /> : <Clock size={22} className="text-[#795015] flex-shrink-0 mt-0.5" />}
                 <div>
-                  <h3 className={`text-base font-bold ${hasEUDR ? 'text-emerald-400' : 'text-amber-400'}`}>{hasEUDR ? t.eudrCompliant : (lang === 'fr' ? 'En attente de preuve EUDR' : 'Awaiting EUDR proof')}</h3>
-                  <p className="text-sm text-gray-400 mt-1">{t.eudrDesc}</p>
+                  <h3 className={`text-base font-bold ${hasEUDR ? 'text-[#435432]' : 'text-[#795015]'}`}>{hasEUDR ? t.eudrCompliant : (lang === 'fr' ? 'En attente de preuve EUDR' : 'Awaiting EUDR proof')}</h3>
+                  <p className="text-sm text-[#70656B] mt-1">{t.eudrDesc}</p>
                 </div>
               </div>
             </div>
 
             {/* Checklist conformité */}
-            <div className="bg-gray-900 rounded-xl border border-white/[0.06] p-5">
-              <h3 className="text-sm font-semibold text-white mb-4">
+            <div className="bg-[#FFFCF6] rounded-[8px] border border-[#D8CEC4] p-5 shadow-xs">
+              <h3 className="text-sm font-semibold text-[#352638] mb-4">
                 {lang === 'fr' ? 'Checklist conformité' : 'Compliance checklist'}
               </h3>
               <div className="space-y-3">
@@ -392,25 +392,25 @@ export const ShipmentPublicPage: React.FC = () => {
                   { label: 'Fair Trade', done: hasFairTrade },
                 ].map((item, i) => (
                   <div key={i} className="flex items-center gap-3">
-                    <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${item.done ? 'bg-emerald-500/20' : 'bg-gray-800'}`}>
+                    <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${item.done ? 'bg-[#E5ECD9]' : 'bg-[#EAE2EB]'}`}>
                       {item.done
-                        ? <CheckCircle size={12} className="text-emerald-400" />
-                        : <Clock size={12} className="text-gray-500" />
+                        ? <CheckCircle size={12} className="text-[#435432]" />
+                        : <Clock size={12} className="text-[#70656B]" />
                       }
                     </div>
-                    <span className={`text-sm ${item.done ? 'text-gray-300' : 'text-gray-500'}`}>{item.label}</span>
+                    <span className={`text-sm ${item.done ? 'text-[#352638] font-medium' : 'text-[#70656B]'}`}>{item.label}</span>
                   </div>
                 ))}
               </div>
             </div>
 
             {/* Règlement EU */}
-            <div className="bg-blue-500/5 border border-blue-500/20 rounded-xl p-4">
+            <div className="bg-[#FFFCF6] border border-[#D8CEC4] rounded-[8px] p-4 shadow-xs">
               <div className="flex items-start gap-3">
                 <span className="text-xl">🇪🇺</span>
                 <div>
-                  <p className="text-sm font-medium text-blue-400">{lang === 'fr' ? 'Règlement (UE) 2023/1115 — EUDR' : 'Regulation (EU) 2023/1115 — EUDR'}</p>
-                  <p className="text-xs text-gray-400 mt-1">
+                  <p className="text-sm font-semibold text-[#352638]">{lang === 'fr' ? 'Règlement (UE) 2023/1115 — EUDR' : 'Regulation (EU) 2023/1115 — EUDR'}</p>
+                  <p className="text-xs text-[#70656B] mt-1">
                     {lang === 'fr'
                       ? "Ce document de traçabilité est conforme aux exigences de diligence raisonnée de l'Union Européenne pour les produits à risque de déforestation."
                       : "This traceability document meets the EU due diligence requirements for deforestation-risk products."}
@@ -422,13 +422,13 @@ export const ShipmentPublicPage: React.FC = () => {
         )}
 
         {/* ── Footer ───────────────────────────────────────────────────── */}
-        <div className="border-t border-white/[0.06] pt-6 pb-4 text-center space-y-2">
+        <div className="border-t border-[#D8CEC4] pt-6 pb-4 text-center space-y-2">
           <div className="flex items-center justify-center gap-2">
-            <Shield size={14} className="text-emerald-400" />
-            <span className="text-xs text-gray-400">{t.certifiedBy}</span>
+            <Shield size={14} className="text-[#435432]" />
+            <span className="text-xs text-[#70656B] font-medium">{t.certifiedBy}</span>
           </div>
-          <p className="text-xs text-gray-600">{t.poweredBy} — {new Date().getFullYear()}</p>
-          <p className="text-xs text-gray-700 font-mono">{id}</p>
+          <p className="text-xs text-[#70656B]">{t.poweredBy} — {new Date().getFullYear()}</p>
+          <p className="text-xs text-[#70656B] font-mono">{id}</p>
         </div>
       </div>
     </div>
@@ -439,9 +439,9 @@ export const ShipmentPublicPage: React.FC = () => {
 const PubRow: React.FC<{ label: string; value: string; icon?: React.ReactNode; mono?: boolean; color?: string }> = ({ label, value, icon, mono, color }) => (
   <div className="flex items-start justify-between gap-2">
     <div className="flex items-center gap-1.5">
-      {icon && <span className="text-gray-500">{icon}</span>}
-      <span className="text-xs text-gray-500">{label}</span>
+      {icon && <span className="text-[#70656B]">{icon}</span>}
+      <span className="text-xs text-[#70656B]">{label}</span>
     </div>
-    <span className={`text-xs text-right ${color || 'text-gray-300'} ${mono ? 'font-mono' : 'font-medium'}`}>{value}</span>
+    <span className={`text-xs text-right ${color || 'text-[#352638]'} ${mono ? 'font-mono' : 'font-medium'}`}>{value}</span>
   </div>
 );

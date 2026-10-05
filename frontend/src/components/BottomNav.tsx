@@ -6,55 +6,54 @@ import {
 import { cn } from '../lib/utils';
 
 const nav = [
-  { to: '/dashboard',    icon: LayoutDashboard, label: 'Dashboard' },
+  { to: '/dashboard',    icon: LayoutDashboard, label: 'Tableau' },
   { to: '/lots',         icon: Package,          label: 'Lots' },
   { to: '/producers',    icon: Users,            label: 'Producteurs' },
   { to: '/shipments',    icon: Ship,             label: 'Expéditions' },
-  { to: '/conditioning', icon: Factory,          label: 'Conditionn.' },
-  { to: '/settings',     icon: Settings,         label: 'Paramètres' },
+  { to: '/conditioning', icon: Factory,          label: 'Atelier' },
+  { to: '/settings',     icon: Settings,         label: 'Réglages' },
 ];
 
 export const BottomNav: React.FC = () => {
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-50 border-t"
+      className="fixed bottom-0 left-0 right-0 z-40 bg-[#FFFCF6] border-t border-[#D8CEC4] shadow-md"
       style={{
-        background: 'var(--color-sidebar)',
-        borderColor: 'rgba(255,255,255,0.07)',
         paddingBottom: 'env(safe-area-inset-bottom)',
       }}
     >
-      {/* Gold accent line at top */}
-      <div style={{
-        height: '2px',
-        background: 'linear-gradient(90deg, transparent, #c9923a, #e0aa55, #c9923a, transparent)',
-      }} />
+      {/* Filet décoratif argile discret */}
+      <div className="h-[2px] bg-[#AD5138]" />
 
-      <div className="flex items-stretch">
+      <div className="flex items-stretch justify-around px-2 py-1">
         {nav.map((item) => (
           <NavLink
             key={item.to}
             to={item.to}
-            className="flex-1 flex flex-col items-center justify-center gap-1 py-2.5 px-1 text-center transition-all duration-150"
-            style={({ isActive }) => isActive ? {
-              color: '#2a7a90',
-            } : {
-              color: 'var(--color-navy-400)',
-            }}
+            className={({ isActive }) => cn(
+              'flex-1 flex flex-col items-center justify-center py-2 px-1 text-center transition-all duration-150 relative',
+              isActive ? 'text-[#352638]' : 'text-[#70656B]'
+            )}
           >
             {({ isActive }) => (
               <>
+                {/* Repère citron confit mobile */}
+                {isActive && (
+                  <span className="absolute top-0 w-8 h-[3px] bg-[#D8DF72] rounded-b-sm" />
+                )}
                 <div
-                  className="p-1.5 rounded-lg transition-all duration-150"
-                  style={isActive ? {
-                    background: 'rgba(30,92,110,0.18)',
-                  } : {}}
+                  className={cn(
+                    'p-1.5 rounded-[6px] transition-all',
+                    isActive ? 'bg-[#EAE2EB] text-[#352638]' : ''
+                  )}
                 >
                   <item.icon size={20} />
                 </div>
                 <span
-                  className="text-[10px] font-medium leading-tight"
-                  style={isActive ? { color: '#2a7a90' } : {}}
+                  className={cn(
+                    'text-[10px] mt-0.5 leading-tight font-sans',
+                    isActive ? 'font-bold text-[#352638]' : 'font-medium text-[#70656B]'
+                  )}
                 >
                   {item.label}
                 </span>

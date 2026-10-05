@@ -70,7 +70,7 @@ export const ReceptionSection: React.FC<ReceptionSectionProps> = ({ lotId, data 
 
   const saveMutation = useMutation({
     mutationFn: (payload: object) => api.put(`/lots/${lotId}/reception`, payload),
-    onSuccess: (response) => {
+    onSuccess: (response: any) => {
       if (response.data?.data?.validatedAt) setSubmittedValidation(true);
       invalidate();
       toast.success('Réception enregistrée');

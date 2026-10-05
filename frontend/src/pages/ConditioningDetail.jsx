@@ -310,11 +310,11 @@ function StepForm({ step, order, onSave, saving }) {
   const field = (label, key, type = 'text', placeholder = '', required = false) => (
     <div style={{ marginBottom: 12 }}>
       <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: 'var(--slate)', marginBottom: 4 }}>
-        {label}{required && <span style={{ color: '#f87171', marginLeft: 3 }}>*</span>}
+        {label}{required && <span style={{ color: '#963C47', marginLeft: 3 }}>*</span>}
       </label>
       <input type={type} value={data[key]} onChange={e => setData(d => ({ ...d, [key]: e.target.value }))}
         placeholder={placeholder}
-        style={{ width: '100%', padding: '8px 11px', border: `1.5px solid ${required && !data[key] ? 'rgba(239,68,68,0.4)' : 'var(--border)'}`, borderRadius: 7, fontSize: 13, background: 'rgba(255,255,255,0.05)', color: 'var(--ink)', boxSizing: 'border-box', outline: 'none' }} />
+        style={{ width: '100%', padding: '8px 11px', border: `1.5px solid ${required && !data[key] ? '#963C47' : 'var(--border-input, #96878E)'}`, borderRadius: 6, fontSize: 13, background: 'var(--paper)', color: 'var(--ink)', boxSizing: 'border-box', outline: 'none' }} />
     </div>
   )
 
@@ -348,9 +348,9 @@ function StepForm({ step, order, onSave, saving }) {
       {/* Suggestion auto poids */}
       {suggestedQIn && (
         <div onClick={() => setData(d => ({ ...d, quantityIn: String(suggestedQIn) }))} style={{
-          marginBottom: 14, padding: '9px 14px', borderRadius: 8,
-          background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.25)',
-          fontSize: 12, color: '#93c5fd', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
+          marginBottom: 14, padding: '9px 14px', borderRadius: 6,
+          background: 'var(--cream)', border: '1px solid var(--border)',
+          fontSize: 12, color: 'var(--ink)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
         }}>
           💡 Suggéré : <strong>{suggestedQIn} kg</strong> (sortie étape précédente) — cliquer pour appliquer
         </div>
@@ -367,14 +367,14 @@ function StepForm({ step, order, onSave, saving }) {
           {field('Quantité (kg)', 'quantityIn', 'number', '0.000')}
           <div style={{ marginBottom: 12 }}>
             <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: 'var(--slate)', marginBottom: 4 }}>
-              Température (°C) <span style={{ color: '#f87171' }}>* CCP</span>
+              Température (°C) <span style={{ color: '#963C47' }}>* CCP</span>
             </label>
             <input type="number" value={data.temperature} onChange={e => setData(d => ({ ...d, temperature: e.target.value }))}
               placeholder="60–65°C"
-              style={{ width: '100%', padding: '8px 11px', border: `1.5px solid ${tempOk === false ? 'rgba(239,68,68,0.6)' : tempOk === true ? 'rgba(34,197,94,0.4)' : 'var(--border)'}`, borderRadius: 7, fontSize: 13, background: 'rgba(255,255,255,0.05)', color: 'var(--ink)', boxSizing: 'border-box', outline: 'none' }} />
+              style={{ width: '100%', padding: '8px 11px', border: `1.5px solid ${tempOk === false ? '#963C47' : tempOk === true ? '#435432' : 'var(--border-input, #96878E)'}`, borderRadius: 6, fontSize: 13, background: 'var(--paper)', color: 'var(--ink)', boxSizing: 'border-box', outline: 'none' }} />
             {tempOk !== null && (
-              <div style={{ marginTop: 4, fontSize: 11, fontWeight: 600, color: tempOk ? '#4ade80' : '#f87171' }}>
-                {tempOk ? '✓ Température conforme (60–65°C)' : `✗ Hors norme CCP ! Norme : 60–65°C`}
+              <div style={{ marginTop: 4, fontSize: 11, fontWeight: 600, color: tempOk ? '#435432' : '#963C47' }}>
+                {tempOk ? '✓ Température conforme (60–65°C)' : `✕ Hors norme CCP ! Norme : 60–65°C`}
               </div>
             )}
           </div>
@@ -405,12 +405,12 @@ function StepForm({ step, order, onSave, saving }) {
               Fendue / Non fendue *
             </label>
             <div style={{ display: 'flex', gap: 10 }}>
-              {[{ val: false, label: 'Non fendue', icon: '✅' }, { val: true, label: 'Fendue', icon: '⚡' }].map(opt => (
+              {[{ val: false, label: 'Non fendue', icon: '✓' }, { val: true, label: 'Fendue', icon: '⚡' }].map(opt => (
                 <div key={String(opt.val)} onClick={() => setData(d => ({ ...d, isFendue: opt.val }))} style={{
                   flex: 1, padding: '10px', borderRadius: 8, cursor: 'pointer', textAlign: 'center',
-                  border: `2px solid ${data.isFendue === opt.val ? (opt.val ? '#fb923c' : '#4ade80') : 'var(--border)'}`,
-                  background: data.isFendue === opt.val ? (opt.val ? 'rgba(245,158,11,0.15)' : 'rgba(34,197,94,0.15)') : 'rgba(255,255,255,0.04)',
-                  color: data.isFendue === opt.val ? (opt.val ? '#fb923c' : '#4ade80') : 'var(--slate)',
+                  border: `1.5px solid ${data.isFendue === opt.val ? (opt.val ? '#795015' : '#435432') : 'var(--border)'}`,
+                  background: data.isFendue === opt.val ? (opt.val ? '#F5E8CC' : '#E5ECD9') : 'var(--paper)',
+                  color: data.isFendue === opt.val ? (opt.val ? '#795015' : '#435432') : 'var(--ink)',
                   fontSize: 13, fontWeight: 600, transition: 'all 0.15s',
                 }}>
                   {opt.icon} {opt.label}
@@ -424,9 +424,9 @@ function StepForm({ step, order, onSave, saving }) {
               {CLASSIFICATIONS.map(c => (
                 <div key={c.key} onClick={() => setData(d => ({ ...d, classification: c.key }))} style={{
                   padding: '8px 10px', borderRadius: 8, cursor: 'pointer', textAlign: 'center',
-                  border: `2px solid ${data.classification === c.key ? 'var(--green)' : 'var(--border)'}`,
-                  background: data.classification === c.key ? 'var(--pale)' : 'rgba(255,255,255,0.04)',
-                  fontSize: 12, fontWeight: 600, color: data.classification === c.key ? 'var(--green)' : 'var(--slate)',
+                  border: `1.5px solid ${data.classification === c.key ? 'var(--clay)' : 'var(--border)'}`,
+                  background: data.classification === c.key ? '#F8E6E8' : 'var(--paper)',
+                  fontSize: 12, fontWeight: 600, color: data.classification === c.key ? 'var(--clay)' : 'var(--ink)',
                   transition: 'all 0.15s',
                 }}>
                   <div style={{ fontSize: 16, marginBottom: 3 }}>{c.icon}</div>
@@ -451,9 +451,9 @@ function StepForm({ step, order, onSave, saving }) {
               ].map(bt => (
                 <div key={bt.key} onClick={() => setData(d => ({ ...d, bundleType: bt.key }))} style={{
                   padding: '10px', borderRadius: 8, cursor: 'pointer', textAlign: 'center',
-                  border: `2px solid ${data.bundleType === bt.key ? 'var(--green)' : 'var(--border)'}`,
-                  background: data.bundleType === bt.key ? 'var(--pale)' : 'rgba(255,255,255,0.04)',
-                  fontSize: 12, fontWeight: 600, color: data.bundleType === bt.key ? 'var(--green)' : 'var(--slate)',
+                  border: `1.5px solid ${data.bundleType === bt.key ? 'var(--clay)' : 'var(--border)'}`,
+                  background: data.bundleType === bt.key ? '#F8E6E8' : 'var(--paper)',
+                  fontSize: 12, fontWeight: 600, color: data.bundleType === bt.key ? 'var(--clay)' : 'var(--ink)',
                   transition: 'all 0.15s',
                 }}>
                   <div style={{ fontSize: 18, marginBottom: 3 }}>{bt.icon}</div>
@@ -475,10 +475,10 @@ function StepForm({ step, order, onSave, saving }) {
             </label>
             <input type="number" step="0.01" value={data.vanillineRate} onChange={e => setData(d => ({ ...d, vanillineRate: e.target.value }))}
               placeholder="≥ 1.5%"
-              style={{ width: '100%', padding: '8px 11px', border: `1.5px solid ${data.vanillineRate && parseFloat(data.vanillineRate) < 1.5 ? 'rgba(239,68,68,0.6)' : 'var(--border)'}`, borderRadius: 7, fontSize: 13, background: 'rgba(255,255,255,0.05)', color: 'var(--ink)', boxSizing: 'border-box', outline: 'none' }} />
+              style={{ width: '100%', padding: '8px 11px', border: `1.5px solid ${data.vanillineRate && parseFloat(data.vanillineRate) < 1.5 ? '#963C47' : 'var(--border-input, #96878E)'}`, borderRadius: 6, fontSize: 13, background: 'var(--paper)', color: 'var(--ink)', boxSizing: 'border-box', outline: 'none' }} />
             {data.vanillineRate && (
-              <div style={{ marginTop: 4, fontSize: 11, fontWeight: 600, color: parseFloat(data.vanillineRate) >= 2 ? '#4ade80' : parseFloat(data.vanillineRate) >= 1.5 ? '#fb923c' : '#f87171' }}>
-                {parseFloat(data.vanillineRate) >= 2 ? '✓ Excellent' : parseFloat(data.vanillineRate) >= 1.5 ? '⚠️ Acceptable (min 1.5%)' : '✗ En dessous du seuil export'}
+              <div style={{ marginTop: 4, fontSize: 11, fontWeight: 600, color: parseFloat(data.vanillineRate) >= 2 ? '#435432' : parseFloat(data.vanillineRate) >= 1.5 ? '#795015' : '#963C47' }}>
+                {parseFloat(data.vanillineRate) >= 2 ? '✓ Excellent' : parseFloat(data.vanillineRate) >= 1.5 ? '⚡ Acceptable (min 1.5%)' : '✕ En dessous du seuil export'}
               </div>
             )}
           </div>
@@ -494,24 +494,24 @@ function StepForm({ step, order, onSave, saving }) {
       {/* Indicateurs en temps réel */}
       {liveLoss !== null && (
         <div style={{
-          marginBottom: 10, padding: '8px 12px', borderRadius: 8, display: 'flex', alignItems: 'center', gap: 6,
-          background: parseFloat(liveLoss) > 25 ? 'rgba(239,68,68,0.1)' : parseFloat(liveLoss) > 15 ? 'rgba(245,158,11,0.1)' : 'rgba(34,197,94,0.1)',
-          border: `1px solid ${parseFloat(liveLoss) > 25 ? 'rgba(239,68,68,0.3)' : parseFloat(liveLoss) > 15 ? 'rgba(245,158,11,0.3)' : 'rgba(34,197,94,0.3)'}`,
+          marginBottom: 10, padding: '8px 12px', borderRadius: 6, display: 'flex', alignItems: 'center', gap: 6,
+          background: parseFloat(liveLoss) > 25 ? '#F8E6E8' : parseFloat(liveLoss) > 15 ? '#F5E8CC' : '#E5ECD9',
+          border: `1px solid ${parseFloat(liveLoss) > 25 ? '#963C47' : parseFloat(liveLoss) > 15 ? '#795015' : '#435432'}`,
           fontSize: 12, fontWeight: 600,
-          color: parseFloat(liveLoss) > 25 ? '#f87171' : parseFloat(liveLoss) > 15 ? '#fb923c' : '#4ade80',
+          color: parseFloat(liveLoss) > 25 ? '#963C47' : parseFloat(liveLoss) > 15 ? '#795015' : '#435432',
         }}>
           📉 Perte : {liveLoss}% ({(liveQIn - liveQOut).toFixed(3)} kg)
-          {parseFloat(liveLoss) > 25 && <span style={{ marginLeft: 4 }}>— ⚠️ Critique</span>}
+          {parseFloat(liveLoss) > 25 && <span style={{ marginLeft: 4 }}>— ✕ Critique</span>}
         </div>
       )}
       {humOk !== null && (
         <div style={{
-          marginBottom: 10, padding: '8px 12px', borderRadius: 8, display: 'flex', alignItems: 'center', gap: 6,
-          background: humOk ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)',
-          border: `1px solid ${humOk ? 'rgba(34,197,94,0.3)' : 'rgba(239,68,68,0.3)'}`,
-          fontSize: 12, fontWeight: 600, color: humOk ? '#4ade80' : '#f87171',
+          marginBottom: 10, padding: '8px 12px', borderRadius: 6, display: 'flex', alignItems: 'center', gap: 6,
+          background: humOk ? '#E5ECD9' : '#F8E6E8',
+          border: `1px solid ${humOk ? '#435432' : '#963C47'}`,
+          fontSize: 12, fontWeight: 600, color: humOk ? '#435432' : '#963C47',
         }}>
-          💧 {liveHum}% — {humOk ? `✓ Conforme (${norm[0]}–${norm[1]}%)` : `✗ Hors norme — cible : ${norm[0]}–${norm[1]}%`}
+          💧 {liveHum}% — {humOk ? `✓ Conforme (${norm[0]}–${norm[1]}%)` : `✕ Hors norme — cible : ${norm[0]}–${norm[1]}%`}
         </div>
       )}
 
@@ -523,7 +523,7 @@ function StepForm({ step, order, onSave, saving }) {
         <textarea value={data.notes} onChange={e => setData(d => ({ ...d, notes: e.target.value }))}
           rows={isAffinage ? 4 : 2}
           placeholder={isAffinage ? "Date de visite, état de la vanille, quantité moisie, observations..." : "Remarques, anomalies..."}
-          style={{ width: '100%', padding: '8px 11px', border: '1.5px solid var(--border)', borderRadius: 7, fontSize: 13, resize: 'vertical', background: 'rgba(255,255,255,0.05)', color: 'var(--ink)', boxSizing: 'border-box', outline: 'none' }} />
+          style={{ width: '100%', padding: '8px 11px', border: '1.5px solid var(--border-input, #96878E)', borderRadius: 6, fontSize: 13, resize: 'vertical', background: 'var(--paper)', color: 'var(--ink)', boxSizing: 'border-box', outline: 'none' }} />
       </div>
 
       {/* Documents */}
@@ -532,15 +532,15 @@ function StepForm({ step, order, onSave, saving }) {
           <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: 'var(--slate)', marginBottom: 6 }}>Documents à cocher</label>
           {docs.map(doc => (
             <label key={doc} onClick={() => toggleDoc(doc)} style={{
-              display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', borderRadius: 8,
+              display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', borderRadius: 6,
               cursor: 'pointer', marginBottom: 6, transition: 'all 0.15s',
-              border: `1.5px solid ${data.documents.includes(doc) ? 'var(--green)' : 'var(--border)'}`,
-              background: data.documents.includes(doc) ? 'var(--pale)' : 'rgba(255,255,255,0.04)',
+              border: `1.5px solid ${data.documents.includes(doc) ? 'var(--clay)' : 'var(--border)'}`,
+              background: data.documents.includes(doc) ? 'var(--cream)' : 'var(--paper)',
             }}>
               <div style={{
                 width: 18, height: 18, borderRadius: 4, flexShrink: 0,
-                border: `2px solid ${data.documents.includes(doc) ? 'var(--green)' : 'var(--border)'}`,
-                background: data.documents.includes(doc) ? 'var(--green)' : 'rgba(255,255,255,0.05)',
+                border: `2px solid ${data.documents.includes(doc) ? 'var(--clay)' : 'var(--border)'}`,
+                background: data.documents.includes(doc) ? 'var(--clay)' : 'var(--paper)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
                 {data.documents.includes(doc) && <span style={{ color: 'white', fontSize: 11, fontWeight: 700 }}>✓</span>}
@@ -731,10 +731,10 @@ export default function ConditioningDetail() {
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
                   <span style={{ fontSize: 14 }}>{STEP_ICONS[pt.step] || '●'}</span>
                   <div style={{
-                    padding: '4px 10px', borderRadius: 8, fontWeight: 700, fontSize: 14,
-                    background: pt.ok === null ? 'rgba(255,255,255,0.06)' : pt.ok ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)',
-                    color: pt.ok === null ? 'var(--slate)' : pt.ok ? '#4ade80' : '#f87171',
-                    border: `1px solid ${pt.ok === null ? 'transparent' : pt.ok ? 'rgba(34,197,94,0.3)' : 'rgba(239,68,68,0.3)'}`,
+                    padding: '4px 10px', borderRadius: 6, fontWeight: 700, fontSize: 14,
+                    background: pt.ok === null ? 'var(--cream)' : pt.ok ? '#E5ECD9' : '#F8E6E8',
+                    color: pt.ok === null ? 'var(--slate)' : pt.ok ? '#435432' : '#963C47',
+                    border: `1px solid ${pt.ok === null ? 'var(--border)' : pt.ok ? '#435432' : '#963C47'}`,
                   }}>{pt.val}%</div>
                   <span style={{ fontSize: 10, color: 'var(--mist)', maxWidth: 72, textAlign: 'center', lineHeight: 1.3 }}>
                     {pt.step.length > 10 ? pt.step.split(' ')[0] : pt.step}
@@ -743,14 +743,14 @@ export default function ConditioningDetail() {
                 {i < humidityPoints.length - 1 && (
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
                     <span style={{ color: 'var(--border)', fontSize: 18 }}>→</span>
-                    <span style={{ fontSize: 9, fontWeight: 700, color: humidityPoints[i + 1].val < pt.val ? '#4ade80' : humidityPoints[i + 1].val > pt.val ? '#f87171' : 'var(--mist)' }}>
+                    <span style={{ fontSize: 9, fontWeight: 700, color: humidityPoints[i + 1].val < pt.val ? '#435432' : humidityPoints[i + 1].val > pt.val ? '#963C47' : 'var(--mist)' }}>
                       {humidityPoints[i + 1].val < pt.val ? '↘' : humidityPoints[i + 1].val > pt.val ? '↗' : '→'}
                     </span>
                   </div>
                 )}
               </React.Fragment>
             ))}
-            {norm && <div style={{ marginLeft: 'auto', padding: '6px 12px', borderRadius: 8, background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.2)', fontSize: 11.5, color: '#4ade80' }}>🎯 Cible : {norm[0]}–{norm[1]}%</div>}
+            {norm && <div style={{ marginLeft: 'auto', padding: '6px 12px', borderRadius: 6, background: '#E5ECD9', border: '1px solid #435432', fontSize: 11.5, color: '#435432', fontWeight: 600 }}>🎯 Cible : {norm[0]}–{norm[1]}%</div>}
           </div>
         </Card>
       )}
@@ -758,31 +758,31 @@ export default function ConditioningDetail() {
       {/* ── BANNIÈRE ALERTES ───────────────────────────────────────────────── */}
       {(criticalAlerts.length > 0 || warningAlerts.length > 0) && (
         <div style={{
-          marginBottom: 20, borderRadius: 10, padding: '14px 18px',
-          background: criticalAlerts.length > 0 ? 'rgba(239,68,68,0.08)' : 'rgba(245,158,11,0.08)',
-          border: `1px solid ${criticalAlerts.length > 0 ? 'rgba(239,68,68,0.3)' : 'rgba(245,158,11,0.3)'}`,
+          marginBottom: 20, borderRadius: 8, padding: '14px 18px',
+          background: criticalAlerts.length > 0 ? '#F8E6E8' : '#F5E8CC',
+          border: `1px solid ${criticalAlerts.length > 0 ? '#963C47' : '#795015'}`,
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
-            <span style={{ fontSize: 16 }}>{criticalAlerts.length > 0 ? '🚨' : '⚠️'}</span>
-            <span style={{ fontSize: 13.5, fontWeight: 700, color: criticalAlerts.length > 0 ? '#f87171' : '#fb923c' }}>
+            <span style={{ fontSize: 16 }}>{criticalAlerts.length > 0 ? '✕' : '⚡'}</span>
+            <span style={{ fontSize: 13.5, fontWeight: 700, color: criticalAlerts.length > 0 ? '#963C47' : '#795015' }}>
               {criticalAlerts.length > 0
                 ? `${criticalAlerts.length} alerte${criticalAlerts.length > 1 ? 's' : ''} critique${criticalAlerts.length > 1 ? 's' : ''}`
                 : `${warningAlerts.length} avertissement${warningAlerts.length > 1 ? 's' : ''}`
               }
             </span>
             {criticalAlerts.length > 0 && warningAlerts.length > 0 && (
-              <span style={{ fontSize: 11.5, color: '#fb923c', marginLeft: 4 }}>+ {warningAlerts.length} avert.</span>
+              <span style={{ fontSize: 11.5, color: '#795015', marginLeft: 4 }}>+ {warningAlerts.length} avert.</span>
             )}
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
             {[...criticalAlerts, ...warningAlerts].slice(0, 6).map((alert, i) => (
               <div key={i} style={{
-                fontSize: 12, padding: '4px 10px', borderRadius: 6,
-                background: alert.level === 'critical' ? 'rgba(239,68,68,0.12)' : 'rgba(245,158,11,0.12)',
-                color: alert.level === 'critical' ? '#fca5a5' : '#fcd34d',
-                display: 'flex', alignItems: 'flex-start', gap: 6,
+                fontSize: 12, padding: '4px 10px', borderRadius: 4,
+                background: alert.level === 'critical' ? '#FCECEE' : '#FAF2DE',
+                color: alert.level === 'critical' ? '#963C47' : '#795015',
+                display: 'flex', alignItems: 'flex-start', gap: 6, fontWeight: 500,
               }}>
-                <span>{alert.level === 'critical' ? '●' : '○'}</span>{alert.msg}
+                <span>{alert.level === 'critical' ? '✕' : '⚡'}</span>{alert.msg}
               </div>
             ))}
             {allAlerts.length > 6 && <div style={{ fontSize: 11.5, color: 'var(--mist)', paddingLeft: 4 }}>+ {allAlerts.length - 6} autres</div>}
@@ -861,9 +861,9 @@ export default function ConditioningDetail() {
         if (phaseSteps.length === 0) return null
         return (
           <Card key={phase.label} style={{ marginBottom: 20, overflow: 'hidden' }}>
-            <div style={{ background: 'rgba(255,255,255,0.025)', borderBottom: '1px solid rgba(255,255,255,0.06)', padding: '12px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ color: phase.accent, fontSize: 12, fontWeight: 700, letterSpacing: 1.5 }}>{phase.icon} {phase.label}</span>
-              <span style={{ fontSize: 11.5, padding: '2px 10px', borderRadius: 20, fontWeight: 600, background: phaseComplete ? 'rgba(34,197,94,0.15)' : 'rgba(255,255,255,0.05)', color: phaseComplete ? '#4ade80' : 'var(--mist)' }}>
+            <div style={{ background: 'var(--cream)', borderBottom: '1px solid var(--border)', padding: '12px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ color: 'var(--ink)', fontSize: 12, fontWeight: 700, letterSpacing: 1.5 }}>{phase.icon} {phase.label}</span>
+              <span style={{ fontSize: 11.5, padding: '2px 10px', borderRadius: 20, fontWeight: 600, background: phaseComplete ? '#E5ECD9' : 'var(--paper)', color: phaseComplete ? '#435432' : 'var(--mist)', border: `1px solid ${phaseComplete ? '#435432' : 'var(--border)'}` }}>
                 {phaseComplete ? '✓ ' : ''}{phaseDone}/{phaseSteps.length} étapes
               </span>
             </div>
@@ -894,22 +894,22 @@ export default function ConditioningDetail() {
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flexShrink: 0, width: 40 }}>
                       <div style={{
                         width: 40, height: 40, borderRadius: '50%',
-                        background: isDone ? '#22c55e' : isActive ? '#f97316' : 'rgba(255,255,255,0.06)',
+                        background: isDone ? '#435432' : isActive ? '#AD5138' : 'var(--cream)',
                         color: isDone || isActive ? 'white' : 'var(--mist)',
-                        border: `2px solid ${isDone ? '#22c55e' : isActive ? '#f97316' : 'var(--border)'}`,
+                        border: `2px solid ${isDone ? '#435432' : isActive ? '#AD5138' : 'var(--border)'}`,
                         display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 17, transition: 'all 0.3s',
                       }}>
                         {isDone ? '✓' : STEP_ICONS[step.stepName] || step.stepOrder}
                       </div>
                       {idx < phaseSteps.length - 1 && (
-                        <div style={{ width: 2, flex: 1, minHeight: 24, background: isDone ? '#22c55e' : 'var(--border)', marginTop: 4, transition: 'background 0.3s' }} />
+                        <div style={{ width: 2, flex: 1, minHeight: 24, background: isDone ? '#435432' : 'var(--border)', marginTop: 4, transition: 'background 0.3s' }} />
                       )}
                     </div>
 
                     <div style={{
-                      flex: 1, borderRadius: 10, padding: '12px 16px', marginBottom: 4, transition: 'border-color 0.2s',
-                      border: `1.5px solid ${stepCriticals.length > 0 ? 'rgba(239,68,68,0.5)' : isActive ? 'rgba(249,115,22,0.5)' : isDone ? 'rgba(34,197,94,0.25)' : 'var(--border)'}`,
-                      background: isActive ? 'rgba(249,115,22,0.05)' : isDone ? 'rgba(34,197,94,0.04)' : 'rgba(255,255,255,0.02)',
+                      flex: 1, borderRadius: 8, padding: '12px 16px', marginBottom: 4, transition: 'border-color 0.2s',
+                      border: `1.5px solid ${stepCriticals.length > 0 ? '#963C47' : isActive ? '#AD5138' : 'var(--border)'}`,
+                      background: isActive ? 'var(--cream)' : 'var(--paper)',
                     }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 }}>
                         <div style={{ flex: 1 }}>
@@ -917,13 +917,13 @@ export default function ConditioningDetail() {
                             <span style={{ fontWeight: 700, fontSize: 14, color: 'var(--ink)' }}>{step.stepName}</span>
                             {step.operatorName && <span style={{ fontSize: 12, color: 'var(--mist)' }}>👤 {step.operatorName}</span>}
                             {stepCriticals.length > 0 && (
-                              <span style={{ fontSize: 10.5, padding: '1px 7px', borderRadius: 20, background: 'rgba(239,68,68,0.2)', color: '#f87171', fontWeight: 700, border: '1px solid rgba(239,68,68,0.4)' }}>
-                                🚨 {stepCriticals.length} critique{stepCriticals.length > 1 ? 's' : ''}
+                              <span style={{ fontSize: 10.5, padding: '1px 7px', borderRadius: 4, background: '#F8E6E8', color: '#963C47', fontWeight: 700, border: '1px solid #963C47' }}>
+                                ✕ {stepCriticals.length} critique{stepCriticals.length > 1 ? 's' : ''}
                               </span>
                             )}
                             {stepWarnings.length > 0 && stepCriticals.length === 0 && (
-                              <span style={{ fontSize: 10.5, padding: '1px 7px', borderRadius: 20, background: 'rgba(245,158,11,0.2)', color: '#fb923c', fontWeight: 700, border: '1px solid rgba(245,158,11,0.4)' }}>
-                                ⚠️ {stepWarnings.length}
+                              <span style={{ fontSize: 10.5, padding: '1px 7px', borderRadius: 4, background: '#F5E8CC', color: '#795015', fontWeight: 700, border: '1px solid #795015' }}>
+                                ⚡ {stepWarnings.length}
                               </span>
                             )}
                           </div>
@@ -936,12 +936,12 @@ export default function ConditioningDetail() {
                           {durMins !== null && (
                             <div style={{ marginTop: 5 }}>
                               <span style={{
-                                fontSize: 11, padding: '2px 8px', borderRadius: 8,
-                                background: durIsCrit ? 'rgba(239,68,68,0.15)' : durIsWarn ? 'rgba(245,158,11,0.15)' : 'rgba(255,255,255,0.05)',
-                                color: durIsCrit ? '#f87171' : durIsWarn ? '#fb923c' : 'var(--mist)',
-                                border: `1px solid ${durIsCrit ? 'rgba(239,68,68,0.3)' : durIsWarn ? 'rgba(245,158,11,0.3)' : 'transparent'}`,
+                                fontSize: 11, padding: '2px 8px', borderRadius: 4,
+                                background: durIsCrit ? '#F8E6E8' : durIsWarn ? '#F5E8CC' : 'var(--cream)',
+                                color: durIsCrit ? '#963C47' : durIsWarn ? '#795015' : 'var(--mist)',
+                                border: `1px solid ${durIsCrit ? '#963C47' : durIsWarn ? '#795015' : 'var(--border)'}`,
                               }}>
-                                {durIsCrit ? '🚨' : '⏱'} {isDone ? 'Durée : ' : 'En cours : '}{formatDuration(durMins)}
+                                {durIsCrit ? '✕' : '⏱'} {isDone ? 'Durée : ' : 'En cours : '}{formatDuration(durMins)}
                                 {thr && isActive && <span style={{ opacity: 0.7 }}> / max {thr.crit}h</span>}
                               </span>
                             </div>
@@ -1044,26 +1044,26 @@ export default function ConditioningDetail() {
         {showValidate && (
           <div>
             {validateForm.isConform === false && getStepAlerts(showValidate, order).filter(a => a.level === 'critical').length > 0 && (
-              <div style={{ marginBottom: 16, padding: '10px 14px', borderRadius: 8, background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', fontSize: 12, color: '#fca5a5' }}>
-                🚨 Alertes critiques détectées — non-conformité pré-sélectionnée
+              <div style={{ marginBottom: 16, padding: '10px 14px', borderRadius: 6, background: '#F8E6E8', border: '1px solid #963C47', fontSize: 12, color: '#963C47' }}>
+                ✕ Alertes critiques détectées — non-conformité pré-sélectionnée
               </div>
             )}
             <p style={{ fontSize: 13.5, color: 'var(--slate)', marginBottom: 20 }}>Confirmez-vous la conformité de cette étape ?</p>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 16 }}>
-              {[{ val: true, label: 'Conforme', color: '#4ade80', bg: 'rgba(34,197,94,0.15)', icon: '✅' }, { val: false, label: 'Non conforme', color: '#f87171', bg: 'rgba(239,68,68,0.15)', icon: '❌' }].map(opt => (
-                <div key={String(opt.val)} onClick={() => setValidateForm(f => ({ ...f, isConform: opt.val }))} style={{ padding: '14px', borderRadius: 10, cursor: 'pointer', textAlign: 'center', border: `2px solid ${validateForm.isConform === opt.val ? opt.color : 'var(--border)'}`, background: validateForm.isConform === opt.val ? opt.bg : 'rgba(255,255,255,0.04)', transition: 'all 0.15s' }}>
+              {[{ val: true, label: 'Conforme', color: '#435432', bg: '#E5ECD9', icon: '✓' }, { val: false, label: 'Non conforme', color: '#963C47', bg: '#F8E6E8', icon: '✕' }].map(opt => (
+                <div key={String(opt.val)} onClick={() => setValidateForm(f => ({ ...f, isConform: opt.val }))} style={{ padding: '14px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', border: `1.5px solid ${validateForm.isConform === opt.val ? opt.color : 'var(--border)'}`, background: validateForm.isConform === opt.val ? opt.bg : 'var(--paper)', transition: 'all 0.15s' }}>
                   <div style={{ fontSize: 24, marginBottom: 6 }}>{opt.icon}</div>
-                  <div style={{ fontSize: 13, fontWeight: 700, color: validateForm.isConform === opt.val ? opt.color : 'var(--slate)' }}>{opt.label}</div>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: validateForm.isConform === opt.val ? opt.color : 'var(--ink)' }}>{opt.label}</div>
                 </div>
               ))}
             </div>
             <div style={{ marginBottom: 16 }}>
               <label style={{ display: 'block', fontSize: 12.5, fontWeight: 500, color: 'var(--slate)', marginBottom: 5 }}>Commentaire</label>
-              <textarea value={validateForm.notes} onChange={e => setValidateForm(f => ({ ...f, notes: e.target.value }))} rows={3} placeholder="Observations..." style={{ width: '100%', padding: '9px 12px', border: '1.5px solid var(--border)', borderRadius: 8, fontSize: 13, resize: 'vertical', background: 'rgba(255,255,255,0.05)', color: 'var(--ink)', boxSizing: 'border-box', outline: 'none' }} />
+              <textarea value={validateForm.notes} onChange={e => setValidateForm(f => ({ ...f, notes: e.target.value }))} rows={3} placeholder="Observations..." style={{ width: '100%', padding: '9px 12px', border: '1.5px solid var(--border-input, #96878E)', borderRadius: 6, fontSize: 13, resize: 'vertical', background: 'var(--paper)', color: 'var(--ink)', boxSizing: 'border-box', outline: 'none' }} />
             </div>
             <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
-              <button onClick={() => setShowValidate(null)} style={{ padding: '9px 18px', borderRadius: 8, background: 'var(--pale)', color: 'var(--green)', fontSize: 13.5, border: 'none', cursor: 'pointer' }}>Annuler</button>
-              <button onClick={handleValidate} disabled={validating || validateForm.isConform === null} style={{ padding: '9px 18px', borderRadius: 8, background: 'var(--green)', color: 'white', fontSize: 13.5, fontWeight: 600, border: 'none', opacity: (validating || validateForm.isConform === null) ? 0.5 : 1, cursor: (validating || validateForm.isConform === null) ? 'not-allowed' : 'pointer' }}>
+              <button onClick={() => setShowValidate(null)} style={{ padding: '9px 18px', borderRadius: 6, background: 'var(--cream)', color: 'var(--ink)', fontSize: 13.5, border: '1px solid var(--border)', cursor: 'pointer', fontWeight: 600 }}>Annuler</button>
+              <button onClick={handleValidate} disabled={validating || validateForm.isConform === null} style={{ padding: '9px 18px', borderRadius: 6, background: 'var(--ink)', color: 'var(--paper)', fontSize: 13.5, fontWeight: 600, border: 'none', opacity: (validating || validateForm.isConform === null) ? 0.5 : 1, cursor: (validating || validateForm.isConform === null) ? 'not-allowed' : 'pointer' }}>
                 {validating ? '⏳...' : 'Confirmer'}
               </button>
             </div>

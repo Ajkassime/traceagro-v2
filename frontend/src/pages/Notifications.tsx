@@ -53,18 +53,22 @@ export const NotificationsPage: React.FC = () => {
         {isLoading ? <PageLoader /> : (notifs ?? []).length === 0 ? (
           <EmptyState title="Aucune notification" icon={<Bell size={40} />} />
         ) : (
-          <Card className="p-0 overflow-hidden divide-y divide-white/[0.04]">
+          <Card className="p-0 overflow-hidden divide-y divide-[#D8CEC4]/60">
             {(notifs ?? []).map((notif: any) => (
-              <div key={notif.id} className={`flex items-start gap-3 p-4 transition-colors ${!notif.isRead ? 'bg-forest-500/5' : 'hover:bg-white/[0.02]'}`}>
+              <div key={notif.id} className={`flex items-start gap-3.5 p-4 transition-colors ${!notif.isRead ? 'bg-[#EAE2EB]/40 font-medium' : 'hover:bg-[#F5F0E7]/60'}`}>
                 <span className="text-xl flex-shrink-0">{TYPE_EMOJI[notif.type] ?? 'ℹ️'}</span>
                 <div className="flex-1 min-w-0">
-                  <p className={`text-sm font-medium ${notif.isRead ? 'text-gray-400' : 'text-white'}`}>{notif.title}</p>
-                  <p className="text-xs text-gray-500 mt-0.5">{notif.message}</p>
-                  <p className="text-xs text-gray-700 mt-1">{formatRelative(notif.createdAt)}</p>
+                  <p className={`text-sm ${notif.isRead ? 'text-[#70656B]' : 'text-[#352638] font-semibold'}`}>{notif.title}</p>
+                  <p className="text-xs text-[#70656B] mt-0.5 leading-relaxed">{notif.message}</p>
+                  <p className="text-[11px] text-[#96878E] mt-1">{formatRelative(notif.createdAt)}</p>
                 </div>
                 {!notif.isRead && (
-                  <button onClick={() => markRead(notif.id)} className="text-forest-400 hover:text-forest-300 p-1">
-                    <Check size={14} />
+                  <button
+                    onClick={() => markRead(notif.id)}
+                    className="text-[#435432] hover:bg-[#E5ECD9] p-1.5 rounded-[4px] transition-colors"
+                    title="Marquer comme lu"
+                  >
+                    <Check size={16} />
                   </button>
                 )}
               </div>

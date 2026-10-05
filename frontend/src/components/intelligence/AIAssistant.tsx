@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Bot, User, Loader2, Zap } from 'lucide-react';
+import { Send, Bot, User, Loader2 } from 'lucide-react';
 import api from '../../lib/api';
 import ReactMarkdown from 'react-markdown';
 
@@ -40,26 +40,26 @@ export const AIAssistant: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full bg-[#FFFCF6]">
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-3">
         {messages.map((msg, i) => (
           <div key={i} className={`flex gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
-            <div className={`w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 ${msg.role === 'assistant' ? 'bg-forest-600' : 'bg-vanilla-600'}`}>
-              {msg.role === 'assistant' ? <Bot size={14} className="text-white" /> : <User size={14} className="text-white" />}
+            <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${msg.role === 'assistant' ? 'bg-[#352638] text-[#FFFCF6]' : 'bg-[#AD5138] text-[#FFFCF6]'}`}>
+              {msg.role === 'assistant' ? <Bot size={15} /> : <User size={15} />}
             </div>
-            <div className={`rounded-xl px-3 py-2 text-sm max-w-[80%] leading-relaxed ${msg.role === 'assistant' ? 'bg-white/5 text-gray-200' : 'bg-forest-600/20 text-forest-200'}`}>
+            <div className={`rounded-[8px] px-4 py-3 text-sm max-w-[80%] leading-relaxed border ${msg.role === 'assistant' ? 'bg-[#F5F0E7] text-[#352638] border-[#D8CEC4]' : 'bg-[#EAE2EB] text-[#352638] border-[#352638]/20'}`}>
               <ReactMarkdown>{msg.content}</ReactMarkdown>
             </div>
           </div>
         ))}
         {loading && (
           <div className="flex gap-3">
-            <div className="w-7 h-7 rounded-full bg-forest-600 flex items-center justify-center">
-              <Bot size={14} className="text-white" />
+            <div className="w-8 h-8 rounded-full bg-[#352638] text-[#FFFCF6] flex items-center justify-center">
+              <Bot size={15} />
             </div>
-            <div className="bg-white/5 rounded-xl px-3 py-2">
-              <Loader2 size={14} className="animate-spin text-forest-400" />
+            <div className="bg-[#F5F0E7] border border-[#D8CEC4] rounded-[8px] px-4 py-3">
+              <Loader2 size={16} className="animate-spin text-[#352638]" />
             </div>
           </div>
         )}
@@ -69,10 +69,14 @@ export const AIAssistant: React.FC = () => {
       {/* Suggestions */}
       {messages.length <= 1 && (
         <div className="px-4 pb-2">
-          <p className="text-xs text-gray-500 mb-2">Suggestions :</p>
+          <p className="text-xs font-semibold uppercase tracking-wider text-[#70656B] mb-2">Suggestions :</p>
           <div className="flex flex-wrap gap-2">
             {SUGGESTIONS.map((s) => (
-              <button key={s} onClick={() => send(s)} className="text-xs bg-white/5 hover:bg-white/10 text-gray-300 px-2.5 py-1 rounded-full transition-all border border-white/10">
+              <button
+                key={s}
+                onClick={() => send(s)}
+                className="text-xs bg-[#FFFCF6] hover:bg-[#EAE2EB] text-[#352638] px-3 py-1.5 rounded-full transition-all border border-[#D8CEC4] font-medium"
+              >
                 {s}
               </button>
             ))}
@@ -81,11 +85,11 @@ export const AIAssistant: React.FC = () => {
       )}
 
       {/* Input */}
-      <div className="p-4 border-t border-white/[0.06]">
+      <div className="p-4 border-t border-[#D8CEC4]">
         <div className="flex gap-2">
           <input
             className="input flex-1 text-sm"
-            placeholder="Posez une question..."
+            placeholder="Posez une question sur le registre..."
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && send()}
@@ -94,9 +98,10 @@ export const AIAssistant: React.FC = () => {
           <button
             onClick={() => send()}
             disabled={!input.trim() || loading}
-            className="btn-primary px-3"
+            className="btn-primary px-4"
+            aria-label="Envoyer"
           >
-            <Send size={14} />
+            <Send size={15} />
           </button>
         </div>
       </div>

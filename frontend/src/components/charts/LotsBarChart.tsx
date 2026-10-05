@@ -1,9 +1,14 @@
 import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 
+// Couleurs Terre & Registre
 const STATUS_COLORS: Record<string, string> = {
-  harvest: '#f59e0b', processing: '#3b82f6', processed: '#a855f7',
-  transit: '#f97316', exported: '#22c55e', rejected: '#ef4444',
+  harvest: '#795015',    // À contrôler / Récolte
+  processing: '#352638', // Aubergine / Transformation
+  processed: '#4A354D',  // Aubergine relevée
+  transit: '#AD5138',    // Argile / Transit
+  exported: '#435432',   // Vérifié / Exporté
+  rejected: '#963C47',   // Erreur / Rejeté
 };
 
 const STATUS_LABELS: Record<string, string> = {
@@ -24,16 +29,35 @@ export const LotsBarChart: React.FC<LotsBarChartProps> = ({ data }) => {
 
   return (
     <ResponsiveContainer width="100%" height={220}>
-      <BarChart data={formatted} margin={{ top: 5, right: 10, left: -20, bottom: 5 }}>
-        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-        <XAxis dataKey="name" tick={{ fill: '#6b7280', fontSize: 11 }} axisLine={false} tickLine={false} />
-        <YAxis tick={{ fill: '#6b7280', fontSize: 11 }} axisLine={false} tickLine={false} />
-        <Tooltip
-          contentStyle={{ background: '#1e293b', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#f0f6fc' }}
-          cursor={{ fill: 'rgba(255,255,255,0.03)' }}
+      <BarChart data={formatted} margin={{ top: 10, right: 10, left: -20, bottom: 5 }}>
+        <CartesianGrid strokeDasharray="3 3" stroke="#D8CEC4" strokeOpacity={0.6} />
+        <XAxis
+          dataKey="name"
+          tick={{ fill: '#70656B', fontSize: 12, fontFamily: 'Manrope, sans-serif' }}
+          axisLine={{ stroke: '#D8CEC4' }}
+          tickLine={false}
         />
-        <Bar dataKey="count" radius={[6, 6, 0, 0]} maxBarSize={50}>
-          {formatted.map((entry) => <Cell key={entry.status} fill={STATUS_COLORS[entry.status] || '#6b7280'} />)}
+        <YAxis
+          tick={{ fill: '#70656B', fontSize: 12, fontFamily: 'Manrope, sans-serif' }}
+          axisLine={false}
+          tickLine={false}
+        />
+        <Tooltip
+          contentStyle={{
+            background: '#FFFCF6',
+            border: '1px solid #D8CEC4',
+            borderRadius: '6px',
+            color: '#352638',
+            fontFamily: 'Manrope, sans-serif',
+            fontSize: '12px',
+            boxShadow: '0 4px 12px rgba(53, 38, 56, 0.08)',
+          }}
+          cursor={{ fill: 'rgba(234, 226, 235, 0.4)' }}
+        />
+        <Bar dataKey="count" radius={[4, 4, 0, 0]} maxBarSize={44}>
+          {formatted.map((entry) => (
+            <Cell key={entry.status} fill={STATUS_COLORS[entry.status] || '#352638'} />
+          ))}
         </Bar>
       </BarChart>
     </ResponsiveContainer>
