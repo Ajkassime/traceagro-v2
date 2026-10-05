@@ -19,9 +19,9 @@ import { SettingsPage } from './pages/Settings/SettingsPage';
 import { NotificationsPage } from './pages/Notifications';
 import { LotPublicPage } from './pages/Public/LotPublicPage';
 import { ShipmentPublicPage } from './pages/Public/ShipmentPublicPage';
-// @ts-ignore – JSX pages
+// @ts-expect-error – JSX legacy page (migration planifiée Lot 9)
 import Conditioning from './pages/Conditioning';
-// @ts-ignore – JSX pages
+// @ts-expect-error – JSX legacy page (migration planifiée Lot 9)
 import ConditioningDetail from './pages/ConditioningDetail';
 import Clients from './pages/Clients';
 import PurchaseOrders from './pages/PurchaseOrders';

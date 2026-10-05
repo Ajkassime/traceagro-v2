@@ -284,7 +284,7 @@ export class LotsService {
     else if (confidenceScore >= 30) risk = 'high';
     else                            risk = 'critical';
 
-    const secret = process.env.JWT_SECRET || 'traceagro-antifr-secret';
+    const secret = config.antifraudSecret;
     const payload = `${lotId}:${lot?.lotNumber}:${lot?.createdAt?.toISOString()}`;
     const verificationToken = crypto
       .createHmac('sha256', secret)

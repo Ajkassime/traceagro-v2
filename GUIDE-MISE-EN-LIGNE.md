@@ -105,9 +105,9 @@ git push
 
 ---
 
-## 🔑 Identifiants
-- **Admin** : admin@traceagro.mg / Admin1234!
-- **DATABASE_PUBLIC_URL** : Railway → Postgres → Variables → DATABASE_PUBLIC_URL
+## 🔑 Sécurité des Identifiants
+- **Comptes administrateurs** : Définir des mots de passe forts et uniques lors de l'initialisation de la production (ne jamais utiliser de mot de passe par défaut).
+- **DATABASE_PUBLIC_URL** : Railway → Postgres → Variables → DATABASE_PUBLIC_URL (restreindre l'accès réseau en production).
 
 ---
 

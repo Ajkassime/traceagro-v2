@@ -5,20 +5,42 @@ import { generateQRCode } from '../utils/qrcode';
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('🌱 Démarrage du seeding...');
+  if (process.env.NODE_ENV === 'production') {
+    console.error('❌ ERREUR CRITIQUE SÉCURITÉ : L\'exécution du seed est strictement interdite en environnement de production.');
+    process.exit(1);
+  }
+
+  console.log('🌱 Démarrage du seeding pour environnement de développement...');
+
+  const adminPassword = process.env.SEED_ADMIN_PASSWORD || 'DevAdminPass2026!';
+  const agentPassword = process.env.SEED_AGENT_PASSWORD || 'DevAgentPass2026!';
+
+  const adminPasswordHash = await bcrypt.hash(adminPassword, 12);
+  const agentPasswordHash = await bcrypt.hash(agentPassword, 12);
 
   // Admin user
-  const passwordHash = await bcrypt.hash('Admin1234!', 12);
-  const admin = await prisma.user.upsert({
+  await prisma.user.upsert({
     where: { email: 'admin@traceagro.mg' },
     update: {},
-    create: { email: 'admin@traceagro.mg', passwordHash, firstName: 'Admin', lastName: 'TraceAgro', role: 'admin' },
+    create: {
+      email: 'admin@traceagro.mg',
+      passwordHash: adminPasswordHash,
+      firstName: 'Admin',
+      lastName: 'TraceAgro',
+      role: 'admin',
+    },
   });
 
   await prisma.user.upsert({
     where: { email: 'agent@traceagro.mg' },
     update: {},
-    create: { email: 'agent@traceagro.mg', passwordHash: await bcrypt.hash('Agent1234!', 12), firstName: 'Jean', lastName: 'Rakoto', role: 'field_agent' },
+    create: {
+      email: 'agent@traceagro.mg',
+      passwordHash: agentPasswordHash,
+      firstName: 'Jean',
+      lastName: 'Rakoto',
+      role: 'field_agent',
+    },
   });
 
   // Products
@@ -27,7 +49,7 @@ async function main() {
     update: {},
     create: { id: '00000000-0000-0000-0000-000000000001', name: 'Vanille Bourbon', variety: 'Planifolia', category: 'VAN', unit: 'kg' },
   });
-  const coffee = await prisma.product.upsert({
+  await prisma.product.upsert({
     where: { id: '00000000-0000-0000-0000-000000000002' },
     update: {},
     create: { id: '00000000-0000-0000-0000-000000000002', name: 'Café Arabica', variety: 'Arabica', category: 'CAF', unit: 'kg' },
@@ -97,9 +119,7 @@ async function main() {
     },
   });
 
-  console.log('✅ Seeding terminé !');
-  console.log('📧 Admin: admin@traceagro.mg / Admin1234!');
-  console.log('📧 Agent: agent@traceagro.mg / Agent1234!');
+  console.log('✅ Seeding développement terminé sans exposition de secrets.');
 }
 
 main().catch(console.error).finally(() => prisma.$disconnect());

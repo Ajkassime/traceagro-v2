@@ -98,12 +98,7 @@ export const Login: React.FC = () => {
             </button>
           </form>
 
-          <div className="mt-5 p-3 rounded-[6px] bg-[#F5F0E7] border border-[#D8CEC4]">
-            <p className="text-xs text-[#70656B] text-center font-medium">Compte de test :</p>
-            <p className="text-xs text-[#352638] text-center mt-1 font-mono font-semibold">
-              admin@traceagro.mg / Admin1234!
-            </p>
-          </div>
+
         </div>
 
         <p className="text-center text-xs mt-6 text-[#70656B]">

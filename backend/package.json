@@ -17,7 +17,7 @@
     "start": "node dist/server.js",
     "lint": "eslint src --ext .ts",
     "typecheck": "tsc --noEmit",
-    "test": "node --test",
+    "test": "tsx --test src/modules/auth/__tests__/auth.security.test.ts",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:push": "prisma db push",
@@ -53,11 +53,13 @@
     "@types/multer": "^1.4.11",
     "@types/node": "^20.11.20",
     "@types/qrcode": "^1.5.5",
+    "@types/supertest": "^7.2.1",
     "@types/uuid": "^9.0.8",
     "@typescript-eslint/eslint-plugin": "^7.18.0",
     "@typescript-eslint/parser": "^7.18.0",
     "eslint": "^8.57.1",
     "prisma": "^5.22.0",
+    "supertest": "^7.3.1",
     "tsx": "^4.7.1",
     "typescript": "^5.3.3"
   }

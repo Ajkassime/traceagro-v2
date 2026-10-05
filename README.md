@@ -59,12 +59,11 @@ L'application démarre sur : `http://localhost:5173`
 
 ---
 
-## 3. Comptes de démonstration
+## 3. Comptes d'accès
 
-| Email | Mot de passe | Rôle |
-|---|---|---|
-| `admin@traceagro.mg` | `Admin1234!` | Administrateur |
-| `agent@traceagro.mg` | `Agent1234!` | Agent de terrain |
+Les comptes d'accès pour l'environnement de développement local sont initialisés via le script `npm run db:seed` (interdit en production). Les mots de passe sont configurables via les variables d'environnement `SEED_ADMIN_PASSWORD` et `SEED_AGENT_PASSWORD`.
+
+> ⚠️ **Sécurité en production :** Aucun mot de passe par défaut n'est fourni pour la production. Une rotation immédiate de tout compte administrateur préalablement initialisé avec des mots de passe temporaires est obligatoire avant mise en ligne.
 
 ---
 
